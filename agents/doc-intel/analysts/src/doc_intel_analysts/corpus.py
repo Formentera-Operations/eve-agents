@@ -70,12 +70,30 @@ def _cache_key(corpus_key: str) -> str:
     return f"{PARSE_CACHE_PREFIX}{sha}.json"
 
 
+def _allowed_parsed_ref(parsed_ref: str) -> str | None:
+    """Return the S3 key iff the ref points at parse outputs we own.
+
+    The service is directly reachable, so parsed_ref is untrusted input:
+    without this gate a caller could make us read arbitrary S3 objects with
+    our credentials and seed them into the analysis. All legitimate parse
+    outputs live under runs/ in the derived bucket — nothing else is ever
+    read through a parsed_ref.
+    """
+    if not parsed_ref.startswith("s3://"):
+        return None
+    bucket, _, key = parsed_ref[5:].partition("/")
+    if bucket != DERIVED_BUCKET or not key.startswith("runs/"):
+        return None
+    return key
+
+
 def fetch_document(corpus_key: str, parsed_ref: str | None) -> dict[str, Any] | None:
     """Fetch a document's parsed view via its parsed_ref or the shared cache."""
     raw = None
-    if parsed_ref and parsed_ref.startswith("s3://"):
-        bucket, _, key = parsed_ref[5:].partition("/")
-        raw = _get_json(bucket, key)
+    if parsed_ref:
+        key = _allowed_parsed_ref(parsed_ref)
+        if key is not None:
+            raw = _get_json(DERIVED_BUCKET, key)
     if raw is None:
         raw = _get_json(DERIVED_BUCKET, _cache_key(corpus_key))
     return normalize(raw) if raw is not None else None
@@ -85,9 +103,15 @@ def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, str]:
     """Render a parsed view as virtual files for the deepagents filesystem.
 
     One file per page keeps grep/read_file page-addressable so analysts can
-    cite (key, page) accurately: `<safe_key>/page-0003.md`.
+    cite (key, page) accurately: `<safe_key>/page-0003.md`. The directory
+    name carries a short digest of the true key because the `/` → `__`
+    mangling alone is not injective (a real `__` in a key collides with a
+    path separator); the digest keeps two distinct documents from silently
+    overwriting each other. The authoritative source key is the header
+    comment inside each page file, never the directory name.
     """
-    safe = corpus_key.replace("/", "__")
+    digest = hashlib.sha256(corpus_key.encode()).hexdigest()[:8]
+    safe = f"{corpus_key.replace('/', '__')}--{digest}"
     files: dict[str, str] = {}
     if view["kind"] == "extraction":
         files[f"{safe}/extraction.json"] = json.dumps(

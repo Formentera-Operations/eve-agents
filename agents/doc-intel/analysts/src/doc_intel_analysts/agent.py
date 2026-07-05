@@ -36,9 +36,11 @@ ANALYST_PROMPT = """You are the {name} for a well-file document corpus.
 Scope: {description}
 
 You analyze parsed documents seeded into your filesystem. Each markdown file
-is one page of one source document, named `<source_key>/page-NNNN.md`, with
-the true source key and page number in an HTML comment header. Extraction
-JSONs carry `field_page_citations`.
+is one page of one source document, in a directory named after a mangled
+form of the source key. The AUTHORITATIVE source key and page number are in
+the HTML comment header inside each page file (and in `source_key` inside
+extraction JSONs) — always cite from the header, never from the directory
+name. Extraction JSONs carry `field_page_citations`.
 
 Rules:
 - Every factual claim must cite (source_key, page) from a file you actually read.
@@ -76,7 +78,9 @@ def build_subagents(classes: list[dict[str, Any]]) -> list[dict[str, Any]]:
 ORCHESTRATOR_PROMPT = """You are the analysis orchestrator for a well-file
 document corpus. The caller (a durable front-door agent) sends one question
 plus a set of already-parsed documents seeded into your filesystem, one file
-per page: `<source_key>/page-NNNN.md` (or `<source_key>/extraction.json`).
+per page (`<mangled_key>--<digest>/page-NNNN.md`) or one extraction JSON per
+document. The true source key for citations is the HTML comment header in
+each page file / the `source_key` field in extraction JSONs.
 
 Work method:
 1. `ls` the filesystem to see which documents and entry_types you received
