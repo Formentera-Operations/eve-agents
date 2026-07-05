@@ -140,7 +140,7 @@ def fetch_document(corpus_key: str, parsed_ref: str | None = None) -> dict[str, 
     return normalize(raw) if raw is not None else None
 
 
-def _file_data(content: str) -> dict[str, str]:
+def file_data(content: str) -> dict[str, str]:
     """Wrap text in the FileData shape deepagents' StateBackend requires.
 
     Seeded state files MUST be `{"content": ..., "encoding": "utf-8"}` dicts
@@ -165,7 +165,7 @@ def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, dict[s
     safe = f"/{corpus_key.replace('/', '__')}--{digest}"
     files: dict[str, dict[str, str]] = {}
     if view["kind"] == "extraction":
-        files[f"{safe}/extraction.json"] = _file_data(
+        files[f"{safe}/extraction.json"] = file_data(
             json.dumps(
                 {
                     "source_key": corpus_key,
@@ -178,5 +178,5 @@ def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, dict[s
         return files
     for page in view["pages"]:
         header = f"<!-- source: {corpus_key} | page: {page['page']} -->\n\n"
-        files[f"{safe}/page-{page['page']:04d}.md"] = _file_data(header + page["markdown"])
+        files[f"{safe}/page-{page['page']:04d}.md"] = file_data(header + page["markdown"])
     return files

@@ -15,7 +15,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
 from .agent import build_agent
-from .corpus import _file_data, document_as_files, fetch_document
+from .corpus import file_data, document_as_files, fetch_document
 
 logging.basicConfig(stream=sys.stdout, format='{"level":"%(levelname)s","msg":%(message)r}')
 log = logging.getLogger("doc-intel-analysts")
@@ -86,7 +86,7 @@ async def analyze(req: AnalyzeRequest) -> AnalyzeResponse:
             documents_missing=missing,
         )
 
-    files["/_manifest.md"] = _file_data("# Seeded documents\n\n" + "\n".join(manifest_lines))
+    files["/_manifest.md"] = file_data("# Seeded documents\n\n" + "\n".join(manifest_lines))
     log.info(f"analyze: {len(manifest_lines)} docs seeded, {len(missing)} missing")
 
     result = await get_agent().ainvoke(
