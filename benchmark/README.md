@@ -20,6 +20,9 @@ document is part of the task.
 2. Page numbers come **only** from the parse JSON, never guessed:
    - tier A (field extraction): `output.metadata.<field>.citations[].page.number`
    - tier B/C (page-chunked Markdown): `output.chunks[].metadata.pageRange.start`
+   - Caveat (verifier-confirmed): some tier-B refs are field-extraction runs
+     rather than chunked Markdown — for those, use the tier-A recipe; the
+     cited page lives in that field's `citations[].page.number`.
 3. Each fact was confirmed to live in **document content** (a value, table cell,
    or line item), not in the filename — so the agent cannot shortcut by pattern
    matching the S3 key.

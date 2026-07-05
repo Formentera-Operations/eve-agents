@@ -1,0 +1,617 @@
+[
+ {
+  "id": "q01",
+  "type": "single-doc",
+  "question": "What was the total gross AFE estimate for the Courts Federal 1H well?",
+  "expected_answer": "$2,773,800",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "AFE #140319, operator EnCana. Accept $2,773,800 exactly (±$1 rounding); reject the net estimate of $1,236,288.",
+  "agent_answer": "The AFE for the Courts Federal 1H well shows a **total gross AFE estimate of $2,773,800** (AFE No. 140319, dated 2008-02-20, Drilling & Completion) (FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf, page 1).\n\nSupporting breakdown from the same document:\n- Dry hole (drilling) cost: $1,011,800\n- Completion cost: $1,762,000\n- Line items: Intangible-Drilling $975,400; Tangible-Drilling $36,400; Intangible-Completion $1,390,000; Tangible-Completion $372,000\n- Net estimate (at 44.5702% working interest, held by Devon Energy Production Company, L.P., operator EnCana Oil & Gas (USA) Inc.): $1,236,288\n\n(all from FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf, page 1)\n\nThis is the only AFE document found in the corpus sample for this well, so it reflects the original/only AFE on file here (no supplements found).",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 10
+ },
+ {
+  "id": "q02",
+  "type": "single-doc",
+  "question": "What was the total gross AFE estimate for the Selma Goodnight 2H workover?",
+  "expected_answer": "$6,000",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/GOODNIGHT SELMA 2H/Financial/AFE/1005504801-GOODNIGHT,_SELMA_2H-WBS-0003.pdf.PDF",
+    "page": 3
+   }
+  ],
+  "notes": "This is a workover AFE supplement (Supplement 29, AFE #52955), single .MEC line item of $6,000. Accept $6,000 exactly.",
+  "agent_answer": "The total gross AFE estimate for the Selma Goodnight 2H workover was **$6,000 USD**.\n\nDetails:\n- Well: SELMA GOODNIGHT 2H (listed in corpus as \"GOODNIGHT SELMA 2H\"), operator Devon, TX\n- AFE Number: 52955, Supplement 29, dated 2017-02-06\n- AFE Type: Workover\n- Total gross estimate: $6,000 (net estimate also $6,000, at 100% working interest)\n\nSource: `FP GRIFFIN/GOODNIGHT SELMA 2H/Financial/AFE/1005504801-GOODNIGHT,_SELMA_2H-WBS-0003.pdf.PDF` (page 3 for the total gross estimate; page 1 for AFE number, type, and well name).",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 18
+ },
+ {
+  "id": "q03",
+  "type": "single-doc",
+  "question": "What is the total gross estimate on the David William 8H (William David 8H) drilling & completion AFE?",
+  "expected_answer": "$3,043,700",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Devon Energy Production, AFE #138370. Accept $3,043,700 exactly (±$1).",
+  "agent_answer": "The total gross estimate on the William David 8H Drilling & Completion AFE is **$3,043,700 USD** (AFE #138370, dated 2007-11-20, operator Devon Energy Production Company, L.P.).\n\nSource: FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF, page 1.\n\nBreakdown of the gross cost line items (which sum to this total):\n- Intangible – Drilling: $1,359,500 (page 1)\n- Tangible – Drilling: $40,500 (page 1)\n- Intangible – Completion: $1,351,700 (page 1)\n- Tangible – Completion: $292,000 (page 1)\n\nNote: the well is listed on the AFE itself as \"William David 8H\" (well working interest 100%, Devon Energy Production Company, L.P.), matching the \"David William 8H\" name you referenced.",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 9
+ },
+ {
+  "id": "q04",
+  "type": "single-doc",
+  "question": "What was the maximum treating pressure recorded on the Wrangler N734H frac stage report?",
+  "expected_answer": "10,998 psi",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Accept 10,998 psi (±10 psi). Do not confuse with fluid/proppant completion percentages on the same ticket.",
+  "agent_answer": "I found multiple frac-related documents for **WRANGLER-STX-UNIT N734H**, but only one is a proper stage frac report that includes an explicit maximum treating-pressure figure:\n\n**WRANGLER-STX-UNIT N734H – Print Out – Stage 37.pdf** (Liberty Energy frac ticket, Stage 37)\n- **Max Pressure: 10,998 psi** (FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf, page 1)\n- Other stage details on the same page: start frac time 23:58, end frac time 2:28, pump time 150 min, fluid completion 127%, proppant completion 88%.\n\nNotes on the rest of the N734H frac file set, for completeness:\n- **Stage 22 \"Ticket\"** (…Ticket - Stage 22.pdf) is a Liberty billing field ticket, not a treating-pressure report — it has no pressure data (page 1).\n- **Stage 66 \"PLOTS\"** (…Stage 66 PLOTS.pdf) contains treating-pressure/wellhead-pressure charts (axes scaled to 15,000–16,000 psi) but the parsed markdown only captures chart labels/axis text, not a specific numeric peak value — I can't cite an exact max psi from it without risking an invented number.\n- **Stage 63 CSV** (…Stage 63 [36079519].csv) is a vendor CSV/log-type file that isn't machine-parseable through this tool; it would need to be opened in its native format (e.g., a frac data software) to extract pressure values.\n\nSo, if you mean the one N734H document that actually states a \"max pressure,\" it's **10,998 psi**, from the Stage 37 report. If you were referring to a different stage (e.g., 66 or 63), the corpus sample doesn't give me a clean numeric max-pressure citation for those — let me know if you'd like me to dig further into the Stage 66 plot data or flag it as needing the source frac data file.",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 29
+ },
+ {
+  "id": "q05",
+  "type": "single-doc",
+  "question": "What total measured depth does the final deviation survey report for the Bull Mountain 31-18-DIV S617HF well?",
+  "expected_answer": "24,565 ft",
+  "expected_citations": [
+   {
+    "key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S617HF/Drilling/Directional/1364889-176566-RM-260105_Bull Mountain-31-18-DIV S617HF_Survey Cert with Surveys.pdf",
+    "page": 6
+   }
+  ],
+  "notes": "Total depth of the survey. Accept 24,565 ft (±5 ft). Survey by Total Directional Services, LLC.",
+  "agent_answer": "The Final Deviation Survey for the Bull Mountain-31-18-DIV S617HF well reports a total measured depth of **24,565 ft** (with a corresponding TVD of 8,774.76 ft at that final station).\n\n**Source:** *1364889-176566-RM-260105_Bull Mountain-31-18-DIV S617HF_Survey Cert with Surveys.pdf* (WESTLAKE RESOURCES / BULL MOUNTAIN-31-18-DIV S617HF / Drilling / Directional), page 6 — the \"total_depth\" field is stated as 24,565 ft there, and the survey station table's final row confirms measured_depth = 24,565 ft / TVD = 8,774.76 ft, azimuth 181.33°, inclination 87.08°.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 22
+ },
+ {
+  "id": "q06",
+  "type": "single-doc",
+  "question": "What reservoir temperature was used in the Hooey N731H PVT study?",
+  "expected_answer": "220 °F",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT N731H/Production/Reports/Hooey STX-Unit N731H PVT Final.pdf",
+    "page": 6
+   }
+  ],
+  "notes": "Recombined black oil PVT study by Premier Corex, Pearsall formation. Accept 220 °F exactly.",
+  "agent_answer": "The PVT study for **Hooey-STX-Unit N731H** (Pearsall formation, a Recombined Black Oil PVT Study by Premier Corex, dated 2025-11-24) used a reservoir temperature of **220°F**.\n\n(Source: FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT N731H/Production/Reports/Hooey STX-Unit N731H PVT Final.pdf, page 6)",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 10
+ },
+ {
+  "id": "q07",
+  "type": "single-doc",
+  "question": "What initial gas rate did the well test report for the Boyd Billy 14H well?",
+  "expected_answer": "2,364 Mcf/day",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/BOYD, BILLY 14H/Production/Well Tests/422513404000-BOYD,_BILLY_14H-Completion_Reports-0001.pdf.PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Gas Well Back Pressure Test - Initial Potential. Accept 2,364 Mcf/day (±1%).",
+  "agent_answer": "The well test report for **Boyd, Billy 14H** shows an initial gas rate of **2,364 Mcf/day**, recorded as a \"Gas Well Back Pressure Test - Initial Potential\" dated 2010-12-29 (operator: Devon Energy Production Co., L.P.; choke: OPEN; casing pressure 1,000 psi).\n\nSource: FP GRIFFIN/BOYD, BILLY 14H/Production/Well Tests/422513404000-BOYD,_BILLY_14H-Completion_Reports-0001.pdf.PDF, page 1.",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 11
+ },
+ {
+  "id": "q08",
+  "type": "single-doc",
+  "question": "Which wireline company was used on the Wildcat Hollow S512HF frac stage?",
+  "expected_answer": "Go Wireline",
+  "expected_citations": [
+   {
+    "key": "WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Accept 'Go Wireline'. Note the frac/pumping service is a different field.",
+  "agent_answer": "**Go Wireline** was the wireline company used on the Wildcat Hollow (16-33-PGN) S512HF frac stages.\n\nThis is confirmed in the frac reports for the well:\n- Stage 27: \"wireline_company\": \"Go Wireline\" (WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf, page 1)\n- Stage 54: \"WireLine Company | Go | Wireline\" (WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/2026-01-28 REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 54 [34330822].pdf, page 1)\n\nBoth stage reports for this well in the corpus sample list the same wireline provider, so it appears Go Wireline serviced the S512HF frac program consistently.",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 15
+ },
+ {
+  "id": "q09",
+  "type": "single-doc",
+  "question": "What flowing tubing pressure was recorded on the Deal 2H well test?",
+  "expected_answer": "1,680 psi",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/DEAL 2H/Production/Well Tests/422513414400-DEAL_2H-Completion_Reports-0005.pdf.PDF",
+    "page": 3
+   }
+  ],
+  "notes": "Accept 1,680 psi (±5 psi). Do not confuse with the 1,410 psi casing pressure on the same page.",
+  "agent_answer": "The well test on file for **DEAL 2H** (FP GRIFFIN asset team) recorded a **flowing tubing pressure of 1,680 psi**.\n\nThis is from a Gas Well Back Pressure Test (G-1) conducted 2011-04-07 by Devon Energy Production Co., L.P. (API 42-251-34144), with a 24/64\" choke, at a gas rate of 3,622 Mcf/day, casing pressure 1,410 psi, and water rate 163 bbl/day.\n\nSource: `FP GRIFFIN/DEAL 2H/Production/Well Tests/422513414400-DEAL_2H-Completion_Reports-0005.pdf.PDF`, page 3.",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 11
+ },
+ {
+  "id": "q10",
+  "type": "single-doc",
+  "question": "To what depth was the surface casing cemented on the Maverick 22-10-BND N618H well?",
+  "expected_answer": "2,050 ft MD (surface to 2,050 ft)",
+  "expected_citations": [
+   {
+    "key": "WESTLAKE RESOURCES/MAVERICK-22-10-BND N618H/Drilling/Casing & Cement/Cement Post Job Report - Formentera - MAVERICK-22-10-BND N618H - Surface.pdf",
+    "page": 3
+   }
+  ],
+  "notes": "Surface post-job report: 9.625-inch casing cemented from surface to 2,050 ft. Accept 2,050 ft (±5 ft).",
+  "agent_answer": "This document is a \"pilot-tier B\" structured extraction (this is why page ranges return the same summary regardless of range — the tool returns the full extraction fields rather than raw text pages).\n\nBased on the Surface Cement Post Job Report for this well:\n\n**The surface casing (9.625\" casing) on the Maverick 22-10-BND N618H well was cemented from surface to 2,050 ft MD**, per the Surface Post Job Report dated 2025-12-07 (CallSheet #97891), API 33-013-01980 (WESTLAKE RESOURCES/MAVERICK-22-10-BND N618H/Drilling/Casing & Cement/Cement Post Job Report - Formentera - MAVERICK-22-10-BND N618H - Surface.pdf, page 1; depth reference on page 3).\n\nNote: this is a structured extraction from a tier-B parsed PDF rather than raw page text, so I can confirm the depth figure (2,050 ft) and job identifiers but cannot quote surrounding narrative text verbatim. If you need the full job log/pump diagram detail, I'd need to view the original PDF directly.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 16
+ },
+ {
+  "id": "q11",
+  "type": "cross-doc",
+  "question": "Between the David William 8H and the Atlas J.J. 4H AFEs, which well has the higher total gross estimate, and by how much?",
+  "expected_answer": "Atlas J.J. 4H is higher, by $425,600 ($3,469,300 vs $3,043,700).",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Requires reading both AFEs. Correct if it identifies Atlas as higher; accept the difference $425,600 (±$1).",
+  "agent_answer": "The **Atlas J.J. 4H** AFE has the higher total gross estimate.\n\n- Atlas J.J. 4H (William David 8H's counterpart AFE #135150): **$3,469,300** gross — (FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF, page 1)\n- David William 8H (AFE #138370): **$3,043,700** gross — (FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF, page 1)\n\n**Difference: Atlas J.J. 4H is higher by $425,600.**",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 10
+ },
+ {
+  "id": "q12",
+  "type": "cross-doc",
+  "question": "Comparing their well tests, which well had the higher initial gas rate: the Boyd Billy 14H or the Deal 2H?",
+  "expected_answer": "The Deal 2H (3,622 Mcf/day vs 2,364 Mcf/day for Boyd Billy 14H).",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/BOYD, BILLY 14H/Production/Well Tests/422513404000-BOYD,_BILLY_14H-Completion_Reports-0001.pdf.PDF",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/DEAL 2H/Production/Well Tests/422513414400-DEAL_2H-Completion_Reports-0005.pdf.PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Correct if it names Deal 2H as higher; both rates (3,622 and 2,364 Mcf/day) should be supportable (±1%).",
+  "agent_answer": "**Deal 2H had the higher initial gas rate.**\n\n- **Deal 2H**: Initial Potential gas well back-pressure test (G-1) dated 2011-04-07, 24/64 choke, gas rate **3,622 Mcf/day** (FP GRIFFIN/DEAL 2H/Production/Well Tests/422513414400-DEAL_2H-Completion_Reports-0005.pdf.PDF, p.1)\n- **Boyd, Billy 14H**: Initial Potential gas well back-pressure test dated 2010-12-29, choke open, gas rate **2,364 Mcf/day** (FP GRIFFIN/BOYD, BILLY 14H/Production/Well Tests/422513404000-BOYD,_BILLY_14H-Completion_Reports-0001.pdf.PDF, p.1)\n\nDeal 2H's initial gas rate was roughly 1,258 Mcf/day higher than Boyd, Billy 14H's, both from Devon Energy-operated initial potential tests on file in the corpus.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 14
+ },
+ {
+  "id": "q13",
+  "type": "cross-doc",
+  "question": "Comparing per-stage frac costs, was the estimated stage cost higher on the Wrangler N731H stage or the Wildcat Hollow S512HF stage, and by roughly how much?",
+  "expected_answer": "Wrangler N731H was higher: $39,304.60 vs $28,681.85 for Wildcat Hollow S512HF, a difference of about $10,623.",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/WRANGLER-STX-UNIT N731H - Ticket - Stage 8.pdf",
+    "page": 1
+   },
+   {
+    "key": "WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Correct if it names Wrangler N731H as higher; accept the difference $10,623 (±$50) or the two values (±1%).",
+  "agent_answer": "Found the estimated stage costs directly on each frac ticket (both parsed as pilot-tierA structured extractions with page-1 citations).\n\n- **Wrangler-STX-Unit N731H — Stage 8**: estimated stage cost **$39,304.60** (FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/WRANGLER-STX-UNIT N731H - Ticket - Stage 8.pdf, p.1)\n- **Wildcat Hollow-16-33-PGN S512HF — Stage 27**: estimated stage cost **$28,681.85** (WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf, p.1)\n\n**Answer:** The Wrangler N731H stage was more expensive, by about **$10,600** ($39,304.60 vs $28,681.85 — roughly 37% higher).\n\nA caveat: these are the only two frac-stage tickets in the corpus sample that came back as fully parsed (pilot-tierA) structured extractions with an `estimated_stage_cost` field for these wells — they are different stage numbers (Stage 8 for Wrangler N731H vs Stage 27 for Wildcat Hollow S512HF), not necessarily comparable \"typical\" stages, since each well has dozens of individual per-stage frac tickets (most unparsed in this sample) and per-stage cost can vary with stage design, proppant/fluid volumes, and pump time. If you want a more representative comparison (e.g., average cost across all stages, or matched stage numbers/positions), I'd need to parse the remaining unparsed Frac Report tickets for both wells — let me know if you'd like me to pull and average those.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "corpus_overview",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 35
+ },
+ {
+  "id": "q14",
+  "type": "cross-doc",
+  "question": "Which frac stage saw the higher maximum treating pressure: the Wrangler N734H stage or the Wildcat Hollow S512HF stage?",
+  "expected_answer": "The Wrangler N734H stage (10,998 psi vs 8,957 psi for Wildcat Hollow S512HF).",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf",
+    "page": 1
+   },
+   {
+    "key": "WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Correct if it names Wrangler N734H as higher; both pressures (10,998 and 8,957 psi) should be supportable (±10 psi).",
+  "agent_answer": "## Answer\n\nThe **Wrangler-STX-Unit N734H frac stage (Stage 37)** saw the higher maximum treating pressure.\n\n| Well / Stage | Max Treating Pressure | Source |\n|---|---|---|\n| Wrangler-STX-Unit N734H — Stage 37 | **10,998 psi** | (FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf, p. 1) |\n| Wildcat Hollow-16-33-PGN S512HF — Stage 27 | 8,957 psi | (WESTLAKE RESOURCES/WILDCAT HOLLOW-16-33-PGN S512HF/Completions/Frac/REPORT WILDCAT HOLLOW-16-33-PGN S512HF Stage 27.pdf, p. 1) |\n\nDifference: ~2,041 psi higher on the Wrangler stage.\n\n**Caveat on scope:** Each well has multiple frac-stage documents in the corpus sample, but only one stage report per well is currently parsed/readable at this tier (Wrangler Stage 37 and Wildcat Hollow Stage 27 — both `pilot-tierA`). Other stage reports exist for both wells (e.g., Wrangler Stages 22, 63, 66; Wildcat Hollow Stage 54) but are `unparsed`, so I did not include them in this comparison since you asked about \"the\" stage for each well rather than a full per-well maximum across all stages. If you want me to parse the remaining stage reports to find each well's true peak treating pressure across all stages (not just these two), I can do that next — let me know.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 18
+ },
+ {
+  "id": "q15",
+  "type": "cross-doc",
+  "question": "Do the David William 8H and Atlas J.J. 4H AFEs budget the same intangible drilling cost? If so, what is it?",
+  "expected_answer": "Yes — both AFEs budget $1,359,500 for the Intangible - Drilling line item.",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Requires comparing the intangible-drilling line item on both AFEs. Accept $1,359,500 (±$1) and a 'yes, identical' conclusion.",
+  "agent_answer": "Yes — both AFEs budget an identical **Intangible – Drilling** line item of **$1,359,500** (gross/net, 100% working interest to Devon Energy Production Company, L.P.):\n\n- David William 8H AFE (AFE #138370, dated 2007-11-20): Intangible – Drilling = $1,359,500 (FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF, p.1)\n- Atlas J.J. 4H AFE (AFE #135150, dated 2007-06-20): Intangible – Drilling = $1,359,500 (FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF, p.1)\n\nInterestingly, the Tangible – Drilling amounts also match exactly ($40,500 each), while the Intangible/Tangible Completion costs and total estimates differ between the two wells.",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 14
+ },
+ {
+  "id": "q16",
+  "type": "cross-doc",
+  "question": "Of the Courts Federal 1H, David William 8H, and Atlas J.J. 4H AFEs, which well carries the highest total gross estimate?",
+  "expected_answer": "Atlas J.J. 4H ($3,469,300), versus David William 8H ($3,043,700) and Courts Federal 1H ($2,773,800).",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Requires reading all three AFEs. Correct if it names Atlas J.J. 4H as highest.",
+  "agent_answer": "## Answer\n\n**Atlas J.J. 4H** carries the highest total gross AFE estimate among the three wells.\n\n| Well | Total Gross Estimate | Source |\n|---|---|---|\n| Atlas J.J. 4H | **$3,469,300** | (FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF, p.1) |\n| David William 8H | $3,043,700 | (FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF, p.1) |\n| Courts Federal 1H | $2,773,800 | (FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf, p.1) |\n\nNote: In the corpus these AFE documents are filed under well names \"J. J. Atlas 4H\" and \"William David 8H\" (name order reversed from your query), but they match the wells you asked about. Also note the Courts Federal 1H AFE (AFE #140319, dated 2008-02-20) is operated by EnCana Oil & Gas with Devon Energy holding a 44.5702% working interest, while the other two are Devon-operated at 100% WI — so the gross figures are on different partner bases, but as requested this compares total gross estimates as stated on each AFE.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 18
+ },
+ {
+  "id": "q17",
+  "type": "cross-doc",
+  "question": "Which frac service company pumped the stages documented for both the Wrangler N731H and the Wrangler N734H?",
+  "expected_answer": "Liberty Energy",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/WRANGLER-STX-UNIT N731H - Ticket - Stage 8.pdf",
+    "page": 1
+   },
+   {
+    "key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Both frac reports list Liberty Energy as the service company. Correct only if it confirms the same company appears on both documents.",
+  "agent_answer": "**Liberty Energy** pumped the frac stages documented for both wells.\n\n- WRANGLER-STX-UNIT N731H, Stage 8 ticket lists `service_company: Liberty Energy` (FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/WRANGLER-STX-UNIT N731H - Ticket - Stage 8.pdf, page 1)\n- WRANGLER-STX-UNIT N734H, Stage 37 ticket lists `service_company: Liberty Energy` (FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N734H/Completions/Frac/WRANGLER-STX-UNIT N734H - Print Out - Stage 37.pdf, page 1)\n\nNote: these are the only two Frac Report tickets for these wells that are currently parsed (pilot-tierA) in this 500-file sample; the remaining frac tickets/plots for both wells (e.g., N731H Stage 21/69, N734H Stage 22/63/66) are unparsed, so I can't confirm the same company pumped every single stage — only that the documented, readable stages for each well both show Liberty Energy as the service company.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 24
+ },
+ {
+  "id": "q18",
+  "type": "cross-doc",
+  "question": "Among the Courts Federal 1H, David William 8H, and Atlas J.J. 4H AFEs, which well carries a working interest below 100%?",
+  "expected_answer": "Courts Federal 1H (44.5702% working interest); David William 8H and Atlas J.J. 4H are both 100%.",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF",
+    "page": 1
+   },
+   {
+    "key": "FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Requires reading the working-interest field on all three AFEs. Correct if it names Courts Federal 1H; accept 44.57% (±0.01%).",
+  "agent_answer": "**Courts Federal 1H** carries a working interest below 100% — its AFE lists partner Devon Energy Production Company, L.P. at **44.5702%** working interest (FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf, page 1).\n\nBy contrast:\n- **David William 8H** (filed as \"William David 8H\") AFE shows Devon Energy Production Company, L.P. at **100%** working interest (FP GRIFFIN/DAVID WILLIAM 8/Financial/AFE/422513253200-DAVID,_WILLIAM_8H-TAB_AFE-0001..PDF, page 1).\n- **Atlas J.J. 4H** (filed as \"J. J. Atlas 4H\") AFE also shows Devon Energy Production Company, L.P. at **100%** working interest (FP GRIFFIN/ATLAS, J. J. 4H/Financial/AFE/422513214700-ATLAS,__J._J._4H-TAB_AFE-0001..PDF, page 1).\n\nSo among the three, Courts Federal 1H is the outlier with a sub-100% working interest.",
+  "agent_tools": [
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 16
+ },
+ {
+  "id": "q19",
+  "type": "table-extraction",
+  "question": "On the Courts Federal 1H AFE cost breakdown, what is the Intangible - Completion line-item amount?",
+  "expected_answer": "$1,390,000",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "One row of the four-row cost table (Intangible/Tangible x Drilling/Completion). Accept $1,390,000 (±$1); do not return the $1,762,000 completion subtotal.",
+  "agent_answer": "On the Courts Federal 1H AFE (AFE #140319, dated 2008-02-20, operator EnCana Oil & Gas (USA) Inc.), the **Intangible - Completion** line item is **$1,390,000** (gross).\n\nSource: FP GRIFFIN/COURTS FEDERAL 1H/Financial/AFE/424393294700-COURTS_FEDERAL_1H-TAB_AFE-0002.pdf.pdf, page 1.",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 7
+ },
+ {
+  "id": "q20",
+  "type": "table-extraction",
+  "question": "In the bit record for the Hickey Billy 2H well, how many feet did the first bit run drill?",
+  "expected_answer": "1,175 ft",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/HICKEY BILLY 2H/Drilling/BHA & Bits/422513094800-HICKEY,_BILLY_2H-Bit_Record-0001.pdf.pdf",
+    "page": 1
+   }
+  ],
+  "notes": "Bit #1 (12.25-in VAREL MKS66G) drilled from 45 ft to 1,220 ft, total drilled 1,175 ft. Accept 1,175 ft (±5 ft).",
+  "agent_answer": "The first bit run (Bit No/Run 1/1, a 12.250\" Varel MKS66G bit, serial 3050) drilled from 45.0 ft to 1,220.0 ft, for a **Total Drilled of 1,175.0 ft** (FP GRIFFIN/HICKEY BILLY 2H/Drilling/BHA & Bits/422513094800-HICKEY,_BILLY_2H-Bit_Record-0001.pdf.pdf, page 1).",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 8
+ },
+ {
+  "id": "q21",
+  "type": "table-extraction",
+  "question": "According to the end-of-well drilling-fluid recap for the Bull Mountain 31-18-DIV S611HF, at what depth was the 9-5/8\" surface casing set?",
+  "expected_answer": "1,642 ft",
+  "expected_citations": [
+   {
+    "key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S611HF/Drilling/Mud & Fluids/FORMENTERA -EOW RECAP - BULL MOUNTAIN 31-18-DIV S611HF - NABORS B-23.pdf",
+    "page": 3
+   }
+  ],
+  "notes": "Interval table: 9 5/8 casing from 0 ft to 1,642 ft (13.5-in hole drilled to 1,655 ft). Accept 1,642 ft (±5 ft).",
+  "agent_answer": "Found it on page 3.\n\nAccording to the Halliburton Baroid \"Final Well Recap Drilling Fluid Job\" (End-of-Well Recap) for the Bull Mountain 31-18-DIV S611HF, the **9-5/8\" surface casing was set at 1,642 ft** (in the 13.5 in surface hole section, drilled from 0 ft to 1,655 ft) (WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S611HF/Drilling/Mud & Fluids/FORMENTERA -EOW RECAP - BULL MOUNTAIN 31-18-DIV S611HF - NABORS B-23.pdf, page 3).",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 17
+ },
+ {
+  "id": "q22",
+  "type": "table-extraction",
+  "question": "What initial solution gas-oil ratio (GOR) does the Hooey N731H PVT report give?",
+  "expected_answer": "1,901 scf/STB",
+  "expected_citations": [
+   {
+    "key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT N731H/Production/Reports/Hooey STX-Unit N731H PVT Final.pdf",
+    "page": 23
+   }
+  ],
+  "notes": "From the reservoir-fluid summary table. Accept 1,901 scf/STB (±1%).",
+  "agent_answer": "The Hooey STX-Unit N731H PVT report gives an **initial solution gas-oil ratio (GOR) of 1,901 scf/STB**.\n\nThis comes from the \"Recombined Black Oil PVT Study\" performed by Premier Corex for Formentera Operations, LLC on the Pearsall formation, dated 2025-11-24, reservoir temperature 220°F, saturation pressure 3,665 psia.\n\nCitation: *FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT N731H/Production/Reports/Hooey STX-Unit N731H PVT Final.pdf*, page 23.",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 13
+ },
+ {
+  "id": "q23",
+  "type": "table-extraction",
+  "question": "What is the proposed casing setting depth (TMD) shown on the pipe-tally report for the Weber John 2H well?",
+  "expected_answer": "11,510 ft",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/WEBER, JOHN 2H/Drilling/Casing & Cement/422513344100-WEBER,_JOHN_2H-Casing_Reports-0002.pdf.PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Final Pipe Tally Report header: Proposed Setting TMD 11,510.0 ft. Accept 11,510 ft (±5 ft).",
+  "agent_answer": "The proposed casing setting depth (TMD) shown on the Final Pipe Tally Report for the Weber, John 2H well is **11,510.0 ft** (source: \"Proposed Setting TMD: 11,510.0 (ft)\"), from the document field \"report_period_or_depth_reference\" — (FP GRIFFIN/WEBER, JOHN 2H/Drilling/Casing & Cement/422513344100-WEBER,_JOHN_2H-Casing_Reports-0002.pdf.PDF, page 1).\n\nNote: this same report separately notes the well actually reached a total measured depth of 11,516.50 ft (same document, page 1) — that is the achieved/actual depth, distinct from the 11,510.0 ft proposed setting TMD you asked about.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 22
+ },
+ {
+  "id": "q24",
+  "type": "table-extraction",
+  "question": "What initial mud weight was used on the surface interval per the drilling-fluid recap for the Bull Mountain 31-18-DIV S611HF?",
+  "expected_answer": "8.6 ppg",
+  "expected_citations": [
+   {
+    "key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S611HF/Drilling/Mud & Fluids/FORMENTERA -EOW RECAP - BULL MOUNTAIN 31-18-DIV S611HF - NABORS B-23.pdf",
+    "page": 3
+   }
+  ],
+  "notes": "Surface discussion: 'Started with 8.6 ppg MW.' Accept 8.6 ppg / lb/gal (±0.1).",
+  "agent_answer": "Found it on page 3 of the Mud Recap.\n\n**Initial mud weight on the surface interval: 8.6 ppg**\n\nPer the Drilling Fluid Recap for Bull Mountain 31-18-DIV S611HF (Halliburton Baroid \"Final Well Recap Drilling Fluid Job\"), the Surface Discussion for the 13.5-in surface hole section (0–1,655 ft MD, freshwater system) states: *\"Rig up on well. Picked up BHA. Started with 8.6 ppg MW. Drilled ahead surface to 1,655 ft MD.\"* Mud weight was later raised and maintained at 8.7–8.9 ppg through the rest of the surface interval to help hole cleaning ahead of running casing.\n\nSource: `WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S611HF/Drilling/Mud & Fluids/FORMENTERA -EOW RECAP - BULL MOUNTAIN 31-18-DIV S611HF - NABORS B-23.pdf`, page 3.",
+  "agent_tools": [
+   "load_skill",
+   "search_documents",
+   "search_documents",
+   "search_documents",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 16
+ },
+ {
+  "id": "q25",
+  "type": "table-extraction",
+  "question": "To what total depth (ftKB) is casing run on the Christine's Lucky Draw 6H per its casing summary?",
+  "expected_answer": "9,716 ftKB",
+  "expected_citations": [
+   {
+    "key": "FP GRIFFIN/CHRISTINE'S LUCKY DRAW 6H/Drilling/Casing & Cement/422213189300-CHRISTINE_S_LUCKY_DRAW_6H-Casing_Reports-0002.pdf.PDF",
+    "page": 1
+   }
+  ],
+  "notes": "Casing summary depth reference: Surface to 9,716.0 ftKB (deepest string). Accept 9,716 ft (±5 ft).",
+  "agent_answer": "Per the casing summary for the Christine's Lucky Draw 6H, casing is run to a total depth of **9,716.0 ftKB** (production casing string setting depth, with the report covering \"Surface to 9,716.0 ftKB\") (FP GRIFFIN/CHRISTINE'S LUCKY DRAW 6H/Drilling/Casing & Cement/422213189300-CHRISTINE_S_LUCKY_DRAW_6H-Casing_Reports-0002.pdf.PDF, page 1).",
+  "agent_tools": [
+   "search_documents",
+   "read_parsed_document",
+   "read_parsed_document"
+  ],
+  "status": "completed",
+  "seconds": 13
+ }
+]
