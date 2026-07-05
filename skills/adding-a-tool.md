@@ -24,8 +24,11 @@ every step is load-bearing.
    ```
 
    Keep pure logic in a named export (or in `agent/lib/`) so it can be
-   unit-tested without the eve runtime. Side-effecting or irreversible tools
-   get `approval: always()` from `eve/tools/approval`.
+   unit-tested without the eve runtime. Recoverable failures (bad upstream
+   status, unparseable payload, nothing found) return an
+   `{ error: "why" }` object rather than throwing — the model reads it and
+   recovers. Side-effecting or irreversible tools get `approval: always()`
+   from `eve/tools/approval`.
 
 3. **Test it.** Two layers, pick per what the tool does:
    - **Unit test (always)**: `agents/<name>/tests/<tool_name>.test.ts` using
