@@ -47,7 +47,8 @@ agent's model at runtime.
    tool.
 4. **Clean conventional commits** (`feat:`, `fix:`, `chore:`, `docs:`, with
    `feat(starter):`-style scopes). One logical change per commit; work lands
-   as reviewable history, not one blob.
+   as reviewable history, not one blob. Commit your finished work — done
+   means committed, not files sitting in the working tree.
 
 ## Commands
 
@@ -84,9 +85,16 @@ pure logic in a named export, and add `tests/<tool_name>.test.ts` using
 `node:test` with `fetch` stubbed. `agents/starter/agent/tools/get_weather.ts`
 and its test are the template — copy their shape.
 
-Verification order after any agent change:
-`npx eve info` (0 diagnostics, file discovered) → `pnpm typecheck` →
-`pnpm test` → exercise it in the dev TUI or via `--no-ui` + HTTP.
+Verification order after any agent change — all four steps, every time:
+1. `npx eve info` — 0 diagnostics, file discovered
+2. `pnpm typecheck`
+3. `pnpm test`
+4. Boot check: `npx eve dev --no-ui`, confirm `[DEV] server listening at`
+   appears, then kill it. This compiles and serves the full agent surface and
+   **needs no credentials** — never skip it. Exercising the tool through the
+   live model (TUI conversation or eval) additionally needs AI Gateway
+   credentials in the agent's `.env.local`; do that too when they're present,
+   note it as untested when they're not.
 
 ## Testing model
 

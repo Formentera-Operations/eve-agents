@@ -36,12 +36,20 @@ every step is load-bearing.
      with `defineEval`; assert `t.calledTool("<tool_name>")`. Evals boot a real
      server and need AI Gateway credentials, so they don't run in plain CI.
 
-4. **Verify, in order** (from `agents/<name>/`):
+4. **Verify, in order** (from `agents/<name>/`). All four steps are required;
+   the first three plus the boot check need no credentials:
    ```bash
-   npx eve info        # tool listed under Tools, 0 diagnostics
-   pnpm typecheck      # green
-   pnpm test           # unit tests green
-   npx eve dev         # dev TUI: ask the agent something that triggers the tool
+   npx eve info                # 0 diagnostics; discovery manifest lists the tool
+   pnpm typecheck              # green
+   pnpm test                   # unit tests green
+   npx eve dev --no-ui         # boot check: wait for "[DEV] server listening at", then kill
    ```
-   If `eve info` doesn't list the tool: wrong directory, wrong casing, or a
-   missing default export. Read the diagnostics it prints.
+   With AI Gateway credentials present (`.env.local` after `npx eve link`),
+   also exercise the tool through the live model: `npx eve dev`, then ask the
+   agent something that triggers it. Without credentials, say so explicitly
+   in your report instead of skipping silently.
+   If discovery misses the tool: wrong directory, wrong casing, or a missing
+   default export. Read the diagnostics `eve info` prints.
+
+5. **Commit** the tool and its test together as one conventional commit
+   (e.g. `feat(<agent>): add <tool_name> tool`).
