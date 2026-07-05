@@ -8,6 +8,28 @@ importers:
 
   .: {}
 
+  agents/doc-intel:
+    dependencies:
+      '@vercel/connect':
+        specifier: 0.2.2
+        version: 0.2.2(ai@7.0.15(zod@4.4.3))(eve@0.19.0(ai@7.0.15(zod@4.4.3)))
+      ai:
+        specifier: ^7.0.0
+        version: 7.0.15(zod@4.4.3)
+      eve:
+        specifier: ^0.19.0
+        version: 0.19.0(ai@7.0.15(zod@4.4.3))
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: 24.x
+        version: 24.13.2
+      typescript:
+        specifier: 7.0.1-rc
+        version: 7.0.1-rc
+
   agents/starter:
     dependencies:
       '@vercel/connect':
