@@ -39,6 +39,11 @@ function slicePages(view: DocumentView, start?: number, end?: number) {
   for (const p of pages) {
     if (used + p.markdown.length > MAX_CHARS) {
       truncated = true;
+      // A single page larger than the budget still returns its head —
+      // a page range cannot subdivide one page.
+      if (out.length === 0) {
+        out.push({ page: p.page, markdown: p.markdown.slice(0, MAX_CHARS) });
+      }
       break;
     }
     used += p.markdown.length;
