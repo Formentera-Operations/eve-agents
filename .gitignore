@@ -1,0 +1,29 @@
+# Secrets — never committed (credentials flow through Vercel Connect / env)
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+.turbo/
+
+# Vercel
+.vercel/
+
+# eve local state
+.eve/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Python (deepagents layer lands later)
+__pycache__/
+.venv/
+*.egg-info/
+
+# OS noise
+.DS_Store
