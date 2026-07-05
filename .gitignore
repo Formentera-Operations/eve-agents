@@ -10,6 +10,10 @@ node_modules/
 dist/
 .next/
 .turbo/
+.output/
+.nitro/
+.workflow-data/
+*.tsbuildinfo
 
 # Vercel
 .vercel/
