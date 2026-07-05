@@ -52,7 +52,8 @@ function parseCsvLine(line: string): string[] {
 export function loadManifest(): ManifestRow[] {
   if (cached) return cached;
   const text = readFileSync(MANIFEST_PATH, "utf8");
-  const lines = text.split("\n").filter((l) => l.length > 0);
+  // The manifest is written by Python's csv module, which emits CRLF.
+  const lines = text.split(/\r?\n/).filter((l) => l.length > 0);
   const header = parseCsvLine(lines[0]);
   cached = lines.slice(1).map((line) => {
     const values = parseCsvLine(line);

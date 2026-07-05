@@ -6,8 +6,11 @@ Document bodies never transit the eve↔analysts seam — this module is how the
 analyst side reads them directly.
 """
 
+import csv
 import hashlib
 import json
+import os
+from pathlib import Path
 from typing import Any
 
 import boto3
@@ -15,7 +18,30 @@ import boto3
 DERIVED_BUCKET = "formentera-welldrive-derived"
 PARSE_CACHE_PREFIX = "runs/doc-intel/parsed/"
 
+# parents[5] = the repo root (…/eve-agents) when run from a source checkout.
+_MANIFEST_PATH = Path(
+    os.environ.get(
+        "WELLDRIVE_MANIFEST",
+        Path(__file__).resolve().parents[5] / "corpus" / "sample-manifest.csv",
+    )
+)
+
 _s3 = boto3.client("s3")
+_manifest_refs: dict[str, str] | None = None
+
+
+def _manifest_parsed_refs() -> dict[str, str]:
+    """key -> parsed_ref from the corpus manifest (the service's own copy).
+
+    The caller's parsed_ref is untrusted and is never used for reads: a
+    direct caller could otherwise pair any corpus key with any parse output
+    and have foreign content rendered under a citation key of their choice.
+    """
+    global _manifest_refs
+    if _manifest_refs is None:
+        with _MANIFEST_PATH.open(newline="") as f:
+            _manifest_refs = {row["key"]: row["parsed_ref"] for row in csv.DictReader(f)}
+    return _manifest_refs
 
 
 def _get_json(bucket: str, key: str) -> dict[str, Any] | None:
@@ -29,7 +55,14 @@ def _get_json(bucket: str, key: str) -> dict[str, Any] | None:
 def normalize(raw: dict[str, Any]) -> dict[str, Any]:
     """Return {kind, pages: [{page, markdown}], extraction?, page_count}."""
     if isinstance(raw.get("pages"), list) and raw.get("kind") in ("markdown", "extraction"):
-        return raw
+        # doc-intel cache entries are written by the TypeScript tool in
+        # camelCase (pageCount); serve them in this module's snake_case.
+        return {
+            "kind": raw["kind"],
+            "pages": raw["pages"],
+            **({"extraction": raw["extraction"]} if raw.get("extraction") else {}),
+            "page_count": raw.get("page_count", raw.get("pageCount", len(raw["pages"]))),
+        }
 
     output = raw.get("output") or {}
     chunks = output.get("chunks")
@@ -87,11 +120,19 @@ def _allowed_parsed_ref(parsed_ref: str) -> str | None:
     return key
 
 
-def fetch_document(corpus_key: str, parsed_ref: str | None) -> dict[str, Any] | None:
-    """Fetch a document's parsed view via its parsed_ref or the shared cache."""
+def fetch_document(corpus_key: str, parsed_ref: str | None = None) -> dict[str, Any] | None:
+    """Fetch a document's parsed view.
+
+    The parsed_ref is resolved from the service's own manifest — the
+    caller-supplied value (kept in the seam contract for observability) is
+    ignored for reads, so parse content is always bound to its true corpus
+    key. Keys outside the manifest fall back to the shared hash-keyed cache
+    only.
+    """
     raw = None
-    if parsed_ref:
-        key = _allowed_parsed_ref(parsed_ref)
+    manifest_ref = _manifest_parsed_refs().get(corpus_key, "")
+    if manifest_ref:
+        key = _allowed_parsed_ref(manifest_ref)
         if key is not None:
             raw = _get_json(DERIVED_BUCKET, key)
     if raw is None:
