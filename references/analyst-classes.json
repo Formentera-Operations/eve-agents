@@ -1,0 +1,40 @@
+{
+  "$comment": "Analyst classes for the doc-intel deepagents layer. Each class becomes one programmatically generated SubAgent config. entry_types come from WellDrive S3 metadata (authoritative). This table is the single source of truth — portable, open JSON; no code may hard-code class routing.",
+  "classes": [
+    {
+      "name": "drilling_ops_analyst",
+      "description": "Drilling operations: day-by-day events, NPT, chronology, end-of-well summaries, BHA and bit performance.",
+      "entry_types": ["Daily Report (Drilling)", "Well Chronology", "EOW Report", "Drilling Program", "BHA", "Bit Information", "Motor Report", "Slide Sheet", "Daily Directional Report", "BOP Test", "CNG Rig Fuel"]
+    },
+    {
+      "name": "completions_analyst",
+      "description": "Completions and stimulation: frac design and execution, perforations, flowback, completion chronology.",
+      "entry_types": ["Frac Report", "Completion Packet", "Completion Program", "Daily Report (Completion)", "Flow Back Report", "Perforation Report", "Post Job Reports", "Casing Tally", "Wellhead"]
+    },
+    {
+      "name": "wellbore_geometry_analyst",
+      "description": "Trajectory and wellbore geometry: deviation surveys, directional plans, schematics, geosteering.",
+      "entry_types": ["Deviation Survey", "Final Deviation Survey", "Directional Plans", "Well Schematic", "Final Geosteering Interpretation", "Geosteering Report", "Plat"]
+    },
+    {
+      "name": "fluids_analyst",
+      "description": "Drilling fluids and cementing: mud programs and recaps, cement programs and reports, solids control.",
+      "entry_types": ["Mud Program", "Mud Recap", "Drilling Fluid Report", "Cement Program", "Cement Report", "Solids Report", "Fit Testing", "Mud Log Data", "Final Mud Log Composite"]
+    },
+    {
+      "name": "reservoir_analyst",
+      "description": "Reservoir and fluid properties: PVT, well tests, core, mass spec, production and pressure-volume analyses.",
+      "entry_types": ["PVT Report", "Well Test", "Core", "Mass Spec", "Final Mass Spec", "Production Information", "PVA", "Final PVA", "Offset Data", "Geological Program"]
+    },
+    {
+      "name": "financial_analyst",
+      "description": "Well economics and land/regulatory paper: AFEs and supplements, field tickets, partner reports, regulatory filings.",
+      "entry_types": ["AFE", "Field Ticket", "Daily Report (Partner)", "Regulatory Information", "W15", "Workover Information", "Daily Report (Workover)", "Facility Information"]
+    },
+    {
+      "name": "logs_analyst",
+      "description": "Wireline/LWD log products. Mostly image or vendor-binary formats that structured parsing cannot read — this analyst's job is to say precisely what exists and what is machine-readable, never to invent log values.",
+      "entry_types": ["Open Hole Logs", "Cased Hole Logs", "CBL", "Final LWD Composite", "LWD Real Time Data"]
+    }
+  ]
+}
