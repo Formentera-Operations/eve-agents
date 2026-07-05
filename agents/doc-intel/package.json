@@ -10,9 +10,11 @@
     "build": "eve build",
     "dev": "eve dev",
     "start": "eve start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test": "node --test 'tests/**/*.test.ts'"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1079.0",
     "@vercel/connect": "0.2.2",
     "ai": "^7.0.0",
     "eve": "^0.19.0",
