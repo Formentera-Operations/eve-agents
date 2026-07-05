@@ -21,8 +21,9 @@ dist/
 # eve local state
 .eve/
 
-# Claude Code local settings
+# Claude Code local/session state
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # Python (deepagents layer lands later)
 __pycache__/
