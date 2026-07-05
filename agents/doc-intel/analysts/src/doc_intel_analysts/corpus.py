@@ -140,11 +140,21 @@ def fetch_document(corpus_key: str, parsed_ref: str | None = None) -> dict[str, 
     return normalize(raw) if raw is not None else None
 
 
-def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, str]:
+def _file_data(content: str) -> dict[str, str]:
+    """Wrap text in the FileData shape deepagents' StateBackend requires.
+
+    Seeded state files MUST be `{"content": ..., "encoding": "utf-8"}` dicts
+    under ABSOLUTE paths — raw strings crash `read_file`, and relative paths
+    are invisible to `ls`. Verified against deepagents 0.6.12.
+    """
+    return {"content": content, "encoding": "utf-8"}
+
+
+def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, dict[str, str]]:
     """Render a parsed view as virtual files for the deepagents filesystem.
 
     One file per page keeps grep/read_file page-addressable so analysts can
-    cite (key, page) accurately: `<safe_key>/page-0003.md`. The directory
+    cite (key, page) accurately: `/<safe_key>/page-0003.md`. The directory
     name carries a short digest of the true key because the `/` → `__`
     mangling alone is not injective (a real `__` in a key collides with a
     path separator); the digest keeps two distinct documents from silently
@@ -152,19 +162,21 @@ def document_as_files(corpus_key: str, view: dict[str, Any]) -> dict[str, str]:
     comment inside each page file, never the directory name.
     """
     digest = hashlib.sha256(corpus_key.encode()).hexdigest()[:8]
-    safe = f"{corpus_key.replace('/', '__')}--{digest}"
-    files: dict[str, str] = {}
+    safe = f"/{corpus_key.replace('/', '__')}--{digest}"
+    files: dict[str, dict[str, str]] = {}
     if view["kind"] == "extraction":
-        files[f"{safe}/extraction.json"] = json.dumps(
-            {
-                "source_key": corpus_key,
-                "fields": view["extraction"]["fields"],
-                "field_page_citations": view["extraction"]["field_pages"],
-            },
-            indent=1,
+        files[f"{safe}/extraction.json"] = _file_data(
+            json.dumps(
+                {
+                    "source_key": corpus_key,
+                    "fields": view["extraction"]["fields"],
+                    "field_page_citations": view["extraction"]["field_pages"],
+                },
+                indent=1,
+            )
         )
         return files
     for page in view["pages"]:
         header = f"<!-- source: {corpus_key} | page: {page['page']} -->\n\n"
-        files[f"{safe}/page-{page['page']:04d}.md"] = header + page["markdown"]
+        files[f"{safe}/page-{page['page']:04d}.md"] = _file_data(header + page["markdown"])
     return files
