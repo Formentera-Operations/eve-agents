@@ -13,6 +13,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1079.0
         version: 3.1079.0
+      '@llamaindex/liteparse':
+        specifier: ^2.4.0
+        version: 2.4.0
       '@vercel/connect':
         specifier: 0.2.2
         version: 0.2.2(ai@7.0.15(zod@4.4.3))(eve@0.19.0(ai@7.0.15(zod@4.4.3)))
@@ -153,6 +156,46 @@ packages:
 
   '@emnapi/wasi-threads@1.2.2':
     resolution: {integrity: sha512-c95qOXkHdydNKhscBTebqEC1CVAZpyqOfVfBzQ1qgzyl3gfeldUjIggDbIZgDKsHLgnsM+igH7TJ/eAasaVuMA==}
+
+  '@llamaindex/liteparse-darwin-arm64@2.4.0':
+    resolution: {integrity: sha512-q58fz2imeCE0JrUJyIV4+zzR223LnAr56sgAUsPnHTxbcMjtbPw2TznGNWKgECd25wOoghlBNJrvYWuDOhrkeQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@llamaindex/liteparse-darwin-x64@2.4.0':
+    resolution: {integrity: sha512-7tsTNooVY+qlspu/Qtp30/nCNl0Jdcv5qgncUHLzU7Ygj7qn8r54Q5zurGnPU8Lby3YgQ7B3dQHzr35uNqow8Q==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@llamaindex/liteparse-linux-arm64-gnu@2.4.0':
+    resolution: {integrity: sha512-eCEmbSsCr25gRfZiG/Sr+wE+ZHgo3O5p2Y4pEmhTpSZEEa2d0gsc5ARPixxtov9/TmuyJYIOLdUinItCmf6eQg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@llamaindex/liteparse-linux-x64-gnu@2.4.0':
+    resolution: {integrity: sha512-8pWwcsjtNUu7ZUhI9qMZQcbwL3McxB6Bed7BXqVv70UtzNg1fk5cZc885bvicdpQaqnmaqcV5wk2WnhJHu/uxg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@llamaindex/liteparse-linux-x64-musl@2.4.0':
+    resolution: {integrity: sha512-QMZfVDzlWVb/eBMEVYRtcpVI7QLK8C+cXrETrzCGymPRsvIFIGQL8B4mr45dIy2ndak5PcFEMD2NOTl/RjpbJA==}
+    cpu: [x64]
+    os: [linux]
+
+  '@llamaindex/liteparse-win32-arm64-msvc@2.4.0':
+    resolution: {integrity: sha512-rQ/vIvWtRidTU7hWyC/lHZIqyrWXqaU+9wc/g1gPsJPGNVPEYGOmY/SmCxGT+unZ7ibI4a7hoBRScaP49V1GTw==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@llamaindex/liteparse-win32-x64-msvc@2.4.0':
+    resolution: {integrity: sha512-VjdFVC5J2HP/iKVLMYjAjoCjO0Sj192ZgaqKKlmIa6LcZ4cU0q6YjUUHR9WH9shozbQm4n2KrV+tvpqPN4/9+w==}
+    cpu: [x64]
+    os: [win32]
+
+  '@llamaindex/liteparse@2.4.0':
+    resolution: {integrity: sha512-UuS8ISkBXhknLe38p8Osi6p15JZcva9cjFVzbxHWxT+qzFSLEnYfhLZqBgiZthjYGF2GOVgq8FEblf5TZwrX1Q==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   '@napi-rs/wasm-runtime@1.1.6':
     resolution: {integrity: sha512-ZLv/JdUfkvOy9eCnnBaGfiO+XimbjebAeO+MRQqD/B+FR1tnRN0tpKSJHRbE8sFfS6aqsXZ67TQjfwfsxULVbg==}
@@ -454,6 +497,10 @@ packages:
 
   bowser@2.14.1:
     resolution: {integrity: sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg==}
+
+  commander@12.1.0:
+    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
+    engines: {node: '>=18'}
 
   consola@3.4.2:
     resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
@@ -986,6 +1033,39 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@llamaindex/liteparse-darwin-arm64@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-darwin-x64@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-linux-arm64-gnu@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-linux-x64-gnu@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-linux-x64-musl@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-win32-arm64-msvc@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse-win32-x64-msvc@2.4.0':
+    optional: true
+
+  '@llamaindex/liteparse@2.4.0':
+    dependencies:
+      commander: 12.1.0
+    optionalDependencies:
+      '@llamaindex/liteparse-darwin-arm64': 2.4.0
+      '@llamaindex/liteparse-darwin-x64': 2.4.0
+      '@llamaindex/liteparse-linux-arm64-gnu': 2.4.0
+      '@llamaindex/liteparse-linux-x64-gnu': 2.4.0
+      '@llamaindex/liteparse-linux-x64-musl': 2.4.0
+      '@llamaindex/liteparse-win32-arm64-msvc': 2.4.0
+      '@llamaindex/liteparse-win32-x64-msvc': 2.4.0
+
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
     dependencies:
       '@emnapi/core': 1.11.1
@@ -1184,6 +1264,8 @@ snapshots:
       zod: 4.4.3
 
   bowser@2.14.1: {}
+
+  commander@12.1.0: {}
 
   consola@3.4.2: {}
 

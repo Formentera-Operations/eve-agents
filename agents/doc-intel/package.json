@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",
+    "@llamaindex/liteparse": "^2.4.0",
     "@vercel/connect": "0.2.2",
     "ai": "^7.0.0",
     "eve": "^0.19.0",
