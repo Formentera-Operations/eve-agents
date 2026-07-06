@@ -133,10 +133,21 @@ async def run(limit: int | None, skip_cognify: bool = False) -> dict[str, Any]:
 
         ontology = Path(__file__).resolve().parents[5] / "references" / "ontology" / "welldrive.owl"
         started = time.monotonic()
-        await cognee.cognify(
-            datasets=DATASET_NAME,
-            ontology_config={"ontology_resolver": RDFLibOntologyResolver(ontology_file=str(ontology))},
-        )
+        kwargs = {
+            "datasets": DATASET_NAME,
+            # cognify's parameter is `config`; a mistyped kwarg falls into
+            # **kwargs and leaks the resolver object into LLM payloads.
+            "config": {"ontology_config": {"ontology_resolver": RDFLibOntologyResolver(ontology_file=str(ontology))}},
+        }
+        try:
+            await cognee.cognify(**kwargs)
+        except Exception as err:
+            # 1.2.2's first-call migration for the global DB can fail
+            # transiently and self-heals on retry (observed live; the error
+            # text itself says "it retries automatically on the next call").
+            if "migration" not in str(err).lower():
+                raise
+            await cognee.cognify(**kwargs)
         cognify_seconds = round(time.monotonic() - started, 1)
 
     report = write_ledger(ledger, total_chars, cognify_seconds)

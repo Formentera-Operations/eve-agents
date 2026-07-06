@@ -45,7 +45,9 @@ def configure() -> None:
     key = _gateway_key()
 
     llm_model = os.environ.get("GRAPH_MODEL", "openai/anthropic/claude-haiku-4.5")
-    embedding_model = os.environ.get("GRAPH_EMBEDDING_MODEL", "openai/openai/text-embedding-3-large")
+    # Bare id: tiktoken must map it for cognee's tokenizer, and the gateway
+    # accepts un-prefixed OpenAI embedding ids (verified live).
+    embedding_model = os.environ.get("GRAPH_EMBEDDING_MODEL", "text-embedding-3-large")
 
     defaults = {
         # LLM path — gateway only.
@@ -60,6 +62,10 @@ def configure() -> None:
         "EMBEDDING_API_KEY": key,
         "EMBEDDING_DIMENSIONS": "3072",
         "EMBEDDING_MAX_TOKENS": "8191",
+        # The gateway rejects response_format json_object (instructor's
+        # default json_mode for custom providers); tool_call works (verified
+        # live against both candidate models).
+        "LLM_INSTRUCTOR_MODE": "tool_call",
         # No third egress path: telemetry off (var name verified against 1.2.2).
         "TELEMETRY_DISABLED": "1",
         # Embedded single-tenant stores with explicit roots (KTD4).
