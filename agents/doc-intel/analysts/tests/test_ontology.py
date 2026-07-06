@@ -45,8 +45,26 @@ def test_key_object_properties_have_domain_and_range():
 
 
 def test_entry_type_count_matches_manifest_vocabulary():
+    # Scoped to DocumentClass subclasses: generated individuals also carry
+    # rdfs:label, so a global label count would drift with every regeneration.
     g = _graph()
     analyst = json.loads((REPO / "references" / "analyst-classes.json").read_text())["classes"]
     expected = sum(len(c["entry_types"]) for c in analyst)
-    labels = list(g.objects(None, rdflib.RDFS.label))
+    doc_class = rdflib.URIRef(NS + "DocumentClass")
+    labels = [
+        s for s in g.subjects(rdflib.RDFS.label, None)
+        if doc_class in set(g.transitive_objects(s, rdflib.RDFS.subClassOf))
+    ]
     assert len(labels) == expected, f"{len(labels)} entry-type leaves vs {expected} in the table"
+
+
+def test_generated_individuals_are_typed_to_declared_classes():
+    g = _graph()
+    classes = set(g.subjects(RDF_TYPE, OWL_CLASS))
+    individuals = [(s, o) for s, o in g.subject_objects(RDF_TYPE) if o in classes]
+    for subj, cls in individuals:
+        assert str(cls).startswith(NS), f"individual {subj} typed outside the namespace"
+    # every individual's fragment is already in cognee matcher-key form
+    for subj, _ in individuals:
+        frag = str(subj).split("#")[-1]
+        assert frag == frag.lower().replace(" ", "_").strip(), f"fragment not normalized: {frag}"

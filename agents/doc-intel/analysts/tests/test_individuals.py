@@ -136,3 +136,96 @@ def test_county_suffix_tolerated_and_asset_team_verified_by_manifest():
 def test_missing_masters_csv_fails_loud(tmp_path):
     with pytest.raises(FileNotFoundError, match="snow sql export"):
         load_master_csv(tmp_path / "gold_dim_well.csv", "gold_dim_well.sql")
+
+
+# --- U3 ---
+
+from doc_intel_analysts.graph.individuals import (  # noqa: E402
+    BEGIN_MARKER,
+    END_MARKER,
+    Verified,
+    render_individuals,
+    splice_individuals,
+)
+
+ONTOLOGY_SHELL = (
+    '<?xml version="1.0"?>\n<rdf:RDF>\n  <owl:Class rdf:about="#Well"/>\n'
+    f"  {BEGIN_MARKER}\n  {END_MARKER}\n</rdf:RDF>\n"
+)
+
+SAMPLE = [
+    Verified("NEAL 3H ST02", "Well", "gold_dim_well", "100001", 1.0),
+    Verified("Scientific Drilling Intl.", "ServiceVendor", "gold_dim_vendor", "V-77", 0.96),
+    Verified("BENBROOK UNIT 'D' FED 3H", "Well", "gold_dim_well (lease)", "111556", 0.95),
+    Verified("H&P Drilling", "ServiceVendor", "gold_dim_vendor", "V-9", 1.0),
+]
+
+
+def _uri_to_key(uri: str) -> str:
+    """Reimplementation of cognee 1.2.2 RDFLibOntologyResolver._uri_to_key —
+    the round-trip arbiter pinning KTD2 against cognee upgrades."""
+    name = uri.split("#")[-1] if "#" in uri else uri.rstrip("/").split("/")[-1]
+    return name.lower().replace(" ", "_").strip()
+
+
+def test_emission_is_deterministic():
+    assert render_individuals(SAMPLE) == render_individuals(list(reversed(SAMPLE)))
+
+
+def test_round_trip_fragment_equals_cognee_match_key():
+    import re
+
+    block = render_individuals(SAMPLE)
+    fragments = re.findall(r'rdf:about="#([^"]+)"', block)
+    assert len(fragments) == len(SAMPLE)
+    spellings = {normalize_key(v.name) for v in SAMPLE}
+    for frag in fragments:
+        # un-escape the XML attribute back to the raw fragment
+        raw = frag.replace("&amp;", "&").replace("&quot;", '"').replace("&lt;", "<").replace("&gt;", ">")
+        base = "https://formenteraops.com/ontology/welldrive"
+        assert _uri_to_key(f"{base}#{raw}") == raw, "fragment must already be in matcher-key form"
+        assert raw in spellings
+
+
+def test_splice_preserves_outside_bytes_and_replaces_block():
+    once = splice_individuals(ONTOLOGY_SHELL, render_individuals(SAMPLE))
+    assert once.startswith('<?xml version="1.0"?>\n<rdf:RDF>\n  <owl:Class rdf:about="#Well"/>')
+    assert once.endswith("</rdf:RDF>\n")
+    assert "NEAL 3H ST02" in once
+    # regeneration replaces, never appends
+    twice = splice_individuals(once, render_individuals(SAMPLE))
+    assert twice == once
+
+
+def test_splice_refuses_missing_or_duplicate_markers():
+    with pytest.raises(ValueError, match="marker"):
+        splice_individuals("<rdf:RDF></rdf:RDF>", "x")
+    with pytest.raises(ValueError, match="marker"):
+        splice_individuals(ONTOLOGY_SHELL + BEGIN_MARKER, "x")
+
+
+def test_provenance_names_table_only_never_master_key():
+    block = render_individuals(SAMPLE)
+    assert "gold_dim_well" in block and "gold_dim_vendor" in block
+    assert "100001" not in block and "V-77" not in block and "V-9" not in block
+
+
+def test_rendered_block_is_parseable_rdf():
+    import rdflib
+
+    doc = (
+        '<?xml version="1.0"?>\n'
+        '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n'
+        '         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"\n'
+        '         xmlns:owl="http://www.w3.org/2002/07/owl#"\n'
+        '         xml:base="https://formenteraops.com/ontology/welldrive"\n'
+        '         xmlns="https://formenteraops.com/ontology/welldrive#">\n'
+        '  <owl:Class rdf:about="#Well"/>\n  <owl:Class rdf:about="#ServiceVendor"/>\n'
+        + render_individuals(SAMPLE)
+        + "\n</rdf:RDF>"
+    )
+    g = rdflib.Graph()
+    g.parse(data=doc, format="xml")
+    ns = "https://formenteraops.com/ontology/welldrive#"
+    wells = list(g.subjects(rdflib.RDF.type, rdflib.URIRef(ns + "Well")))
+    assert len(wells) == 2  # the two Well individuals; class declarations are typed owl:Class

@@ -269,8 +269,96 @@ def verify_candidates(
     return list(verified.values()), unverified
 
 
-def _main() -> None:  # pragma: no cover — CLI wiring lands with U3
-    raise SystemExit("CLI arrives with U3; import extract_candidates for now")
+# --- U3: deterministic OWL emission -------------------------------------------
+
+BEGIN_MARKER = "<!-- BEGIN GENERATED INDIVIDUALS — do not hand-edit; regenerate via doc_intel_analysts.graph.individuals -->"
+END_MARKER = "<!-- END GENERATED INDIVIDUALS -->"
+
+
+def _xml_escape(text: str) -> str:
+    return (
+        text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    )
+
+
+def render_individuals(verified: list[Verified]) -> str:
+    """One rdf:Description per individual, sorted by class then fragment for
+    stable diffs. The URI fragment IS cognee's match key (KTD2), so it is
+    minted already normalized; rdfs:label keeps the document spelling for
+    human readers (cognee never consults it). Provenance names only the
+    master source table — master_key stays in the gitignored report."""
+    lines = []
+    for v in sorted(verified, key=lambda v: (v.cls, normalize_key(v.name))):
+        fragment = _xml_escape(normalize_key(v.name))
+        lines.append(f'  <rdf:Description rdf:about="#{fragment}">')
+        lines.append(f'    <rdf:type rdf:resource="#{v.cls}"/>')
+        lines.append(f"    <rdfs:label>{_xml_escape(v.name)}</rdfs:label>")
+        lines.append(f"    <rdfs:comment>verified: {_xml_escape(v.master_source)}</rdfs:comment>")
+        lines.append("  </rdf:Description>")
+    return "\n".join(lines)
+
+
+def splice_individuals(ontology_text: str, block: str) -> str:
+    """Replace the marked individuals block, preserving everything outside
+    byte-for-byte. Refuses to run on missing or duplicated markers."""
+    for marker in (BEGIN_MARKER, END_MARKER):
+        if ontology_text.count(marker) != 1:
+            raise ValueError(
+                f"marker not found exactly once in ontology: {marker[:40]}… — "
+                "add the BEGIN/END GENERATED INDIVIDUALS markers before </rdf:RDF>"
+            )
+    head, rest = ontology_text.split(BEGIN_MARKER, 1)
+    _, tail = rest.split(END_MARKER, 1)
+    return f"{head}{BEGIN_MARKER}\n{block}\n  {END_MARKER}{tail}"
+
+
+def _main() -> None:  # pragma: no cover — exercised end-to-end, not unit-tested
+    import argparse
+    import json
+
+    repo = Path(__file__).resolve().parents[6]
+    analysts = Path(__file__).resolve().parents[3]
+    masters_dir = analysts / ".masters"
+
+    parser = argparse.ArgumentParser(description="Regenerate welldrive.owl named individuals")
+    parser.add_argument("--nodes", type=Path, default=masters_dir / "nodes.csv")
+    parser.add_argument("--edges", type=Path, default=masters_dir / "edges.csv")
+    parser.add_argument("--manifest", type=Path, default=repo / "corpus" / "sample-manifest.csv")
+    parser.add_argument("--masters-dir", type=Path, default=masters_dir)
+    parser.add_argument("--ontology", type=Path, default=repo / "references" / "ontology" / "welldrive.owl")
+    args = parser.parse_args()
+
+    for path, key in ((args.nodes, "nodes.csv"), (args.edges, "edges.csv")):
+        if not path.exists():
+            from ..corpus import DERIVED_BUCKET, _s3  # boto3 only on the S3 path
+
+            path.parent.mkdir(parents=True, exist_ok=True)
+            _s3.download_file(DERIVED_BUCKET, f"runs/doc-intel/graph/{key}", str(path))
+
+    pools = extract_candidates(args.nodes, args.edges, args.manifest)
+    well_master = load_master_csv(args.masters_dir / "gold_dim_well.csv", "gold_dim_well.sql")
+    vendor_master = load_master_csv(args.masters_dir / "gold_dim_vendor.csv", "gold_dim_vendor.sql")
+    verified, unverified = verify_candidates(pools, well_master, vendor_master)
+
+    report_path = args.masters_dir / "unverified-report.csv"
+    with report_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=["name", "class", "nearest_master", "score"])
+        writer.writeheader()
+        writer.writerows(unverified)
+
+    args.ontology.write_text(
+        splice_individuals(args.ontology.read_text(encoding="utf-8"), render_individuals(verified)),
+        encoding="utf-8",
+    )
+
+    by_class: dict[str, int] = {}
+    for v in verified:
+        by_class[v.cls] = by_class.get(v.cls, 0) + 1
+    print(json.dumps({
+        "verified": len(verified), "by_class": by_class,
+        "unverified": len(unverified), "report": str(report_path),
+        "ontology": str(args.ontology),
+    }, indent=1))
 
 
 if __name__ == "__main__":
