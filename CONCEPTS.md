@@ -27,8 +27,15 @@ The document key carried into the graph with every ingested document, making eac
 ### Ontology Validity
 The per-entity flag marking that an extracted graph entity fuzzy-matched a named individual in the project ontology (80% similarity cutoff). Its meaning is only as strong as the individuals list: matched against corpus-derived names alone it signals consistency, not correctness — ground truth requires individuals verified against enterprise masters. Many entities (dates, depths, measurements) legitimately never validate.
 
+A validated entity takes its matched individual's name in the graph and exports — matching rewrites identity, so downstream consumers join validated entities to the ontology by name.
+
 ### Named Individual
 A concrete, verified instance of an ontology class — a specific well, operator, vendor, county, or asset team — as distinct from the class itself. Individuals are generated from corpus-seen spellings and verified against Snowflake masters, never hand-edited into the ontology file.
+
+An individual's identifier doubles as its match key: the spelling of the identifier is the matching behavior, so identifiers are minted in the matcher's normalized form and must avoid characters the matcher treats as delimiters.
+
+### Matchable Ceiling
+The measurable upper bound on how many extracted entities can ever achieve ontology validity in a given corpus — the population of genuine well/organization/place/team mentions, excluding the majority of entities (dates, depths, measurements) that no named individual can represent. Success bars for enrichment are set against this ceiling, measured by offline simulation, not against the raw entity count.
 
 ### Egress Guard
 The named fail-loud check that refuses to initialize any model-calling component unless every outbound path — LLM, embeddings, telemetry — points at the approved gateway. Exists because vendored AI libraries default unset paths to their own providers silently.
