@@ -1,0 +1,318 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="https://formenteraops.com/ontology/welldrive"
+         xmlns="https://formenteraops.com/ontology/welldrive#">
+  <owl:Ontology rdf:about="https://formenteraops.com/ontology/welldrive">
+    <rdfs:comment>WellDrive well-file ontology for doc-intel knowledge-graph typing. Seeded from corpus entry_types and analyst classes; open knowledge-layer artifact (plan KTD5/U2).</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:about="#Well"><rdfs:comment>A wellbore: the central entity documents attach to.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#Operator"><rdfs:comment>Company operating a well (e.g. Devon, EnCana, Formentera Operations).</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#ServiceVendor"><rdfs:comment>Service company performing work (frac, cementing, wireline, directional).</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#Formation"><rdfs:comment>Geologic formation a well penetrates or targets.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#County"><rdfs:comment>County/parish where a well is located.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#AssetTeam"><rdfs:comment>Formentera asset team owning the well (FP Griffin, Formentera South Texas, Westlake Resources).</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#Event"><rdfs:comment>Dated operational occurrence: a test, frac job, workover, spud, completion.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#DocumentClass"><rdfs:comment>Class of well-file document, keyed by WellDrive entry_type metadata.</rdfs:comment></owl:Class>
+  <owl:Class rdf:about="#DrillingOpsDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Drilling operations: day-by-day events, NPT, chronology, end-of-well summaries, BHA and bit performance.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#DailyReportDrilling">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Daily Report (Drilling)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#WellChronology">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Well Chronology</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#EowReport">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>EOW Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DrillingProgram">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Drilling Program</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Bha">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>BHA</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#BitInformation">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Bit Information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#MotorReport">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Motor Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#SlideSheet">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Slide Sheet</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DailyDirectionalReport">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>Daily Directional Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#BopTest">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>BOP Test</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CngRigFuel">
+    <rdfs:subClassOf rdf:resource="#DrillingOpsDocument"/>
+    <rdfs:label>CNG Rig Fuel</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CompletionsDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Completions and stimulation: frac design and execution, perforations, flowback, completion chronology.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#FracReport">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Frac Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CompletionPacket">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Completion Packet</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CompletionProgram">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Completion Program</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DailyReportCompletion">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Daily Report (Completion)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FlowBackReport">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Flow Back Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#PerforationReport">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Perforation Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#PostJobReports">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Post Job Reports</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CasingTally">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Casing Tally</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Wellhead">
+    <rdfs:subClassOf rdf:resource="#CompletionsDocument"/>
+    <rdfs:label>Wellhead</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#WellboreGeometryDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Trajectory and wellbore geometry: deviation surveys, directional plans, schematics, geosteering.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#DeviationSurvey">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Deviation Survey</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalDeviationSurvey">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Final Deviation Survey</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DirectionalPlans">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Directional Plans</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#WellSchematic">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Well Schematic</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalGeosteeringInterpretation">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Final Geosteering Interpretation</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#GeosteeringReport">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Geosteering Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Plat">
+    <rdfs:subClassOf rdf:resource="#WellboreGeometryDocument"/>
+    <rdfs:label>Plat</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FluidsDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Drilling fluids and cementing: mud programs and recaps, cement programs and reports, solids control.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#MudProgram">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Mud Program</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#MudRecap">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Mud Recap</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DrillingFluidReport">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Drilling Fluid Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CementProgram">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Cement Program</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CementReport">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Cement Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#SolidsReport">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Solids Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FitTesting">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Fit Testing</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#MudLogData">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Mud Log Data</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalMudLogComposite">
+    <rdfs:subClassOf rdf:resource="#FluidsDocument"/>
+    <rdfs:label>Final Mud Log Composite</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ReservoirDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Reservoir and fluid properties: PVT, well tests, core, mass spec, production and pressure-volume analyses.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#PvtReport">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>PVT Report</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#WellTest">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Well Test</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Core">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Core</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#MassSpec">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Mass Spec</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalMassSpec">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Final Mass Spec</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#ProductionInformation">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Production Information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Pva">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>PVA</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalPva">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Final PVA</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OffsetData">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Offset Data</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#GeologicalProgram">
+    <rdfs:subClassOf rdf:resource="#ReservoirDocument"/>
+    <rdfs:label>Geological Program</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinancialDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Well economics and land/regulatory paper: AFEs and supplements, field tickets, partner reports, regulatory filings.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#Afe">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>AFE</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FieldTicket">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Field Ticket</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DailyReportPartner">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Daily Report (Partner)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#RegulatoryInformation">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Regulatory Information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#W15">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>W15</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#WorkoverInformation">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Workover Information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#DailyReportWorkover">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Daily Report (Workover)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FacilityInformation">
+    <rdfs:subClassOf rdf:resource="#FinancialDocument"/>
+    <rdfs:label>Facility Information</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#LogsDocument">
+    <rdfs:subClassOf rdf:resource="#DocumentClass"/>
+    <rdfs:comment>Wireline/LWD log products. Mostly image or vendor-binary formats that structured parsing cannot read — this analyst's job is to say precisely what exists and what is machine-readable, never to invent log values.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="#OpenHoleLogs">
+    <rdfs:subClassOf rdf:resource="#LogsDocument"/>
+    <rdfs:label>Open Hole Logs</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#CasedHoleLogs">
+    <rdfs:subClassOf rdf:resource="#LogsDocument"/>
+    <rdfs:label>Cased Hole Logs</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Cbl">
+    <rdfs:subClassOf rdf:resource="#LogsDocument"/>
+    <rdfs:label>CBL</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#FinalLwdComposite">
+    <rdfs:subClassOf rdf:resource="#LogsDocument"/>
+    <rdfs:label>Final LWD Composite</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#LwdRealTimeData">
+    <rdfs:subClassOf rdf:resource="#LogsDocument"/>
+    <rdfs:label>LWD Real Time Data</rdfs:label>
+  </owl:Class>
+  <owl:ObjectProperty rdf:about="#operatedBy">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#Operator"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#servicedBy">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#ServiceVendor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#locatedIn">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#County"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#penetrates">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#Formation"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#ownedBy">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#AssetTeam"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#documentedBy">
+    <rdfs:domain rdf:resource="#Well"/>
+    <rdfs:range rdf:resource="#DocumentClass"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#occurredOn">
+    <rdfs:domain rdf:resource="#Event"/>
+    <rdfs:range rdf:resource="#Well"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#performedBy">
+    <rdfs:domain rdf:resource="#Event"/>
+    <rdfs:range rdf:resource="#ServiceVendor"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:about="#recordedIn">
+    <rdfs:domain rdf:resource="#Event"/>
+    <rdfs:range rdf:resource="#DocumentClass"/>
+  </owl:ObjectProperty>
+</rdf:RDF>
