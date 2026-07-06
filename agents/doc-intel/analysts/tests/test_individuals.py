@@ -229,3 +229,23 @@ def test_rendered_block_is_parseable_rdf():
     ns = "https://formenteraops.com/ontology/welldrive#"
     wells = list(g.subjects(rdflib.RDF.type, rdflib.URIRef(ns + "Well")))
     assert len(wells) == 2  # the two Well individuals; class declarations are typed owl:Class
+
+
+# --- U4 iteration: sweep precision guards ---
+
+def test_short_keys_are_exact_only_no_fuzzy_county():
+    # 'dwayne' must NOT verify against county 'WAYNE' (difflib 0.909)
+    wm = [{"EID": "1", "WELL_NAME": "X 1H", "LEASE_NAME": "X",
+           "COMPANY_NAME": "C", "OPERATOR_NAME": "C", "STATE": "ND", "COUNTY": "WAYNE"}]
+    verified, _ = verify_candidates({"_sweep": {"dwayne": "dwayne"}}, wm, [])
+    assert verified == []
+
+
+def test_sweep_never_uses_org_prefix():
+    # 'three forks' (a formation) must not become a vendor via prefix on sweep
+    vm = [{"VENDOR_ID": "V1", "VENDOR_NAME": "THREE FORKS SERVICES LLC", "VENDOR_FULL_NAME": ""}]
+    verified, _ = verify_candidates({"_sweep": {"three_forks": "three forks"}}, [], vm)
+    assert verified == []
+    # but a pooled (organization-typed) candidate still verifies via prefix
+    verified, _ = verify_candidates({"ServiceVendor": {"three_forks": "three forks"}}, [], vm)
+    assert [v.master_key for v in verified] == ["V1"]

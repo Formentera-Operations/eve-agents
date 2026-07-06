@@ -153,10 +153,14 @@ def _master_lookup(rows: Iterable[dict[str, str]], name_cols: tuple[str, ...], k
     return lookup
 
 
-def _match(candidate_key: str, lookup: dict[str, tuple[str, str]]) -> tuple[str, str, float] | None:
+def _match(candidate_key: str, lookup: dict[str, tuple[str, str]], fuzzy: bool = True) -> tuple[str, str, float] | None:
     if candidate_key in lookup:
         source, key = lookup[candidate_key]
         return source, key, 1.0
+    # Short keys are exact-only: at difflib 0.9 a six-char name still reaches
+    # a one-letter-different master ('dwayne' -> 'wayne' county at 0.909).
+    if not fuzzy or len(candidate_key) < 8:
+        return None
     close = difflib.get_close_matches(candidate_key, list(lookup), n=1, cutoff=VERIFY_CUTOFF)
     if not close:
         return None
@@ -222,14 +226,18 @@ def verify_candidates(
         "County": _master_lookup(well_master, ("COUNTY",), "COUNTY", "gold_dim_well"),
     }
 
-    def check(cls: str, key: str) -> tuple[str, str, float] | None:
+    def check(cls: str, key: str, pooled: bool) -> tuple[str, str, float] | None:
         probe = _strip_county_suffix(key) if cls == "County" else key
-        hit = _match(probe, lookups[cls])
+        # Counties are short geographic words — exact-only at any length.
+        hit = _match(probe, lookups[cls], fuzzy=cls != "County")
         if hit is None and cls == "Well":
             stem = _strip_well_number(probe)
             if stem != probe:
                 hit = _match(stem, lookups["WellLease"])
-        if hit is None and cls in ("Operator", "ServiceVendor"):
+        # Org-prefix verification only for candidates the extractor actually
+        # typed as organizations; on untyped sweep names it turned formations
+        # and regions into vendors ('three forks', 'south texas').
+        if hit is None and pooled and cls in ("Operator", "ServiceVendor"):
             hit = _match_org_prefix(probe, lookups[cls])
         return hit
 
@@ -242,7 +250,7 @@ def verify_candidates(
             if cls == "AssetTeam":
                 verified[key] = Verified(spelling, cls, "manifest", spelling, 1.0)
                 continue
-            hit = check(cls, key)
+            hit = check(cls, key, pooled=True)
             if hit is None:
                 nearest = difflib.get_close_matches(key, list(lookups[cls]), n=1, cutoff=0.0)
                 unverified.append({
@@ -260,7 +268,7 @@ def verify_candidates(
         if key in verified:
             continue
         for cls in ("Well", "Operator", "ServiceVendor", "County"):
-            hit = check(cls, key)
+            hit = check(cls, key, pooled=False)
             if hit is not None:
                 source, master_key, score = hit
                 verified[key] = Verified(spelling, cls, source, master_key, score)

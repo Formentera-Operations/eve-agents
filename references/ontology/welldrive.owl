@@ -333,27 +333,22 @@
   </rdf:Description>
   <rdf:Description rdf:about="#burke_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>burke county</rdfs:label>
+    <rdfs:label>burke_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#burke_county,_nd">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>burke county, nd</rdfs:label>
+    <rdfs:label>burke_county,_nd</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#divide_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>divide county</rdfs:label>
+    <rdfs:label>divide_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#divide_county,_nd">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>divide county, nd</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#dwayne">
-    <rdf:type rdf:resource="#County"/>
-    <rdfs:label>dwayne</rdfs:label>
+    <rdfs:label>divide_county,_nd</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#frio">
@@ -363,37 +358,37 @@
   </rdf:Description>
   <rdf:Description rdf:about="#frio_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>frio county</rdfs:label>
+    <rdfs:label>frio_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#frio_county,_tx">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>frio county, tx</rdfs:label>
+    <rdfs:label>frio_county,_tx</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hill_county,_tx">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>hill county, tx</rdfs:label>
+    <rdfs:label>hill_county,_tx</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hood_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>hood county</rdfs:label>
+    <rdfs:label>hood_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#johnson_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>johnson county</rdfs:label>
+    <rdfs:label>johnson_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#johnson_county,_tx">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>johnson county, tx</rdfs:label>
+    <rdfs:label>johnson_county,_tx</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#parker_county">
+  <rdf:Description rdf:about="#parker">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>parker county</rdfs:label>
+    <rdfs:label>parker</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#tarrant">
@@ -403,17 +398,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#tarrant_county">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>tarrant county</rdfs:label>
+    <rdfs:label>tarrant_county</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#tarrant_county,_tx">
     <rdf:type rdf:resource="#County"/>
-    <rdfs:label>tarrant county, tx</rdfs:label>
+    <rdfs:label>tarrant_county,_tx</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#chesapeake_operating,_inc.">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>chesapeake operating, inc.</rdfs:label>
+    <rdfs:label>chesapeake_operating,_inc.</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#depco">
@@ -421,9 +416,14 @@
     <rdfs:label>depco</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#devon_energy">
+    <rdf:type rdf:resource="#Operator"/>
+    <rdfs:label>devon energy</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#devon_energy_production_co,_l.p.">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>devon energy production co, l.p.</rdfs:label>
+    <rdfs:label>devon_energy_production_co,_l.p.</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#diversified">
@@ -438,12 +438,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#fdl_operating,_llc">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>fdl operating, llc</rdfs:label>
+    <rdfs:label>fdl_operating,_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#formentara_operations_llc">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>formentara operations llc</rdfs:label>
+    <rdfs:label>formentara_operations_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#formentera">
@@ -453,122 +453,67 @@
   </rdf:Description>
   <rdf:Description rdf:about="#formentera_operations">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>formentera operations</rdfs:label>
+    <rdfs:label>formentera_operations</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#formentera_operations,_llc">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>formentera operations, llc</rdfs:label>
+    <rdfs:label>formentera_operations,_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#formentera_operations_llc">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>formentera operations llc</rdfs:label>
+    <rdfs:label>formentera_operations_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#formentera_partners">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>formentera partners</rdfs:label>
+    <rdfs:label>formentera_partners</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#range_resources">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>range resources</rdfs:label>
+    <rdfs:label>range_resources</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#south_texas">
     <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>south texas</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#xto_energy">
-    <rdf:type rdf:resource="#Operator"/>
-    <rdfs:label>xto energy</rdfs:label>
+    <rdfs:label>south_texas</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#aes_drilling_fluids">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>aes drilling fluids</rdfs:label>
+    <rdfs:label>aes_drilling_fluids</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#american_cementing">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>american cementing</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#archrock">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>archrock</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#baker_hughes">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>baker hughes</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#certarus">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>certarus</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#core_geologic">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>core geologic</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#drilling">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>drilling</rdfs:label>
+    <rdfs:label>american_cementing</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#eog_resources,_inc.">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>eog resources, inc.</rdfs:label>
+    <rdfs:label>eog_resources,_inc.</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#go_wireline">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>go wireline</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#halliburton">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>halliburton</rdfs:label>
+    <rdfs:label>go_wireline</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#ksw_oilfield_rental_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>ksw oilfield rental llc</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#liberty_energy">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>liberty energy</rdfs:label>
+    <rdfs:label>ksw_oilfield_rental_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#luke_weissler">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>luke weissler</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#nabors_drilling">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>nabors drilling</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#natural_gas">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>natural gas</rdfs:label>
+    <rdfs:label>luke_weissler</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#newpark_drilling_fluids">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>newpark drilling fluids</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#north_dakota">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>north dakota</rdfs:label>
+    <rdfs:label>newpark_drilling_fluids</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#patterson">
@@ -578,87 +523,47 @@
   </rdf:Description>
   <rdf:Description rdf:about="#patterson-uti_drilling_company">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>patterson-uti drilling company</rdfs:label>
+    <rdfs:label>patterson-uti_drilling_company</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#phoenix_technology_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>phoenix technology services</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#premier_corex">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>premier corex</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#production">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>production</rdfs:label>
+    <rdfs:label>phoenix_technology_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#ranger_energy_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>ranger energy services</rdfs:label>
+    <rdfs:label>ranger_energy_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#scientific_drilling">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>scientific drilling</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#security">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>security</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#spearfish">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>spearfish</rdfs:label>
+    <rdfs:label>scientific_drilling</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#texas_commission_on_environmental_quality">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>texas commission on environmental quality</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#three_forks">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>three forks</rdfs:label>
+    <rdfs:label>texas_commission_on_environmental_quality</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#total_directional">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>total directional</rdfs:label>
+    <rdfs:label>total_directional</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#total_directional_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>total directional services</rdfs:label>
+    <rdfs:label>total_directional_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#total_directional_services,_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>total directional services, llc</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#ubiterra">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>ubiterra</rdfs:label>
+    <rdfs:label>total_directional_services,_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#vaughn_energy_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>vaughn energy services</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#weatherford">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>weatherford</rdfs:label>
-    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#williston">
-    <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>williston</rdfs:label>
+    <rdfs:label>vaughn_energy_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#abilene_christian_university_ut_1h">
@@ -671,11 +576,6 @@
     <rdfs:label>ABSHIRE, WILLIAM 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#ahmet_uysaler_#3h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>ahmet uysaler #3h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#ahmet_uysaler_#_3_h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>ahmet uysaler # 3 h</rdfs:label>
@@ -686,11 +586,6 @@
     <rdfs:label>ALDRIDGE, JOE 1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#alice_scheeler_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>alice scheeler #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#alice_scheeler_#_1_h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>alice scheeler # 1 h</rdfs:label>
@@ -698,12 +593,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#allen_carlock_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>allen carlock 2h</rdfs:label>
+    <rdfs:label>allen_carlock_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#andy_olson">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>andy olson</rdfs:label>
+    <rdfs:label>andy_olson</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#anker_1-22h">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>anker 1-22h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#armstrong,_james_4h">
@@ -738,7 +638,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#bailey_ranch">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bailey ranch</rdfs:label>
+    <rdfs:label>bailey_ranch</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bailey_ranch_1">
@@ -761,16 +661,6 @@
     <rdfs:label>BAJA 2215-3H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#bakken">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bakken</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#barite">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>barite</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#barker-simpson_1">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>BARKER-SIMPSON 1</rdfs:label>
@@ -778,7 +668,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#barker-simpson_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>barker-simpson 1h</rdfs:label>
+    <rdfs:label>barker-simpson_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#barr,_danny_1p">
@@ -788,7 +678,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#barry_callaway_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>barry callaway 1h</rdfs:label>
+    <rdfs:label>barry_callaway_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_perrone_swd">
@@ -798,12 +688,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_perrone_swd_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>benbrook perrone swd 1</rdfs:label>
+    <rdfs:label>benbrook_perrone_swd_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_unit_&quot;c&quot;_fed_8h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>benbrook unit &quot;c&quot; fed 8h</rdfs:label>
+    <rdfs:label>benbrook_unit_&quot;c&quot;_fed_8h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_unit_'a'_fed_7h">
@@ -848,12 +738,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_unit_a_fed_7h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>benbrook unit a fed 7h</rdfs:label>
+    <rdfs:label>benbrook_unit_a_fed_7h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#benbrook_unit_c_fed_5h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>benbrook unit c fed 5h</rdfs:label>
+    <rdfs:label>benbrook_unit_c_fed_5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bennett,_donald_8h">
@@ -861,24 +751,9 @@
     <rdfs:label>BENNETT, DONALD 8H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#bill_hickey_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bill hickey #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#billy_boyd_#9-h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>billy boyd #9-h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#billy_boyd_8h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>billy boyd 8h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#billy_hickey_#4">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>billy hickey #4</rdfs:label>
+    <rdfs:label>billy_boyd_8h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#boles,_verdia_1h">
@@ -893,7 +768,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#boles_verdia_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>boles verdia 1h</rdfs:label>
+    <rdfs:label>boles_verdia_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bontke_trust_1h">
@@ -926,44 +801,39 @@
     <rdfs:label>BRITE 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#bruno_czajkowski_#_9">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bruno czajkowski # 9</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#bruno_czajkowski_10h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bruno czajkowski 10h</rdfs:label>
+    <rdfs:label>bruno_czajkowski_10h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_f513hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain-31-18-div f513hf</rdfs:label>
+    <rdfs:label>bull_mountain-31-18-div_f513hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_s11hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain-31-18-div s11hf</rdfs:label>
+    <rdfs:label>bull_mountain-31-18-div_s11hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_s513hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain-31-18-div s513hf</rdfs:label>
+    <rdfs:label>BULL MOUNTAIN-31-18-DIV S513HF</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_s515hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>BULL MOUNTAIN-31-18-DIV S515HF</rdfs:label>
+    <rdfs:label>bull_mountain-31-18-div_s515hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_s611hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain-31-18-div s611hf</rdfs:label>
+    <rdfs:label>bull_mountain-31-18-div_s611hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-18-div_s617hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain-31-18-div s617hf</rdfs:label>
+    <rdfs:label>bull_mountain-31-18-div_s617hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain-31-31-div_n112dw">
@@ -973,12 +843,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain_31-18-div_s617hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain 31-18-div s617hf</rdfs:label>
+    <rdfs:label>bull_mountain_31-18-div_s617hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bull_mountain_6-18_pad">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>bull mountain 6-18 pad</rdfs:label>
+    <rdfs:label>bull_mountain_6-18_pad</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bussey,_thomas_2h">
@@ -993,7 +863,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#bussey_5h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>BUSSEY 5H</rdfs:label>
+    <rdfs:label>bussey_5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#callaway,_barry_1h">
@@ -1021,19 +891,9 @@
     <rdfs:label>CASTLE 2H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#charles_pitts_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>charles pitts #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#charles_pitts_#_1_h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>charles pitts # 1 h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#charles_pitts_3">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>charles pitts 3</rdfs:label>
+    <rdfs:label>charles_pitts_3</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#christine's_lucky_draw_1h">
@@ -1051,45 +911,20 @@
     <rdfs:label>CHRISTINE'S LUCKY DRAW 7H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#christines_lucky_draw_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>christines lucky draw #1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#christines_lucky_draw_#_1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>christines lucky draw # 1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#christines_lucky_draw_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>christines lucky draw 1h</rdfs:label>
+    <rdfs:label>christines_lucky_draw_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#christines_lucky_draw_6h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>christines lucky draw 6h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#circle_r_partnership_#18h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>circle r partnership #18h</rdfs:label>
+    <rdfs:label>christines_lucky_draw_6h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#circle_r_partnership_1">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>CIRCLE R PARTNERSHIP 1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#clarke_1866">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>clarke 1866</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#cleveland_federal_#4h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>cleveland federal #4h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#cleveland_federal_2">
     <rdf:type rdf:resource="#Well"/>
@@ -1116,11 +951,6 @@
     <rdfs:label>COOPER 3H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#cooper_8_h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>cooper 8 h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#cooper_8h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>COOPER 8H</rdfs:label>
@@ -1130,11 +960,6 @@
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>COURTS FEDERAL 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#cox_#4">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>cox #4</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#cox_2h">
     <rdf:type rdf:resource="#Well"/>
@@ -1148,7 +973,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#crabtree,_gary_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>crabtree, gary 1h</rdfs:label>
+    <rdfs:label>crabtree,_gary_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#crabtree,_gary_6">
@@ -1168,7 +993,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#crawford_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>crawford 1h</rdfs:label>
+    <rdfs:label>crawford_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#crisp_unit_2h">
@@ -1183,7 +1008,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#cummins_g83">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>cummins g83</rdfs:label>
+    <rdfs:label>cummins_g83</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#czajkowski,_bruno_1">
@@ -1193,7 +1018,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#czajkowski,_bruno_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>czajkowski, bruno 1h</rdfs:label>
+    <rdfs:label>czajkowski,_bruno_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#czajkowski,_bruno_8">
@@ -1208,7 +1033,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#danny_barr_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>danny barr 1</rdfs:label>
+    <rdfs:label>danny_barr_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#darino,_vincent_1h">
@@ -1218,7 +1043,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#darlene_1-stx_n731hp">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>darlene 1-stx n731hp</rdfs:label>
+    <rdfs:label>darlene_1-stx_n731hp</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#david_william_8">
@@ -1234,21 +1059,16 @@
   <rdf:Description rdf:about="#deal_1">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>DEAL 1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#deal_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>deal 2h</rdfs:label>
+    <rdfs:label>deal_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#donald_cryer_#1">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>donald cryer #1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#donegal_hills_#3h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>donegal hills #3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#donegal_hills_2">
@@ -1258,7 +1078,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#donegal_hills_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>donegal hills 2h</rdfs:label>
+    <rdfs:label>donegal_hills_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#donegal_hills_3">
@@ -1278,22 +1098,22 @@
   </rdf:Description>
   <rdf:Description rdf:about="#donut_palace-stx-unit_s733h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>DONUT PALACE-STX-UNIT S733H</rdfs:label>
+    <rdfs:label>donut_palace-stx-unit_s733h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#donut_palace_stx_unit_s733h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>donut palace stx unit s733h</rdfs:label>
+    <rdfs:label>donut_palace_stx_unit_s733h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#eagle_ford">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>eagle ford</rdfs:label>
+    <rdfs:label>eagle_ford</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#eberhart,_juanita_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>eberhart, juanita 1</rdfs:label>
+    <rdfs:label>eberhart,_juanita_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#eberhart_juanita_1">
@@ -1311,11 +1131,6 @@
     <rdfs:label>EDWARDS, C. J. UNIT 1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#edwards_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>edwards #1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#edwards_1">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>EDWARDS 1</rdfs:label>
@@ -1323,7 +1138,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#elizabeth_preston_5h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>elizabeth preston 5h</rdfs:label>
+    <rdfs:label>elizabeth_preston_5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#ellis_sid_1">
@@ -1344,7 +1159,7 @@
   <rdf:Description rdf:about="#faxel_4">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>FAXEL 4</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fincher-howard_(sa)_1h">
     <rdf:type rdf:resource="#Well"/>
@@ -1353,52 +1168,47 @@
   </rdf:Description>
   <rdf:Description rdf:about="#fiscus_jerry_1p">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fiscus jerry 1p</rdfs:label>
+    <rdfs:label>fiscus_jerry_1p</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda-23-02-bal_n513hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda-23-02-bal n513hf</rdfs:label>
+    <rdfs:label>fonda-23-02-bal_n513hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda-23-02-bal_n516hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda-23-02-bal n516hf</rdfs:label>
+    <rdfs:label>fonda-23-02-bal_n516hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda-23-02-bal_n518hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>FONDA-23-02-BAL N518HF</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#fonda-23-02-bal_n519hf">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda-23-02-bal n519hf</rdfs:label>
+    <rdfs:label>fonda-23-02-bal_n518hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda-23-02-bal_n611hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>FONDA-23-02-BAL N611HF</rdfs:label>
+    <rdfs:label>fonda-23-02-bal_n611hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda-23-23-bal_w112dw">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda-23-23-bal w112dw</rdfs:label>
+    <rdfs:label>fonda-23-23-bal_w112dw</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda_23-02-bal_n611hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda 23-02-bal n611hf</rdfs:label>
+    <rdfs:label>fonda_23-02-bal_n611hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#fonda_23-23-bal_w112dw">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>fonda 23-23-bal w112dw</rdfs:label>
+    <rdfs:label>fonda_23-23-bal_w112dw</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#frances_sherrod_4h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>frances sherrod 4h</rdfs:label>
+    <rdfs:label>frances_sherrod_4h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#frazier">
@@ -1413,17 +1223,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#g2_845-846-stx_c311vw">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>g2 845-846-stx c311vw</rdfs:label>
+    <rdfs:label>G2 845-846-STX C311VW</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#gambler-stx-unit_n727h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>Gambler-STX-Unit N727H</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#gary_blackwell_#_1_h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>gary blackwell # 1 h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#gary_blackwell_1h">
@@ -1443,7 +1248,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#gary_nickelson_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>gary nickelson 2h</rdfs:label>
+    <rdfs:label>gary_nickelson_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#gates_edwards_unit_1h">
@@ -1453,7 +1258,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#gatlin_unit_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>gatlin unit 1h</rdfs:label>
+    <rdfs:label>gatlin_unit_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#gatlin_winston_2h">
@@ -1476,14 +1281,9 @@
     <rdfs:label>GILL CROSSING 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#gills_crossing_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>gills crossing #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#gladys_dike_(sa)_6h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>gladys dike (sa) 6h</rdfs:label>
+    <rdfs:label>gladys_dike_(sa)_6h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#goodnight_selma_2h">
@@ -1493,7 +1293,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#grady,_john_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>grady, john 1</rdfs:label>
+    <rdfs:label>grady,_john_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#grady,_john_1h">
@@ -1508,18 +1308,8 @@
   </rdf:Description>
   <rdf:Description rdf:about="#guthrie,_thomas_3">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>guthrie, thomas 3</rdfs:label>
+    <rdfs:label>guthrie,_thomas_3</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#guthrie_thomas_#5h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>guthrie thomas #5h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#guthrie_thomas_#6">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>guthrie thomas #6</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#guthrie_thomas_2h">
     <rdf:type rdf:resource="#Well"/>
@@ -1543,12 +1333,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hand,_mairead_6h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hand, mairead 6h</rdfs:label>
+    <rdfs:label>hand,_mairead_6h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hand,_mairead_7h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hand, mairead 7h</rdfs:label>
+    <rdfs:label>hand,_mairead_7h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hand_mairead_2h">
@@ -1578,7 +1368,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hencken_unit_a_fed_8h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hencken unit a fed 8h</rdfs:label>
+    <rdfs:label>HENCKEN UNIT A FED 8H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hencken_unit_a_fed_9h">
@@ -1593,12 +1383,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hickey,_billy_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hickey, billy 1</rdfs:label>
+    <rdfs:label>hickey,_billy_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hickey,_billy_2">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hickey, billy 2</rdfs:label>
+    <rdfs:label>hickey,_billy_2</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hickey_billy_1h">
@@ -1636,14 +1426,9 @@
     <rdfs:label>HILL TOP RANCH 5H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#hill_top_rch_#3">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hill top rch #3</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#hollingsworth,_gary_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hollingsworth, gary 1</rdfs:label>
+    <rdfs:label>hollingsworth,_gary_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hollingsworth_gary_1h">
@@ -1658,7 +1443,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit-b_n724h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>HOOEY-STX-UNIT-B N724H</rdfs:label>
+    <rdfs:label>hooey-stx-unit-b_n724h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit-c">
@@ -1668,17 +1453,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit-c_n736h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hooey-stx-unit-c n736h</rdfs:label>
+    <rdfs:label>hooey-stx-unit-c_n736h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hooey-stx-unit n731h</rdfs:label>
+    <rdfs:label>HOOEY-STX-UNIT N731H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hooper_11">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hooper 11</rdfs:label>
+    <rdfs:label>hooper_11</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hooper_5h">
@@ -1686,19 +1471,24 @@
     <rdfs:label>HOOPER 5H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#hurrikain_cat-1-stx_s731h">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>hurrikain cat-1-stx s731h</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#hyde-hickman_e_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hyde-hickman e 2h</rdfs:label>
+    <rdfs:label>hyde-hickman_e_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hyde_-_hickman_b_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hyde - hickman b 3h</rdfs:label>
+    <rdfs:label>hyde_-_hickman_b_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hyde_-_hickman_b_4h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>hyde - hickman b 4h</rdfs:label>
+    <rdfs:label>hyde_-_hickman_b_4h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hyde_hickman_b_3h">
@@ -1731,20 +1521,10 @@
     <rdfs:label>HYDE HICKMAN WEST 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#igr_unit_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>igr unit #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#igr_unit_1h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>IGR UNIT 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#inez_whitehead_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>inez whitehead #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#inez_whitehead_#_1_h">
     <rdf:type rdf:resource="#Well"/>
@@ -1753,7 +1533,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#isbell_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>isbell 2h</rdfs:label>
+    <rdfs:label>isbell_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#island_grove_ranch_unit_#1h">
@@ -1768,7 +1548,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#jackson,_ad_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>jackson, ad 1h</rdfs:label>
+    <rdfs:label>jackson,_ad_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#james_conn_iv_#1h">
@@ -1778,12 +1558,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#james_elrod_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>james elrod 1</rdfs:label>
+    <rdfs:label>james_elrod_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#john_brady_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>john brady 1h</rdfs:label>
+    <rdfs:label>john_brady_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#john_cashion_#9">
@@ -1793,12 +1573,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#john_edward_king_22h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>john edward king 22h</rdfs:label>
+    <rdfs:label>john_edward_king_22h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#john_edward_king_28h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>john edward king 28h</rdfs:label>
+    <rdfs:label>john_edward_king_28h</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#johnson">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>johnson</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#johnson,_ben_2h">
@@ -1813,17 +1598,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#kennon,_alfred_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>kennon, alfred 1</rdfs:label>
+    <rdfs:label>kennon,_alfred_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#kennon_alfred_1h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>KENNON ALFRED 1H</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#king_john_edward_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>king john edward #1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#king_john_edward_22h">
@@ -1848,7 +1628,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#king_sisters_27h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>king sisters 27h</rdfs:label>
+    <rdfs:label>king_sisters_27h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#king_sisters_4h">
@@ -1866,29 +1646,14 @@
     <rdfs:label>LAIN TOMMY 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#larry_hubbard_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>larry hubbard #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#larry_hubbard_#_1_h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>larry hubbard # 1 h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#larry_trulove_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>larry trulove #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#larry_trulove_1h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>LARRY TRULOVE 1H</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#larry_woolley_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>larry woolley #1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#larry_woolley_#_1_h">
@@ -1901,24 +1666,14 @@
     <rdfs:label>lee</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#lieta_lightfoot_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>lieta lightfoot #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#lokken_1-12-161-96h_1bp">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>lokken 1-12-161-96h 1bp</rdfs:label>
+    <rdfs:label>lokken_1-12-161-96h_1bp</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#lokken_1-12-161-98h_13p">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>lokken 1-12-161-98h 13p</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#louis_muzykia_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>louis muzykia #1h</rdfs:label>
+    <rdfs:label>lokken_1-12-161-98h_13p</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#lucille-stx-unit-a_s_724h">
@@ -1938,7 +1693,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#lumbermen_a_8">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>lumbermen a 8</rdfs:label>
+    <rdfs:label>lumbermen_a_8</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#lumbermen_a_8h">
@@ -1981,16 +1736,6 @@
     <rdfs:label>MAHAFFEY, SUE 8H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#mahaffey_sue_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mahaffey sue #1</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#mahaffey_sue_#5">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mahaffey sue #5</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#mahaffey_sue_5h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>MAHAFFEY SUE 5H</rdfs:label>
@@ -2006,11 +1751,6 @@
     <rdfs:label>mairead hand # 7</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#mannings_4m_farm_#3h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mannings 4m farm #3h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#mannings_4m_farms_3h">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>MANNINGS 4M FARMS 3H</rdfs:label>
@@ -2023,37 +1763,32 @@
   </rdf:Description>
   <rdf:Description rdf:about="#maples_unit_4h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>maples unit 4h</rdfs:label>
+    <rdfs:label>maples_unit_4h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#marjorie_6-7-161-97h_xp">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>marjorie 6-7-161-97h xp</rdfs:label>
+    <rdfs:label>marjorie_6-7-161-97h_xp</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mark_mcmahon_gu_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mark mcmahon gu 1h</rdfs:label>
+    <rdfs:label>mark_mcmahon_gu_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#martha_reeves_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>martha reeves 1h</rdfs:label>
+    <rdfs:label>martha_reeves_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#martha_reeves_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>martha reeves 2h</rdfs:label>
+    <rdfs:label>martha_reeves_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#martin">
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>martin</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#martin_unit_#5h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>martin unit #5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#martin_unit_5h">
@@ -2065,11 +1800,6 @@
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>MARTINDALE 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#martindale_unit_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>martindale unit #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#maverick-22-10-bnd_n611h">
     <rdf:type rdf:resource="#Well"/>
@@ -2083,12 +1813,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#maverick_22-10-bnd_n618h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>maverick 22-10-bnd n618h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#mcclanahan_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mcclanahan #1</rdfs:label>
+    <rdfs:label>maverick_22-10-bnd_n618h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mcclanahan_1h">
@@ -2103,17 +1828,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#mcclure_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mcclure 2h</rdfs:label>
+    <rdfs:label>mcclure_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mcclure_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mcclure 3h</rdfs:label>
+    <rdfs:label>mcclure_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mcclure_4h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mcclure 4h</rdfs:label>
+    <rdfs:label>mcclure_4h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mcgee_odis_gas_unit_2h">
@@ -2143,12 +1868,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#mello_308-stx_a311vw">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>mello 308-stx a311vw</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#monty_miller_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>monty miller #1h</rdfs:label>
+    <rdfs:label>mello_308-stx_a311vw</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#monty_miller_#_1_h">
@@ -2158,7 +1878,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#morgan,_edmund_4">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>morgan, edmund 4</rdfs:label>
+    <rdfs:label>morgan,_edmund_4</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#morgan_edmund_4h">
@@ -2166,19 +1886,9 @@
     <rdfs:label>MORGAN EDMUND 4H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#murrin_bear_creek_#4">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>murrin bear creek #4</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#murrin_bear_creek_#_5h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>murrin bear creek # 5h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#murrin_bear_creek_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>murrin bear creek 1</rdfs:label>
+    <rdfs:label>murrin_bear_creek_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#murrin_bear_creek_10h">
@@ -2188,7 +1898,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#murrin_bear_creek_5">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>murrin bear creek 5</rdfs:label>
+    <rdfs:label>murrin_bear_creek_5</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#murrin_bear_creek_5h">
@@ -2208,7 +1918,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#nowlin,_billie_marie_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>nowlin, billie marie 1</rdfs:label>
+    <rdfs:label>nowlin,_billie_marie_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#nowlin_-_doyle_(sa)_2h">
@@ -2223,12 +1933,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#parnell_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>parnell 1</rdfs:label>
+    <rdfs:label>parnell_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#parnell_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>PARNELL 3H</rdfs:label>
+    <rdfs:label>parnell_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#pbm_ragle_1h">
@@ -2248,17 +1958,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#pendleton-stx-unit_n734h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>pendleton-stx-unit n734h</rdfs:label>
+    <rdfs:label>PENDLETON-STX-UNIT N734H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#pendleton-stx-unit_n735h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>pendleton-stx-unit n735h</rdfs:label>
+    <rdfs:label>pendleton-stx-unit_n735h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#pendleton_stx_unit_n734h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>pendleton stx unit n734h</rdfs:label>
+    <rdfs:label>pendleton_stx_unit_n734h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#pitts,_charles_3h">
@@ -2323,22 +2033,22 @@
   </rdf:Description>
   <rdf:Description rdf:about="#revival-stx-unit-a_s724h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>REVIVAL-STX-UNIT-A S724H</rdfs:label>
+    <rdfs:label>revival-stx-unit-a_s724h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#revival-stx-unit-a_s732h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>REVIVAL-STX-UNIT-A S732H</rdfs:label>
+    <rdfs:label>revival-stx-unit-a_s732h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#revival-stx-unit-b_s736h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>REVIVAL-STX-UNIT-B S736H</rdfs:label>
+    <rdfs:label>revival-stx-unit-b_s736h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#roper-stx-unit_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>roper-stx-unit n731h</rdfs:label>
+    <rdfs:label>roper-stx-unit_n731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#roper-stx-unit_s731h">
@@ -2353,17 +2063,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#roper_stx_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>roper stx n731h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#rose_children_trust_#1">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>rose children trust #1</rdfs:label>
+    <rdfs:label>roper_stx_n731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#rose_childrens_trust_1">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>rose childrens trust 1</rdfs:label>
+    <rdfs:label>rose_childrens_trust_1</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#rose_childrens_trust_1h">
@@ -2383,13 +2088,8 @@
   </rdf:Description>
   <rdf:Description rdf:about="#sandra_wakefield_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>sandra wakefield 3h</rdfs:label>
+    <rdfs:label>sandra_wakefield_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#scott_unit_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>scott unit #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#scott_unit_1h">
     <rdf:type rdf:resource="#Well"/>
@@ -2398,18 +2098,13 @@
   </rdf:Description>
   <rdf:Description rdf:about="#selma_goodnight_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>selma goodnight 2h</rdfs:label>
+    <rdfs:label>selma_goodnight_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#sendero-stx-unit_s731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>SENDERO-STX-UNIT S731H</rdfs:label>
+    <rdfs:label>sendero-stx-unit_s731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#shaw_robert_#1h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>shaw robert #1h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#sherman_hudson_#1h">
     <rdf:type rdf:resource="#Well"/>
@@ -2428,18 +2123,8 @@
   </rdf:Description>
   <rdf:Description rdf:about="#smelley_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>smelley 3h</rdfs:label>
+    <rdfs:label>smelley_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#smelly_#6">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>smelly #6</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#smelly_#7">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>smelly #7</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#snodgress_randal_3h">
     <rdf:type rdf:resource="#Well"/>
@@ -2451,14 +2136,9 @@
     <rdfs:label>STEVENSON C 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#stevenson_c_unit_#2h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>stevenson c unit #2h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#stevenson_c_unit_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>stevenson c unit 1h</rdfs:label>
+    <rdfs:label>stevenson_c_unit_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#stevenson_c_unit_2h">
@@ -2466,39 +2146,24 @@
     <rdfs:label>STEVENSON C UNIT 2H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
-  <rdf:Description rdf:about="#sue_mahaffey_#15h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>sue mahaffey #15h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#sue_mahaffey_#3h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>sue mahaffey #3h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#sue_mahaffey_#8h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>sue mahaffey #8h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
   <rdf:Description rdf:about="#sue_mahaffey_5h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>sue mahaffey 5h</rdfs:label>
+    <rdfs:label>sue_mahaffey_5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01-pgn_s514ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01-pgn s514ht</rdfs:label>
+    <rdfs:label>the_great-25-01-pgn_s514ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01-pgn_s518ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01-pgn s518ht</rdfs:label>
+    <rdfs:label>THE GREAT-25-01-PGN S518HT</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01-pgn_s612ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01-pgn s612ht</rdfs:label>
+    <rdfs:label>THE GREAT-25-01-PGN S612HT</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01-pgn_s616ht">
@@ -2508,37 +2173,37 @@
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s514hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s514hf</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s514hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s514ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s514ht</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s514ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s518ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s518ht</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s518ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s612ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s612ht</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s612ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s616ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s616ht</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s616ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-01_pgn_s618ht">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>the great-25-01 pgn s618ht</rdfs:label>
+    <rdfs:label>the_great-25-01_pgn_s618ht</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#the_great-25-25-pgn_e116dw">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>THE GREAT-25-25-PGN E116DW</rdfs:label>
+    <rdfs:label>the_great-25-25-pgn_e116dw</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#thomas_bussey_#2h">
@@ -2548,22 +2213,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#thomas_gutherie_3-h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>thomas gutherie 3-h</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#thomas_guthrie_#2h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>thomas guthrie #2h</rdfs:label>
+    <rdfs:label>thomas_gutherie_3-h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#thompson_1p">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>thompson 1p</rdfs:label>
-    <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
-  </rdf:Description>
-  <rdf:Description rdf:about="#tindle_buford_#2h">
-    <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>tindle buford #2h</rdfs:label>
+    <rdfs:label>thompson_1p</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#trussell,_spencer_l._1h">
@@ -2578,7 +2233,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#uysaler_ahmet_5h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>uysaler ahmet 5h</rdfs:label>
+    <rdfs:label>uysaler_ahmet_5h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#vincent_darino_#1h">
@@ -2598,7 +2253,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#weber,_john_2">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>weber, john 2</rdfs:label>
+    <rdfs:label>weber,_john_2</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#weber,_john_2h">
@@ -2628,12 +2283,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#whitehead_mckinney_(sa)_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>whitehead mckinney (sa) 1h</rdfs:label>
+    <rdfs:label>whitehead_mckinney_(sa)_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow-16-33-pgn_s512hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>WILDCAT HOLLOW-16-33-PGN S512HF</rdfs:label>
+    <rdfs:label>wildcat_hollow-16-33-pgn_s512hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow-16-33-pgn_s516hf">
@@ -2653,17 +2308,17 @@
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow_16-33-pgn_s516hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wildcat hollow 16-33-pgn s516hf</rdfs:label>
+    <rdfs:label>wildcat_hollow_16-33-pgn_s516hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#william_abshire_1-h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>william abshire 1-h</rdfs:label>
+    <rdfs:label>william_abshire_1-h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#william_david_8h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>william david 8h</rdfs:label>
+    <rdfs:label>william_david_8h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#willis_jerry_1h">
@@ -2693,47 +2348,47 @@
   </rdf:Description>
   <rdf:Description rdf:about="#woodpecker_27-34-163-95h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>woodpecker 27-34-163-95h</rdfs:label>
+    <rdfs:label>woodpecker_27-34-163-95h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler-stx-unit_n725h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler-stx-unit n725h</rdfs:label>
+    <rdfs:label>wrangler-stx-unit_n725h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler-stx-unit_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler-stx-unit n731h</rdfs:label>
+    <rdfs:label>wrangler-stx-unit_n731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler-stx-unit_n732h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler-stx-unit n732h</rdfs:label>
+    <rdfs:label>wrangler-stx-unit_n732h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler-stx-unit_n734h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler-stx-unit n734h</rdfs:label>
+    <rdfs:label>wrangler-stx-unit_n734h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler-stx-unit_n737h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler-stx-unit n737h</rdfs:label>
+    <rdfs:label>wrangler-stx-unit_n737h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler_stx-unit_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler stx-unit n731h</rdfs:label>
+    <rdfs:label>wrangler_stx-unit_n731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler_stx_unit_n731h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler stx unit n731h</rdfs:label>
+    <rdfs:label>wrangler_stx_unit_n731h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wrangler_stx_unit_n732h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>wrangler stx unit n732h</rdfs:label>
+    <rdfs:label>wrangler_stx_unit_n732h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <!-- END GENERATED INDIVIDUALS -->
