@@ -69,7 +69,8 @@ def build_subagents(classes: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "system_prompt": ANALYST_PROMPT.format(
                 name=cls["name"].replace("_", " "), description=cls["description"]
             ),
-            "model": _gateway_model(DEFAULT_MODEL),
+            # Per-class override from the knowledge table; ANALYST_MODEL default.
+            "model": _gateway_model(cls.get("model", DEFAULT_MODEL)),
         }
         for cls in classes
     ]

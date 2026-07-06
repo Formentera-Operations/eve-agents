@@ -1,5 +1,5 @@
 {
-  "$comment": "Analyst classes for the doc-intel deepagents layer. Each class becomes one programmatically generated SubAgent config. entry_types come from WellDrive S3 metadata (authoritative). This table is the single source of truth — portable, open JSON; no code may hard-code class routing.",
+  "$comment": "Analyst classes for the doc-intel deepagents layer. Each class becomes one programmatically generated SubAgent config. entry_types come from WellDrive S3 metadata (authoritative). This table is the single source of truth — portable, open JSON; no code may hard-code class routing. Optional per-class 'model' (AI Gateway id) overrides the ANALYST_MODEL default — use lighter models for classes whose job is enumeration/refusal rather than close reading.",
   "classes": [
     {
       "name": "drilling_ops_analyst",
@@ -34,7 +34,8 @@
     {
       "name": "logs_analyst",
       "description": "Wireline/LWD log products. Mostly image or vendor-binary formats that structured parsing cannot read — this analyst's job is to say precisely what exists and what is machine-readable, never to invent log values.",
-      "entry_types": ["Open Hole Logs", "Cased Hole Logs", "CBL", "Final LWD Composite", "LWD Real Time Data"]
+      "entry_types": ["Open Hole Logs", "Cased Hole Logs", "CBL", "Final LWD Composite", "LWD Real Time Data"],
+      "model": "anthropic/claude-haiku-4.5"
     }
   ]
 }

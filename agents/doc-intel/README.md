@@ -32,7 +32,7 @@ enabled — without it every model call fails with
 
 Environment knobs: `DOC_INTEL_ANALYSTS_URL` (default `http://127.0.0.1:8734`),
 `WELLDRIVE_MANIFEST` (default `../../corpus/sample-manifest.csv`),
-`ANALYST_MODEL` (default `anthropic/claude-sonnet-5`), `ANALYST_CLASSES_PATH`.
+`ANALYST_MODEL` (default `anthropic/claude-sonnet-5`; per-class overrides via the optional `model` field in `references/analyst-classes.json` — logs analyst runs Haiku), `ANALYST_CLASSES_PATH`.
 
 Parse-on-demand uses LiteParse (`@llamaindex/liteparse`) — a local, in-process
 parser with no API key and no cost. OCR routing is automatic via `isComplex`.
