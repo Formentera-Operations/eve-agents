@@ -289,15 +289,29 @@ def _xml_escape(text: str) -> str:
     )
 
 
+def fragment_key(name: str) -> str:
+    """URI fragment for an individual. Starts from the matcher key but strips
+    '#': the resolver derives keys via uri.split('#')[-1], so a '#' inside a
+    fragment collapses the lookup key to its tail ('winston_gatlin_#3h' ->
+    '3h') — a garbage entry that also exact-matches junk. Stripping costs the
+    exact-hit for '#'-spelled names; the 0.8 runtime fuzzy still reaches them
+    (~0.97 similarity)."""
+    return normalize_key(name).replace("#", "")
+
+
 def render_individuals(verified: list[Verified]) -> str:
     """One rdf:Description per individual, sorted by class then fragment for
-    stable diffs. The URI fragment IS cognee's match key (KTD2), so it is
-    minted already normalized; rdfs:label keeps the document spelling for
-    human readers (cognee never consults it). Provenance names only the
-    master source table — master_key stays in the gitignored report."""
+    stable diffs. The URI fragment carries cognee's match key (KTD2) — minted
+    normalized and '#'-free via fragment_key; rdfs:label keeps the document
+    spelling for human readers (cognee never consults it). Provenance names
+    only the master source table — master_key stays in the gitignored report."""
     lines = []
-    for v in sorted(verified, key=lambda v: (v.cls, normalize_key(v.name))):
-        fragment = _xml_escape(normalize_key(v.name))
+    seen: set[str] = set()
+    for v in sorted(verified, key=lambda v: (v.cls, fragment_key(v.name))):
+        fragment = _xml_escape(fragment_key(v.name))
+        if not fragment or fragment in seen:
+            continue  # '#'-stripping can collide two spellings; first wins
+        seen.add(fragment)
         lines.append(f'  <rdf:Description rdf:about="#{fragment}">')
         lines.append(f'    <rdf:type rdf:resource="#{v.cls}"/>')
         lines.append(f"    <rdfs:label>{_xml_escape(v.name)}</rdfs:label>")

@@ -158,6 +158,7 @@ SAMPLE = [
     Verified("Scientific Drilling Intl.", "ServiceVendor", "gold_dim_vendor", "V-77", 0.96),
     Verified("BENBROOK UNIT 'D' FED 3H", "Well", "gold_dim_well (lease)", "111556", 0.95),
     Verified("H&P Drilling", "ServiceVendor", "gold_dim_vendor", "V-9", 1.0),
+    Verified("WINSTON GATLIN #3H", "Well", "gold_dim_well", "111818", 0.97),
 ]
 
 
@@ -173,18 +174,31 @@ def test_emission_is_deterministic():
 
 
 def test_round_trip_fragment_equals_cognee_match_key():
+    import difflib
     import re
 
     block = render_individuals(SAMPLE)
     fragments = re.findall(r'rdf:about="#([^"]+)"', block)
     assert len(fragments) == len(SAMPLE)
-    spellings = {normalize_key(v.name) for v in SAMPLE}
+    keys = {normalize_key(v.name) for v in SAMPLE}
     for frag in fragments:
         # un-escape the XML attribute back to the raw fragment
         raw = frag.replace("&amp;", "&").replace("&quot;", '"').replace("&lt;", "<").replace("&gt;", ">")
+        assert "#" not in raw, "a '#' inside a fragment collapses the resolver key to its tail"
         base = "https://formenteraops.com/ontology/welldrive"
-        assert _uri_to_key(f"{base}#{raw}") == raw, "fragment must already be in matcher-key form"
-        assert raw in spellings
+        assert _uri_to_key(f"{base}#{raw}") == raw, "fragment must survive the resolver's key derivation"
+        # runtime match still reaches the doc spelling: exact, or fuzzy >= 0.8
+        assert raw in keys or max(
+            difflib.SequenceMatcher(None, raw, k).ratio() for k in keys
+        ) >= 0.8
+
+
+def test_number_sign_names_mint_hash_free_fragments():
+    block = render_individuals([Verified("WINSTON GATLIN #3H", "Well", "gold_dim_well", "1", 1.0)])
+    assert 'rdf:about="#winston_gatlin_3h"' in block
+    assert "winston_gatlin_#3h" not in block
+    # label still carries the document spelling
+    assert "<rdfs:label>WINSTON GATLIN #3H</rdfs:label>" in block
 
 
 def test_splice_preserves_outside_bytes_and_replaces_block():
@@ -228,7 +242,7 @@ def test_rendered_block_is_parseable_rdf():
     g.parse(data=doc, format="xml")
     ns = "https://formenteraops.com/ontology/welldrive#"
     wells = list(g.subjects(rdflib.RDF.type, rdflib.URIRef(ns + "Well")))
-    assert len(wells) == 2  # the two Well individuals; class declarations are typed owl:Class
+    assert len(wells) == 3  # the three Well individuals; class declarations are typed owl:Class
 
 
 # --- U4 iteration: sweep precision guards ---

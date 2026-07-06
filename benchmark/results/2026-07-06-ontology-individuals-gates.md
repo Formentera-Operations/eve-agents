@@ -36,3 +36,18 @@ never match). **Rob revised the bar 400 → 250 (2026-07-06).**
   run each)
 - Final graph: 6,511 nodes / 26,652 edges; exports refreshed at
   `runs/doc-intel/graph/`
+
+## Addendum: fragment-key fix (PR 8 Codex review)
+
+Codex review caught 23 individuals whose names contain `#` ('WINSTON GATLIN
+#3H'): a `#` inside a URI fragment collapses cognee's lookup key to its tail
+(`uri.split('#')[-1]` → '3h') — garbage entries that also exact-match junk.
+Fixed by minting fragments `#`-free (`fragment_key`); runtime fuzzy (0.8)
+still reaches the `#`-spelled entities at ~0.97 similarity. Regenerated,
+rebuilt, re-gated:
+
+- ontology_valid: **PASS — 276/4,449 (23× baseline; up from 259)**;
+  by class: 229 Well, 17 ServiceVendor, 14 Operator, 13 County, 3 AssetTeam
+- 20-node precision spot-check: **PASS — 20/20 (100%)**
+- Evals: **PASS — graph-explore 4/4, delegation 4/4**
+- Rebuild: cognify 229.9s, 311/311 ok; final graph 6,567 nodes / 26,832 edges

@@ -28,17 +28,25 @@ Entity nodes to EntityType nodes, not in the `type` column.
 **edges.csv** — `source`, `target` (node ids), `label` (relationship, e.g.
 operatedBy / servicedBy / occurredOn / is_part_of), `properties` (JSON).
 
-## Worked example: wells → vendors in SQL
+## Worked example: vendors → wells in SQL
 
-Load both files (Snowflake `COPY INTO`, or `read_csv` in dbt-duckdb), then:
+Load both files (Snowflake `COPY INTO`, or `read_csv` in dbt-duckdb), then
+join through the extractor's relationship edges, filtering to ontology-valid
+entities (class membership comes from joining `name` to the OWL individuals):
 
 ```sql
-select w.name as well, v.name as vendor
+select v.name as vendor, w.name as well
 from edges e
-join nodes w on w.id = e.source and w.type = 'Well'
-join nodes v on v.id = e.target and v.type = 'ServiceVendor'
-where e.label = 'servicedBy';
+join nodes v on v.id = e.source and v.type = 'Entity'
+join nodes w on w.id = e.target and w.type = 'Entity'
+where e.label = 'performed_on'
+  and v.properties:ontology_valid = true
+  and w.properties:ontology_valid = true;
 ```
+
+Edge labels are extractor-derived (`performed_on`, `underwent`, `contains`,
+`is_part_of`, `is_a`, …) — enumerate what an export actually contains with
+`select label, count(*) from edges group by 1`.
 
 Provenance: document nodes carry their corpus S3 key in `properties`
 (`s3key:<key>`); join through document edges to trace any fact to its
