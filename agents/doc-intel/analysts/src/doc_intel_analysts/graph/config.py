@@ -66,6 +66,10 @@ def configure() -> None:
         # default json_mode for custom providers); tool_call works (verified
         # live against both candidate models).
         "LLM_INSTRUCTOR_MODE": "tool_call",
+        # Session-memory caching feeds cached completions back into later
+        # searches in the same session, poisoning CHUNKS provenance (the
+        # cached item carries no belongs_to_set tags — observed live).
+        "CACHING": "false",
         # No third egress path: telemetry off (var name verified against 1.2.2).
         "TELEMETRY_DISABLED": "1",
         # Embedded single-tenant stores with explicit roots (KTD4).

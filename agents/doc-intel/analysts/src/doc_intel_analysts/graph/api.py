@@ -37,6 +37,10 @@ def extract_source_keys(payload: Any) -> list[str]:
         elif isinstance(value, (list, tuple, set)):
             for v in value:
                 walk(v)
+        elif hasattr(value, "model_dump"):
+            # cognee search results are pydantic models; tags live in
+            # fields like belongs_to_set (verified live against 1.2.2).
+            walk(value.model_dump())
 
     walk(payload)
     return found

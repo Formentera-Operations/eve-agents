@@ -24,3 +24,14 @@ def test_dedupes_and_preserves_order():
 
 def test_ignores_non_tag_strings_and_empty_tags():
     assert extract_source_keys(["plain", "s3key:", {"x": 42}, None]) == []
+
+
+def test_extracts_keys_from_pydantic_model_results():
+    from pydantic import BaseModel
+
+    class Chunk(BaseModel):
+        text: str
+        belongs_to_set: list[str]
+
+    payload = [Chunk(text="...", belongs_to_set=["s3key:TEAM/WELL/doc.pdf"])]
+    assert extract_source_keys(payload) == ["TEAM/WELL/doc.pdf"]
