@@ -47,3 +47,21 @@ def test_sampler_spans_teams_and_is_deterministic():
 def test_sampler_handles_small_pools():
     rows = [{"key": "A/x.pdf", "asset_team": "A", "parse_source": "pilot-tierA"}]
     assert sample_trial(rows, 20) == rows
+
+
+def test_ontology_path_resolves_to_repo_root():
+    from pathlib import Path
+
+    import doc_intel_analysts.graph.ingest as ingest_mod
+
+    repo_root = Path(ingest_mod.__file__).resolve().parents[6]
+    assert (repo_root / "references" / "ontology" / "welldrive.owl").exists(), (
+        "parents[6] from ingest.py must be the repo root holding the ontology"
+    )
+
+
+def test_resume_ignores_ledgers_without_local_store(monkeypatch, tmp_path):
+    from doc_intel_analysts.graph import config, ingest
+
+    monkeypatch.setattr(config, "SYSTEM_ROOT", tmp_path / "missing")
+    assert ingest.already_ingested_keys() == set()

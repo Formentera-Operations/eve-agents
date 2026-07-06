@@ -80,8 +80,27 @@ def sample_trial(rows: list[dict[str, str]], n: int) -> list[dict[str, str]]:
     return picked[:n]
 
 
+def _local_store_present() -> bool:
+    """True when the embedded graph store exists locally with real content.
+
+    Resume state lives in SHARED S3 ledgers, but graph data lives in the
+    LOCAL gitignored .cognee directory — on a fresh checkout the ledgers
+    say "done" while the store is empty, which would silently produce an
+    empty graph. Resume is honored only when the local store backs it up.
+    """
+    from .config import SYSTEM_ROOT
+
+    databases = SYSTEM_ROOT / "databases"
+    if not databases.exists():
+        return False
+    return any(p.stat().st_size > 0 for p in databases.rglob("*") if p.is_file())
+
+
 def already_ingested_keys() -> set[str]:
-    """Keys marked ok in prior ledgers (resume support for add())."""
+    """Keys marked ok in prior ledgers (resume support for add()) — only
+    trusted when the local embedded store actually holds prior data."""
+    if not _local_store_present():
+        return set()
     done: set[str] = set()
     try:
         resp = _s3.list_objects_v2(Bucket=DERIVED_BUCKET, Prefix=LEDGER_PREFIX)
@@ -131,7 +150,13 @@ async def run(limit: int | None, skip_cognify: bool = False) -> dict[str, Any]:
     if not skip_cognify:
         from cognee.modules.ontology.rdf_xml.RDFLibOntologyResolver import RDFLibOntologyResolver
 
-        ontology = Path(__file__).resolve().parents[5] / "references" / "ontology" / "welldrive.owl"
+        # parents[6] = repo root: this module sits one level deeper (graph/)
+        # than corpus.py/agent.py, whose parents[5] idiom does NOT transfer.
+        ontology = Path(__file__).resolve().parents[6] / "references" / "ontology" / "welldrive.owl"
+        if not ontology.exists():
+            # RDFLibOntologyResolver silently proceeds without a missing file
+            # (verified live) — which would rebuild the graph untyped. Fail loud.
+            raise FileNotFoundError(f"ontology not found at {ontology}")
         started = time.monotonic()
         kwargs = {
             "datasets": DATASET_NAME,
@@ -151,6 +176,12 @@ async def run(limit: int | None, skip_cognify: bool = False) -> dict[str, Any]:
         cognify_seconds = round(time.monotonic() - started, 1)
 
     report = write_ledger(ledger, total_chars, cognify_seconds)
+
+    if not skip_cognify:
+        # R8: exports refresh per ingest run — no second manual command.
+        from . import export as graph_export
+
+        report["export"] = await graph_export.run()
     return report
 
 
