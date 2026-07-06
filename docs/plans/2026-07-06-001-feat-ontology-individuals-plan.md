@@ -16,17 +16,17 @@ execution: code
 - **Objective:** Raise the doc-intel knowledge graph's ontology match rate from 12/4,720 extracted entities by adding corpus-scoped named individuals to `references/ontology/welldrive.owl` via a deterministic generator, then rebuilding the graph.
 - **Product authority:** Rob (dialogue, 2026-07-06). Source strategy, scope, success bar, snowsql-CLI access pattern, and dev-schema verification source confirmed.
 - **Open blockers:** None. PR #7 (learnings docs) is unrelated and can merge independently.
-- **Stop conditions:** Stop and surface if the first enriched rebuild lands under 400 valid or under 90% precision after one iteration of the KTD7 protocol, if snowsql cannot reach the master models, or if cognify wall-clock degrades materially (>2× the ~35-minute baseline).
+- **Stop conditions:** Stop and surface if the rebuild lands under 250 valid (bar revised from 400 by Rob, 2026-07-06 — see Success Criteria) or under 90% precision after one iteration of the KTD7 protocol, if the Snowflake CLI cannot reach the master models, or if cognify wall-clock degrades materially.
 
 ---
 
 ## Product Contract
 
-Product Contract unchanged from the 2026-07-06 brainstorm.
+Product Contract changed from the 2026-07-06 brainstorm in one place: the Success Criteria count bar, 400 → 250, revised by Rob on 2026-07-06 after the first rebuild measured the corpus's honest matchable ceiling. All other product decisions unchanged.
 
 ### Summary
 
-Build a deterministic generator that writes the named-individuals section of `references/ontology/welldrive.owl` from corpus-seen entity names verified against Snowflake masters, then rebuild the knowledge graph and verify ontology-valid entities rise to at least 400 with a passing precision spot-check.
+Build a deterministic generator that writes the named-individuals section of `references/ontology/welldrive.owl` from corpus-seen entity names verified against Snowflake masters, then rebuild the knowledge graph and verify ontology-valid entities rise to at least 250 with a passing precision spot-check.
 
 ### Problem Frame
 
@@ -58,7 +58,7 @@ The dlt-pipelines ontology Rob derived (`.schema/formentera/ontology.md`, 66 ent
 
 ### Success Criteria
 
-- `ontology_valid=true` entities rise from 12 to at least 400 (≥30× baseline) out of ~4,720 extracted entities.
+- `ontology_valid=true` entities rise from 12 to at least 250 (≥20× baseline). Bar revised from 400 by Rob (2026-07-06) after the first rebuild measured the honest ceiling: most extracted entities are dates, depths, and measurements that legitimately never match a named individual, and the verifiable well/org/county mention population in this corpus sample is ~270–320.
 - A 20-node spot-check of validated entities shows ≥90% are correct matches — the matched individual genuinely is the entity the document mentioned, not an 80%-cutoff near-miss.
 - Both evals stay 4/4 (R7); a failed precision check or eval regression means iterating on the individual lists, not shipping.
 
@@ -181,7 +181,7 @@ flowchart TB
 - **Files:** `benchmark/results/` (new results note), `references/graph-export.md` (update if node `type` now carries ontology classes), `agents/doc-intel/analysts/.cognee/` (wiped, regenerated — untracked).
 - **Approach:** Established procedure: stop the analysts service (Kuzu single-writer), remove the local store, run `uv run python -m doc_intel_analysts.graph.ingest` with `VERCEL_OIDC_TOKEN` exported from `agents/doc-intel/analysts/`; export auto-runs post-cognify. Measure `ontology_valid=true` count from the refreshed nodes export. Precision spot-check: sample 20 validated entities stratified across classes, confirm each matched individual is the entity the source document mentions (manifest keys via provenance tags), seeded from `benchmark/results/2026-07-06-u7-spot-check-list.md` for wells. Run both evals with the service and gateway creds up. Apply KTD7 iteration knobs at most once before stopping per the Goal Capsule stop conditions. Record counts, precision, eval results, and cost in a dated results note.
 - **Execution note:** This unit is operational proof, not new code; prefer runtime evidence (counts, spot-check table, eval output) over unit coverage.
-- **Test scenarios:** Test expectation: none — operational verification unit; evidence is the measured bar (≥400 valid, ≥90% precision, evals 4/4) recorded in the results note.
+- **Test scenarios:** Test expectation: none — operational verification unit; evidence is the measured bar (≥250 valid — revised bar, ≥90% precision, evals 4/4) recorded in the results note.
 - **Verification:** Results note committed showing the bar met; `runs/doc-intel/graph/` exports refreshed; both evals 4/4.
 
 ---
@@ -194,13 +194,13 @@ flowchart TB
 | Workspace bar | `pnpm typecheck && pnpm test` (repo root) | all units | Green (TS untouched but the bar always runs) |
 | Boot check | `npx eve dev --no-ui` (`agents/doc-intel/`) | U4 | `[DEV] server listening at` then clean kill |
 | Graph rebuild | `uv run python -m doc_intel_analysts.graph.ingest` (`agents/doc-intel/analysts/`, service stopped, `VERCEL_OIDC_TOKEN` exported) | U4 | Ingest ledger complete; exports uploaded |
-| Success bar | measured from refreshed `nodes.csv` + spot-check + `npx eve eval` | U4 | ≥400 ontology_valid; ≥90% precision on 20-node check; both evals 4/4 |
+| Success bar | measured from refreshed `nodes.csv` + spot-check + `npx eve eval` | U4 | ≥250 ontology_valid (revised bar); ≥90% precision on 20-node check; both evals 4/4 |
 
 ---
 
 ## Definition of Done
 
 - Generator committed (U1–U3) with all listed tests green; `welldrive.owl` regenerated with verified individuals and the do-not-hand-edit marker; export SQL committed; masters CSVs and unverified report gitignored.
-- Graph rebuilt on the enriched ontology; success bar met and recorded in a dated `benchmark/results/` note (≥400 valid, ≥90% precision, evals 4/4).
+- Graph rebuilt on the enriched ontology; success bar met and recorded in a dated `benchmark/results/` note (≥250 valid — revised bar, ≥90% precision, evals 4/4).
 - `references/ontology/README.md` documents the regeneration procedure end-to-end (snowsql export → generator → rebuild).
 - No dead-end or experimental code in the diff; work lands as conventional commits on a feature branch, pushed, with a PR opened after the pre-PR audit sub-agent reviews the diff.

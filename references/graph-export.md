@@ -13,10 +13,17 @@ a notebook, a dashboard — reads these without touching Cognee.
 ## Schema
 
 **nodes.csv** — `id` (graph node id, stable within an export), `type`
-(ontology class where matched: Well, Operator, ServiceVendor, Formation,
-County, AssetTeam, Event, a DocumentClass leaf, or extractor-derived),
-`name` (display name, ≤500 chars), `properties` (JSON object of remaining
-attributes; includes `s3key:`-prefixed node_set tags on document nodes).
+(node kind: Entity, EntityType, TextDocument, DocumentChunk, TextSummary,
+NodeSet), `name` (display name, ≤500 chars), `properties` (JSON object of
+remaining attributes; includes `s3key:`-prefixed node_set tags on document
+nodes).
+
+Ontology typing on Entity nodes: `properties.ontology_valid = true` marks an
+entity that matched a named individual in `references/ontology/welldrive.owl`
+(cognee renames the entity to the individual's key on match, so `name` joins
+directly to the OWL individual and its class — Well, Operator, ServiceVendor,
+County, AssetTeam). Extractor-assigned types travel as `is_a` edges from
+Entity nodes to EntityType nodes, not in the `type` column.
 
 **edges.csv** — `source`, `target` (node ids), `label` (relationship, e.g.
 operatedBy / servicedBy / occurredOn / is_part_of), `properties` (JSON).
