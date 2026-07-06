@@ -16,3 +16,16 @@ was verified exact against manifest ground truth (6/6 documents, correct
 classes, path+page citations, honest sample-gap statement, and a flagged
 vendor-template artifact instead of silent normalization). Evals:
 graph-explore 4/4, delegation regression 4/4.
+
+## Addendum — typed rebuild (post PR-6 review, Rob's option A)
+
+PR-6 review caught that the original full ingest resolved the ontology path
+one directory short; RDFLibOntologyResolver silently proceeded, so the gated
+graph was built untyped. After the path fix (+ fail-loud guard), Rob chose a
+clean rebuild: store wiped, 311/311 re-ingested (ledger
+`.../2026-07-06-132037.csv`), cognify 248s, exports auto-refreshed (new
+per-run export behavior). Rebuilt graph: 6,856 nodes / 28,595 edges, all
+carrying ontology metadata; 12 nodes ontology_valid=true at the 80% fuzzy
+cutoff — the class-only OWL matches few entity names, so enriching it with
+individuals (operators, vendors, teams, counties) is the noted follow-up.
+Both evals re-passed 4/4 against the rebuilt graph.
