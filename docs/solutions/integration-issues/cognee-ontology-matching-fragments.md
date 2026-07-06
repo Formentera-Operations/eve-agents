@@ -117,7 +117,14 @@ generator matches candidates to `WELL_NAME`, `COMPANY_NAME`, `VENDOR_NAME`,
 `COUNTY` masters at cutoff **0.9**, with guards that killed the (c) false
 positives: keys under 8 characters are exact-only (blocks `dwayne`→`wayne`),
 counties are exact-only at any length, and org-prefix matching is restricted to
-organization-typed candidates (blocks `three forks`, `south texas`).
+organization-typed candidates (blocks `three forks`).
+
+The guards do **not** cover exact master hits: `south texas` survives as an
+`Operator` individual because the well master literally carries
+`COMPANY_NAME = "South Texas"` on one row, and exact matching runs before
+every guard. Exact collisions between region/formation words and dirty
+master name values are a residual precision limit bounded by master data
+quality — the spot-check is the detector, not the guards.
 
 ```python
 if not fuzzy or len(candidate_key) < 8:
@@ -165,6 +172,10 @@ scoped at match time). Once that's the ground truth, three things follow:
   you intend — that would have flagged `3h`.
 - **Simulate paid rebuilds offline first.** Reproducing the exact match
   algorithm over the current export gates cost and sets honest success bars.
+- **Exact master hits bypass every fuzzy guard.** A dirty master name value
+  (a company column carrying a bare region word) becomes a verified
+  individual no guard can stop; the precision spot-check is the detector for
+  this class, and master data quality is its bound.
 - **Set success bars against the matchable population, not the raw entity
   count.** LLM extraction is nondeterministic (±500 entities across identical
   ingests) and most entities are unmatchable literals; bar to the ceiling the
