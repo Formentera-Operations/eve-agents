@@ -23,6 +23,8 @@ agents/<name>/       # one eve app per directory
 skills/              # procedures for SESSIONS working on this repo — start here
 references/          # distilled framework knowledge (eve-conventions.md)
 decisions/           # decision records, YYYY-MM-DD-topic.md
+docs/solutions/      # documented solutions to past problems (bugs, integration pitfalls), organized by category with YAML frontmatter (module, tags, problem_type)
+CONCEPTS.md          # shared domain vocabulary — entities, named processes, status concepts
 ```
 
 Two different "skills" concepts exist — never mix them: root `skills/` teach
