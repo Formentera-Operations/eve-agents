@@ -24,6 +24,12 @@ doc-intel's entity-level memory over the corpus sample: wells, operators, vendor
 ### Provenance Tag
 The document key carried into the graph with every ingested document, making each graph fact traceable to its source document. Provenance is two-tier: tags give the document; page-level attribution always comes from re-reading the parsed source before citation. A fact that cannot be pinned to a page is dropped, never cited with a guessed page.
 
+### Ontology Validity
+The per-entity flag marking that an extracted graph entity fuzzy-matched a named individual in the project ontology (80% similarity cutoff). Its meaning is only as strong as the individuals list: matched against corpus-derived names alone it signals consistency, not correctness — ground truth requires individuals verified against enterprise masters. Many entities (dates, depths, measurements) legitimately never validate.
+
+### Named Individual
+A concrete, verified instance of an ontology class — a specific well, operator, vendor, county, or asset team — as distinct from the class itself. Individuals are generated from corpus-seen spellings and verified against Snowflake masters, never hand-edited into the ontology file.
+
 ### Egress Guard
 The named fail-loud check that refuses to initialize any model-calling component unless every outbound path — LLM, embeddings, telemetry — points at the approved gateway. Exists because vendored AI libraries default unset paths to their own providers silently.
 
