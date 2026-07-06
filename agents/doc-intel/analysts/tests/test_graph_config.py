@@ -51,3 +51,9 @@ def test_guard_raises_without_any_gateway_credential(monkeypatch):
     monkeypatch.delenv("AI_GATEWAY_API_KEY", raising=False)
     with pytest.raises(config.GraphConfigError, match="gateway credential"):
         config.configure()
+
+
+def test_guard_rejects_lookalike_gateway_host(monkeypatch):
+    monkeypatch.setenv("LLM_ENDPOINT", "https://ai-gateway.vercel.sh.evil.com/v1")
+    with pytest.raises(config.GraphConfigError, match="LLM_ENDPOINT"):
+        config.configure()

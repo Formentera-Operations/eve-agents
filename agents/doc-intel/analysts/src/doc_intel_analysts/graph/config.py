@@ -91,10 +91,15 @@ def configure() -> None:
 
 def _assert_gateway_only() -> None:
     """The three-part egress guard: LLM endpoint, embedding endpoint, telemetry."""
+    from urllib.parse import urlparse
+
+    gateway_host = urlparse(GATEWAY_BASE_URL).netloc
     problems = []
     for group in ("LLM", "EMBEDDING"):
         endpoint = os.environ.get(f"{group}_ENDPOINT", "")
-        if not endpoint.startswith(GATEWAY_BASE_URL):
+        # Host equality, not prefix match: "https://ai-gateway.vercel.sh/v1.evil.com"
+        # must not slip past (audit note, defense-in-depth).
+        if urlparse(endpoint).netloc != gateway_host:
             problems.append(
                 f"{group}_ENDPOINT is {endpoint!r} — must point at the Vercel AI Gateway"
             )
