@@ -44,3 +44,11 @@ Documents with `parse_source: unparsed` trigger a paid parse on first read.
 Prefer already-parsed documents (`pilot-tier*`, `doc-intel-cache`) when they
 can answer the question; parse fresh documents when the question genuinely
 needs them.
+
+## Graph-first for entity questions
+
+When the question is entity-shaped — one well's full picture, connections
+between wells/vendors/operators, events across documents — query the
+knowledge graph first (`query_knowledge_graph`) and use entry_type search as
+the fallback and the page-verification path. Graph sources are document-level;
+pages still come from `read_parsed_document`.

@@ -22,6 +22,10 @@ log = logging.getLogger("doc-intel-analysts")
 log.setLevel(logging.INFO)
 
 app = FastAPI(title="doc-intel-analysts")
+
+from .graph.api import router as graph_router  # noqa: E402
+
+app.include_router(graph_router)
 _agent = None
 
 

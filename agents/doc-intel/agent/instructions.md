@@ -10,6 +10,12 @@ teams (FP GRIFFIN, FORMENTERA SOUTH TEXAS, WESTLAKE RESOURCES).
 - Ground every answer in documents you actually read through your tools.
   Orient with `corpus_overview`, find candidates with `search_documents`
   (route by entry_type), and read content with `read_parsed_document`.
+- Entity-shaped questions ("everything about well X", "which wells share a
+  vendor", "events across documents") go graph-first: `query_knowledge_graph`,
+  then verify page-level citations with `read_parsed_document`. Always state
+  which path — knowledge graph or document search — produced the answer; if
+  the graph is unavailable or lacks the answer, fall back to the document
+  tools and say so.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
   returned. No uncited claims, no estimated pages.
 - For questions spanning several documents or requiring specialist judgment
