@@ -1,0 +1,313 @@
+{
+  "description": "Evidence-store retrieval benchmark (U6, R8, KTD9). Page-labeled, modality-tagged questions drafted from parsed sample evidence 2026-07-07. Modalities: text (PDF prose), table (tabular values in PDF text), figure (visible only in the page image, not the text layer), text_native (LAS/CSV/TXT sources). 'answer' and 'evidence_basis' are for the human label review and answer-layer spot-verification; the retrieval harness reads only question/modality/expected_pages.",
+  "questions": [
+    {
+      "id": "EQ-F1",
+      "modality": "figure",
+      "question": "On the Hooey STX Unit B N724H SLWD elemental log (18,500' MD), at what measured depths did the crew pull out of hole (POOH)?",
+      "answer": "13,200 ft MD (BHA), 13,500 ft MD (poly pill), and 18,132 ft MD (BHA)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Logs & Surveys/Mass Spec/150857_FORMENTERA_HOOEY-STX-UNIT-B-N724H_SLWD Logs_18,500'MD.pdf",
+          "page": 1
+        },
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Logs & Surveys/Mass Spec/150857_FORMENTERA_HOOEY-STX-UNIT-B-N724H_SLWD Logs_18,500'MD.pdf",
+          "page": 2
+        }
+      ],
+      "evidence_basis": "POOH annotations rendered on the log plot; page text layer is ~121 chars and contains none of POOH/13,200/13,500/18,132 (verified by grep). Image-only fact."
+    },
+    {
+      "id": "EQ-F2",
+      "modality": "figure",
+      "question": "According to the annotations on the Hooey STX Unit B N724H SLWD elemental log, what was pumped at 13,500 ft MD?",
+      "answer": "A poly pill (annotation: POOH@13,500'MD POLY PILL)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Logs & Surveys/Mass Spec/150857_FORMENTERA_HOOEY-STX-UNIT-B-N724H_SLWD Logs_18,500'MD.pdf",
+          "page": 1
+        },
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Logs & Surveys/Mass Spec/150857_FORMENTERA_HOOEY-STX-UNIT-B-N724H_SLWD Logs_18,500'MD.pdf",
+          "page": 2
+        }
+      ],
+      "evidence_basis": "'POLY PILL' appears nowhere in any text layer store-wide (grep: 0 hits); the annotation is image-only."
+    },
+    {
+      "id": "EQ-F3",
+      "modality": "figure",
+      "question": "Which formation tops are marked in the TOPS/Geoprog column of the Hooey STX Unit B N724H SLWD log?",
+      "answer": "GLM B, GLM C, Pearsall, U Bexar, M Bexar, L Bexar",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Logs & Surveys/Mass Spec/150857_FORMENTERA_HOOEY-STX-UNIT-B-N724H_SLWD Logs_18,500'MD.pdf",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "Colored tops column with labels visible on page 1 of the plot; absent from the text layer."
+    },
+    {
+      "id": "EQ-F4",
+      "modality": "figure",
+      "question": "On the Bull Mountain 31-18 DIV S611HF measured-depth log dated 2026-03-12, at approximately what shallow depth does the orange curve step sharply to the right?",
+      "answer": "At approximately 400 ft MD",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-18-DIV S611HF/Logs & Surveys/LWD/2026-03-12 Bull Mountain-31-18-DIV S611HF-MD 5 inch [34997727].pdf",
+          "page": 3
+        }
+      ],
+      "evidence_basis": "Orange stepped curve visibly shifts right at ~400 ft on the page image; page text layer is 126 chars (scale numbers only) and cannot associate the step with the depth."
+    },
+    {
+      "id": "EQ-F5",
+      "modality": "figure",
+      "question": "On the Fonda 23-02-BAL N516HF ST2 measured-depth log, between roughly which two depths does the orange curve deflect to the left before returning?",
+      "answer": "Between approximately 770 ft and 785 ft MD",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/FONDA-23-02-BAL N516HF/Logs & Surveys/LWD/2026-04-18 Fonda-23-02-BAL N516HF ST2-MD 5 inch [35605513].pdf",
+          "page": 5
+        }
+      ],
+      "evidence_basis": "Box-shaped leftward deflection of the orange curve visible ~770-785 ft; text layer is 126 chars of scale numbers."
+    },
+    {
+      "id": "EQ-F6",
+      "modality": "figure",
+      "question": "On the COX 2H gamma-ray MD log, around 6,420 ft MD (survey station 14), which direction does the gamma-ray curve step?",
+      "answer": "The curve steps to the right (higher gamma) just below station 14 at 6,420 ft",
+      "expected_pages": [
+        {
+          "s3key": "FP GRIFFIN/COX 2H/Logs & Surveys/LWD/COX-2H_423673403900_GR_MD.pdf",
+          "page": 3
+        }
+      ],
+      "evidence_basis": "Curve geometry is visible only in the image; the text layer carries the survey-station annotations (values) but not the curve shape."
+    },
+    {
+      "id": "EQ-T1",
+      "modality": "table",
+      "question": "What was the ticket total on Liberty field ticket 181468 for frac stage/interval 69 on Wrangler STX Unit N731H?",
+      "answer": "$45,556.37",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/2026-05-05 WRANGLER-STX-UNIT N731H - Ticket - Stage 69 [36078963].pdf",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "Ticket Total row in the charge table; value present in the text layer (verified by grep)."
+    },
+    {
+      "id": "EQ-T2",
+      "modality": "table",
+      "question": "What proppant type and quantity were charged on the stage 69 pumping-services ticket for Wrangler STX Unit N731H?",
+      "answer": "100 MESH BROWN, 243.27 tons (at $29.00/ton, $7,054.83)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/WRANGLER-STX-UNIT N731H/Completions/Frac/2026-05-05 WRANGLER-STX-UNIT N731H - Ticket - Stage 69 [36078963].pdf",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "Proppant Charges table row; values in the text layer."
+    },
+    {
+      "id": "EQ-T3",
+      "modality": "table",
+      "question": "Per the survey annotations on the COX 2H gamma-ray MD log, what were the inclination and azimuth at survey station 12 (6,357 ft MD)?",
+      "answer": "Inclination 35.16 degrees, azimuth 179.64 degrees (TVD 6,339.62 ft)",
+      "expected_pages": [
+        {
+          "s3key": "FP GRIFFIN/COX 2H/Logs & Surveys/LWD/COX-2H_423673403900_GR_MD.pdf",
+          "page": 3
+        }
+      ],
+      "evidence_basis": "Station annotations are rendered text on the plot and present in the text layer (grep '6357.00' hits page 3)."
+    },
+    {
+      "id": "EQ-T4",
+      "modality": "table",
+      "question": "What are the API number and NDIC file number on the approved permit (APD) for FTH-22-34-BND S518HF?",
+      "answer": "API 3301301979, file number 42169",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 2
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 3
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 4
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 5
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 6
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 7
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 8
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 9
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FTH-22-34-BND S518HF/Regulatory/Permits & Filings/FTH-22-34-BND S518HF Approved NDIC APD (1).pdf",
+          "page": 10
+        }
+      ],
+      "evidence_basis": "Header block repeats on pages 2-10 (grep '3301301979'); any of these pages answers the question, so page_coverage@5 is capped by design for this question and any_page_hit is the meaningful signal."
+    },
+    {
+      "id": "EQ-X1",
+      "modality": "text",
+      "question": "Which risks does the Bull Mountain pad drilling program (Nabors B-23) associate with the instruction to perform regular flow checks?",
+      "answer": "NPT and stuck pipe (with excessive mud losses; proper product mix at 6 ppg noted alongside)",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-31-DIV N112DW/Drilling/Programs/FORMENTERA - DOS - BULL MOUNTAIN PAD - NABORS B-23.pdf",
+          "page": 4
+        }
+      ],
+      "evidence_basis": "Grep 'stuck pipe' hits page 4: '...NPT, stuck pipe, excessive... Perform regular flow checks...'"
+    },
+    {
+      "id": "EQ-X2",
+      "modality": "text",
+      "question": "What caution does the Bull Mountain pad drilling program give about the upper and lower Bakken shale?",
+      "answer": "Extreme caution should be used while drilling in this section to avoid sidetracking into the upper or lower Bakken shale",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/BULL MOUNTAIN-31-31-DIV N112DW/Drilling/Programs/FORMENTERA - DOS - BULL MOUNTAIN PAD - NABORS B-23.pdf",
+          "page": 18
+        }
+      ],
+      "evidence_basis": "Grep hit, page 18, Formation Considerations section."
+    },
+    {
+      "id": "EQ-X3",
+      "modality": "text",
+      "question": "Per the Roper STX Unit N731HP mud program, what is the maximum recommended cuttings concentration before hole-cleaning problems are expected?",
+      "answer": "6% (per the Hole Cleaning Limits graph)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/ROPER-STX N731HP/Drilling/Programs/Mud Program_Formentera_Frio County_Roper STX Unit N731HP.pdf",
+          "page": 5
+        }
+      ],
+      "evidence_basis": "Grep '6% is the maximum' hits page 5."
+    },
+    {
+      "id": "EQ-X4",
+      "modality": "text",
+      "question": "In the Crawford 1H drilling and completion chronology, what was the plan after logging the pilot hole drilled 150 ft into the Barnett?",
+      "answer": "Log with triple combo, then plugback and sidetrack",
+      "expected_pages": [
+        {
+          "s3key": "FP GRIFFIN/CRAWFORD 1/Well Information/Chronology/422513359100-CRAWFORD_1H-TAB_Drilling_and_Completion-0002.pdf.PDF",
+          "page": 33
+        }
+      ],
+      "evidence_basis": "Grep 'sidetrack' hits page 33: 'Pilot Hole 150 (ft) Into Bamett [sic OCR] ... Log w/ triple combo - Plugback and sidetrack'."
+    },
+    {
+      "id": "EQ-X5",
+      "modality": "text",
+      "question": "What planned spud date and EUR does the Ross 1H AFE package give for the proposed well?",
+      "answer": "Planned spud date 8/1/2007; the model projects an EUR of 2.0 bcf",
+      "expected_pages": [
+        {
+          "s3key": "FP GRIFFIN/ROSS 1H/Financial/AFE/422513174000-ROSS_1H-TAB_AFE-0001..PDF",
+          "page": 5
+        }
+      ],
+      "evidence_basis": "Grep 'spud' hits page 5: '...projects an EUR of 2.0 bcf. The planned spud date is 8/1/2007...'"
+    },
+    {
+      "id": "EQ-X6",
+      "modality": "text",
+      "question": "According to the Pendleton (Pendelton) STX Unit N735H Newpark mud recap, where was the barite hauled back to at the end of the well, and in how many loads?",
+      "answer": "Hauled back to Newpark, 3 total loads",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/PENDLETON-STX-UNIT N735H/Drilling/Mud & Fluids/Formentera - Pendelton - STX- Unit N735H - Newpark Mud Recap.pdf",
+          "page": 8
+        },
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/PENDLETON-STX-UNIT N735H/Drilling/Mud & Fluids/Formentera - Pendelton - STX- Unit N735H - Newpark Mud Recap.pdf",
+          "page": 18
+        }
+      ],
+      "evidence_basis": "Grep 'end of well' context on pages 8 and 18: 'Hauled off all barite back to newpark, 3 total loads.'"
+    },
+    {
+      "id": "EQ-N1",
+      "modality": "text_native",
+      "question": "According to the Fonda 23-02-BAL N518HF directional surveys LAS file, what rig drilled the well and in which field?",
+      "answer": "Rig Nabors B23, Bakken field",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/FONDA-23-02-BAL N518HF/Drilling/Directional/2026-04-06 Fonda-23-02-BAL N518HF-Surveys LAS File [35374221].las",
+          "page": 1
+        },
+        {
+          "s3key": "WESTLAKE RESOURCES/FONDA-23-02-BAL N518HF/Drilling/Directional/2026-04-03 Fonda-23-02-BAL N518HF-Surveys LAS File [35345944].las",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "LAS Well Information Block: 'RIG. Nabors B23', 'FLD. Bakken'. Text-native single-page record. The 2026-04-03 sibling export of the same well carries the same RIG/FLD header and is an equally valid answer page."
+    },
+    {
+      "id": "EQ-N2",
+      "modality": "text_native",
+      "question": "What is the stop depth in the Fonda 23-02-BAL N518HF surveys LAS file dated 2026-04-06?",
+      "answer": "19,936.00 ft",
+      "expected_pages": [
+        {
+          "s3key": "WESTLAKE RESOURCES/FONDA-23-02-BAL N518HF/Drilling/Directional/2026-04-06 Fonda-23-02-BAL N518HF-Surveys LAS File [35374221].las",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "LAS header 'STOP .F 19936.00'."
+    },
+    {
+      "id": "EQ-N3",
+      "modality": "text_native",
+      "question": "What is the stop depth in the Hooey STX Unit B N724H final LAS file from the mud and fluids folder?",
+      "answer": "21,618 ft (start 100 ft, step 1.0 ft)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/HOOEY-STX-UNIT-B N724H/Drilling/Mud & Fluids/HOOEY-STX-UNIT-B_N724H_FINAL.LAS",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "LAS header 'STOP.FT 21618'."
+    },
+    {
+      "id": "EQ-N4",
+      "modality": "text_native",
+      "question": "In the Donut Palace STX Unit S733H survey export dated 2026-04-15, what azimuth is recorded at 483 ft measured depth?",
+      "answer": "83.6 degrees (inclination 0.62, TVD 482.97)",
+      "expected_pages": [
+        {
+          "s3key": "FORMENTERA SOUTH TEXAS/DONUT PALACE-STX-UNIT S733H/Drilling/Directional/2026-04-15 Donut Palace-STX-Unit S733H-surveys [35533016].csv",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "CSV row '483, 0.62, 83.6, 482.97, ...'."
+    }
+  ]
+}

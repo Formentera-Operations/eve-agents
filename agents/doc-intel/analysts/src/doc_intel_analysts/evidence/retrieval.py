@@ -158,8 +158,13 @@ class EvidenceRetriever:
             return []
 
     def _fuse(self, ranked_lists: dict[str, list[dict]], limit: int) -> list[PageHit]:
-        """Reciprocal-rank fusion by page_id; each page keeps its best rank
-        per signal and its best text snippet."""
+        """Merge by page_id, each page winning on its STRONGEST signal (KTD7).
+
+        Primary score is the reciprocal rank of the page's best rank across
+        signals; agreement across signals adds only a small tie-break. A
+        summed fusion was tried first and failed live: a decisive rank-1 FTS
+        hit was drowned by pages that appeared mid-list in three signals.
+        """
         hits: dict[str, PageHit] = {}
         for signal, rows in ranked_lists.items():
             for rank, row in enumerate(rows, 1):
@@ -175,12 +180,15 @@ class EvidenceRetriever:
                         score=0.0,
                     )
                     hits[pid] = hit
-                hit.score += 1.0 / (RRF_K + rank)
                 if signal not in hit.signals or rank < hit.signals[signal]:
                     hit.signals[signal] = rank
                 text = row.get("text", "")
                 if text and (not hit.snippet or len(text) < len(hit.snippet)):
                     hit.snippet = text[:400]
+        for hit in hits.values():
+            best = min(hit.signals.values())
+            agreement = sum(1.0 / (RRF_K + r) for r in hit.signals.values())
+            hit.score = 1.0 / (RRF_K + best) + 0.01 * agreement
         return sorted(hits.values(), key=lambda h: -h.score)[:limit]
 
     # -- grep --------------------------------------------------------------
