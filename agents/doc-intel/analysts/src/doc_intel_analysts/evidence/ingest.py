@@ -128,6 +128,10 @@ def run_ingest(
                 f"skipped={report['skipped']} failed={report['failed']}",
                 file=sys.stderr,
             )
+        # Same single writer, so mid-pass compaction is safe — dead versions
+        # otherwise accumulate for the whole multi-day pass.
+        if report["complete"] and report["complete"] % 1000 == 0:
+            store.optimize()
 
     store.build_indexes()
     store.optimize()

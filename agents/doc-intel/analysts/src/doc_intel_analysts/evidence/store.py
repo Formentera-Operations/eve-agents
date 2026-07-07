@@ -255,23 +255,40 @@ class EvidenceStore:
         return not (row["status"] == "complete" and row["checksum"] == checksum)
 
     def upsert_document(self, doc: ParsedDocument, checksum: str) -> IngestOutcome:
-        """Write one parsed document. Delete-before-insert, ledger LAST."""
-        if not self.needs_ingest(doc.doc_id, checksum):
+        """Write one parsed document. Delete-before-insert, ledger LAST.
+
+        Deletes are skipped for first-seen documents: every delete() is a
+        table commit, and at Westlake scale the per-doc delete storm was the
+        dominant disk cost (~10 versions/doc, 1.9GB of ledger manifests for
+        KB of live rows — measured 2026-07-07).
+        """
+        prior = self.ledger_status(doc.doc_id)
+        if prior is not None and prior["status"] == "complete" and prior["checksum"] == checksum:
             return IngestOutcome(doc_id=doc.doc_id, status="unchanged")
         try:
-            self._delete_document_rows(doc.doc_id)
+            if prior is not None:
+                self._delete_document_rows(doc.doc_id)
             self._insert_rows(doc)
         except Exception as exc:  # noqa: BLE001 — failures must reach the ledger
             self._write_ledger(
-                doc.doc_id, doc.s3key, checksum, "failed", f"ingest error: {exc}", doc
+                doc.doc_id, doc.s3key, checksum, "failed", f"ingest error: {exc}",
+                doc, delete_prior=prior is not None,
             )
             return IngestOutcome(doc.doc_id, "failed", str(exc))
-        self._write_ledger(doc.doc_id, doc.s3key, checksum, "complete", "", doc)
+        self._write_ledger(
+            doc.doc_id, doc.s3key, checksum, "complete", "", doc,
+            delete_prior=prior is not None,
+        )
         return IngestOutcome(doc_id=doc.doc_id, status="complete")
 
     def record_skip(self, skip: SkipRecord, checksum: str = "") -> IngestOutcome:
-        self._delete_document_rows(skip.doc_id)
-        self._write_ledger(skip.doc_id, skip.s3key, checksum, "skipped", skip.reason)
+        prior = self.ledger_status(skip.doc_id)
+        if prior is not None:
+            self._delete_document_rows(skip.doc_id)
+        self._write_ledger(
+            skip.doc_id, skip.s3key, checksum, "skipped", skip.reason,
+            delete_prior=prior is not None,
+        )
         return IngestOutcome(doc_id=skip.doc_id, status="skipped", reason=skip.reason)
 
     def _delete_document_rows(self, doc_id: str) -> None:
@@ -379,8 +396,11 @@ class EvidenceStore:
         status: str,
         reason: str,
         doc: ParsedDocument | None = None,
+        *,
+        delete_prior: bool = True,
     ) -> None:
-        self.table("ledger").delete(f"doc_id = '{doc_id}'")
+        if delete_prior:
+            self.table("ledger").delete(f"doc_id = '{doc_id}'")
         self.table("ledger").add(
             [
                 {
