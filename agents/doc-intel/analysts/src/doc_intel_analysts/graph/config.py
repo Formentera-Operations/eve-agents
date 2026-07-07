@@ -89,20 +89,27 @@ def configure() -> None:
     SYSTEM_ROOT.mkdir(parents=True, exist_ok=True)
 
 
-def _assert_gateway_only() -> None:
-    """The three-part egress guard: LLM endpoint, embedding endpoint, telemetry."""
+def gateway_host_problem(endpoint: str, label: str) -> str | None:
+    """Host-equality check shared by the graph and evidence egress guards.
+
+    Host equality, not prefix match: "https://ai-gateway.vercel.sh/v1.evil.com"
+    must not slip past (audit note, defense-in-depth).
+    """
     from urllib.parse import urlparse
 
-    gateway_host = urlparse(GATEWAY_BASE_URL).netloc
+    if urlparse(endpoint).netloc != urlparse(GATEWAY_BASE_URL).netloc:
+        return f"{label} is {endpoint!r} — must point at the Vercel AI Gateway"
+    return None
+
+
+def _assert_gateway_only() -> None:
+    """The three-part egress guard: LLM endpoint, embedding endpoint, telemetry."""
     problems = []
     for group in ("LLM", "EMBEDDING"):
         endpoint = os.environ.get(f"{group}_ENDPOINT", "")
-        # Host equality, not prefix match: "https://ai-gateway.vercel.sh/v1.evil.com"
-        # must not slip past (audit note, defense-in-depth).
-        if urlparse(endpoint).netloc != gateway_host:
-            problems.append(
-                f"{group}_ENDPOINT is {endpoint!r} — must point at the Vercel AI Gateway"
-            )
+        problem = gateway_host_problem(endpoint, f"{group}_ENDPOINT")
+        if problem:
+            problems.append(problem)
         if not os.environ.get(f"{group}_API_KEY"):
             problems.append(f"{group}_API_KEY is unset")
     if os.environ.get("TELEMETRY_DISABLED") not in ("1", "true", "True"):

@@ -1,0 +1,214 @@
+"""U3 contract tests: round-trip, idempotency, resume, batching, concurrency."""
+
+import threading
+
+import pytest
+
+from doc_intel_analysts.evidence import parse, store
+from doc_intel_analysts.evidence.config import EvidenceConfig
+
+
+def make_config(tmp_path, dims=8) -> EvidenceConfig:
+    return EvidenceConfig(
+        gateway_base_url="https://ai-gateway.vercel.sh/v1",
+        gateway_api_key="test-key",
+        embedding_model="text-embedding-3-small",
+        embedding_dimensions=dims,
+        clip_model="ViT-B-32-quickgelu",
+        clip_pretrained="openai",
+        store_root=tmp_path / ".evidence",
+        lance_root=tmp_path / ".evidence" / "lance",
+        parsed_root=tmp_path / ".evidence" / "parsed",
+    )
+
+
+def fake_text_embedder(dims=8):
+    def embed(texts):
+        return [[float(len(t) % 7)] * dims for t in texts]
+
+    return embed
+
+
+def fake_image_embedder():
+    def embed(images):
+        return [[0.5] * store.CLIP_DIMENSIONS for _ in images]
+
+    return embed
+
+
+def make_store(tmp_path, dims=8):
+    cfg = make_config(tmp_path, dims)
+    cfg.lance_root.mkdir(parents=True, exist_ok=True)
+    cfg.parsed_root.mkdir(parents=True, exist_ok=True)
+    return store.EvidenceStore(
+        cfg,
+        text_embedder=fake_text_embedder(dims),
+        image_embedder=fake_image_embedder(),
+    )
+
+
+def make_doc(key="team/well/doc.las", text="DEPT GR\n9800 45\n" * 100):
+    doc = parse.parse_document(key, text.encode(), None, asset_team="team")
+    assert isinstance(doc, parse.ParsedDocument)
+    return doc
+
+
+def test_round_trip_by_page_id(tmp_path):
+    st = make_store(tmp_path)
+    doc = make_doc()
+    outcome = st.upsert_document(doc, "sum1")
+    assert outcome.status == "complete"
+    pid = doc.pages[0].page_id
+    pages = st.table("pages").search().where(f"page_id = '{pid}'").to_list()
+    assert len(pages) == 1 and pages[0]["s3key"] == doc.s3key
+    chunks = st.table("chunks").search().where(f"page_id = '{pid}'").to_list()
+    assert len(chunks) == len(doc.chunks)
+    ledger = st.ledger_status(doc.doc_id)
+    assert ledger["status"] == "complete" and ledger["checksum"] == "sum1"
+
+
+def tiny_jpeg() -> bytes:
+    import io
+
+    from PIL import Image
+
+    img = Image.new("RGB", (64, 48), (200, 30, 30))
+    buf = io.BytesIO()
+    img.save(buf, "JPEG")
+    return buf.getvalue()
+
+
+def test_blob_bytes_intact(tmp_path):
+    st = make_store(tmp_path)
+    doc = parse.parse_document("t/w/plat.jpg", tiny_jpeg(), None)
+    st.upsert_document(doc, "sum1")
+    row = st.table("pages").search().where(f"doc_id = '{doc.doc_id}'").to_list()[0]
+    assert bytes(row["screenshot"]) == doc.pages[0].screenshot_jpeg
+
+
+def test_idempotent_second_run_writes_nothing(tmp_path):
+    st = make_store(tmp_path)
+    doc = make_doc()
+    st.upsert_document(doc, "sum1")
+    assert st.upsert_document(doc, "sum1").status == "unchanged"
+    assert st.table("chunks").count_rows() == len(doc.chunks)
+    # changed content re-ingests without duplication
+    assert st.upsert_document(doc, "sum2").status == "complete"
+    assert st.table("chunks").count_rows() == len(doc.chunks)
+
+
+def test_interrupted_doc_completes_on_rerun(tmp_path):
+    st = make_store(tmp_path)
+    doc = make_doc()
+    # Simulate a crash after parse but before completion: ledger row exists
+    # with a non-complete status.
+    st.table("ledger").add(
+        [
+            {
+                "doc_id": doc.doc_id,
+                "s3key": doc.s3key,
+                "checksum": "sum1",
+                "status": "failed",
+                "reason": "embed-pending (interrupted)",
+                "page_count": 0,
+                "chunk_count": 0,
+                "asset_count": 0,
+                "updated_at": "",
+            }
+        ]
+    )
+    assert st.needs_ingest(doc.doc_id, "sum1") is True
+    assert st.upsert_document(doc, "sum1").status == "complete"
+    assert st.ledger_status(doc.doc_id)["status"] == "complete"
+
+
+def test_gateway_embedder_batches(monkeypatch, tmp_path):
+    calls = []
+
+    class FakeEmbeddings:
+        def create(self, model, input):
+            calls.append(len(input))
+            return type(
+                "R",
+                (),
+                {
+                    "data": [
+                        type("D", (), {"embedding": [0.0] * 8})() for _ in input
+                    ]
+                },
+            )()
+
+    class FakeOpenAI:
+        def __init__(self, base_url, api_key):
+            self.embeddings = FakeEmbeddings()
+
+    import openai
+
+    monkeypatch.setattr(openai, "OpenAI", FakeOpenAI)
+    embedder = store.GatewayTextEmbedder(make_config(tmp_path))
+    vectors = embedder([f"text {i}" for i in range(200)])
+    assert len(vectors) == 200
+    assert calls == [96, 96, 8], "batched, not per-chunk"
+
+
+def test_skip_recorded_in_ledger(tmp_path):
+    st = make_store(tmp_path)
+    skip = parse.parse_document("t/w/costs.xlsx", b"PK", None)
+    st.record_skip(skip, "sum1")
+    row = st.ledger_status(skip.doc_id)
+    assert row["status"] == "skipped" and "excel-family" in row["reason"]
+
+
+def test_concurrent_read_during_write(tmp_path):
+    """R13: a service-style reader during active ingest writes must not
+    corrupt or block. LanceDB MVCC — readers see committed versions."""
+    st = make_store(tmp_path)
+    st.upsert_document(make_doc("t/w/first.las"), "sum0")
+    errors = []
+
+    def writer():
+        try:
+            for i in range(5):
+                st.upsert_document(make_doc(f"t/w/doc{i}.las"), f"sum{i}")
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    def reader():
+        try:
+            for _ in range(20):
+                rows = st.table("chunks").search().limit(3).to_list()
+                assert isinstance(rows, list)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=writer), threading.Thread(target=reader)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert not errors
+    assert st.table("documents").count_rows() == 6
+
+
+def test_ingest_report_shape(tmp_path):
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [
+        {"key": "t/w/a.las", "asset_team": "t"},
+        {"key": "t/w/b.xlsx", "asset_team": "t"},
+        {"key": "t/w/gone.las", "asset_team": "t"},
+    ]
+
+    def fetch(key):
+        if "gone" in key:
+            raise RuntimeError("404")
+        return b"DEPT GR\n9800 45\n" * 50
+
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report["complete"] == 1 and report["skipped"] == 1 and report["failed"] == 1
+    assert report["failures"][0]["reason"].startswith("fetch failed")
+    assert report["table_counts"]["ledger"] == 3
+    # re-run: completed doc is unchanged, failed fetch retries
+    report2 = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report2["unchanged"] == 1

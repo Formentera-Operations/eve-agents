@@ -37,6 +37,9 @@ An individual's identifier doubles as its match key: the spelling of the identif
 ### Matchable Ceiling
 The measurable upper bound on how many extracted entities can ever achieve ontology validity in a given corpus — the population of genuine well/organization/place/team mentions, excluding the majority of entities (dates, depths, measurements) that no named individual can represent. Success bars for enrichment are set against this ceiling, measured by offline simulation, not against the raw entity count.
 
+### Evidence Store
+The corpus's indexed-retrieval leg: documents parsed into page-keyed layers (page text, page screenshots, extracted figures) and searched mechanically at query time — semantic, keyword, and visual. Interpretation happens at read time in the agent loop, unlike the Knowledge Graph, whose interpretation happens once at ingest. The two compose: the graph recalls what the corpus means; the evidence store retrieves what the corpus says, page-cited.
+
 ### Egress Guard
 The named fail-loud check that refuses to initialize any model-calling component unless every outbound path — LLM, embeddings, telemetry — points at the approved gateway. Exists because vendored AI libraries default unset paths to their own providers silently.
 
