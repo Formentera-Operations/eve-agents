@@ -100,6 +100,15 @@ def test_standalone_image_gets_screenshot_only():
     assert doc.pages[0].text == "" and not doc.chunks
 
 
+def test_text_native_embeds_head_chunks_only():
+    """R10 Option B: chunk records cap at TEXT_NATIVE_MAX_CHUNKS while the
+    page row keeps the full text for grep."""
+    big = b"9800.5 12.3 45.6 GR SP RES\n" * 20_000  # ~540k chars
+    doc = parse.parse_document("t/w/deep.las", big, None)
+    assert len(doc.chunks) == parse.TEXT_NATIVE_MAX_CHUNKS
+    assert len(doc.pages[0].text) == len(big)
+
+
 def test_text_native_size_cap_truncates_not_rejects():
     big = b"9800.5 12.3 45.6\n" * 200_000  # ~3.4 MB
     doc = parse.parse_document("t/w/big.csv", big, None)

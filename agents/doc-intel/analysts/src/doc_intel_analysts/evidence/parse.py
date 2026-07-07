@@ -38,6 +38,12 @@ JPEG_MAX_DIMENSION = 2200
 # Text-native files are size-capped, not rejected: the head of an oversized
 # LAS/CSV file is still searchable evidence.
 TEXT_NATIVE_MAX_CHARS = 2_000_000
+# R10 Option B (Rob, 2026-07-07): text-native files embed only their head
+# chunks — sample LAS files averaged 728 chunks/doc, which priced Westlake
+# at ~$64 and ~131GB. Grep and page reads are unaffected: the page row
+# keeps the full (size-capped) text; only semantic-search granularity over
+# deep numeric rows is given up.
+TEXT_NATIVE_MAX_CHUNKS = 50
 
 PDF_EXTENSIONS = {".pdf"}
 TEXT_EXTENSIONS = {".las", ".csv", ".txt"}
@@ -332,7 +338,7 @@ def _parse_text_native(
         format_gate="text",
         page_count=1,
         pages=pages,
-        chunks=chunk_text(text, doc_id, 1),
+        chunks=chunk_text(text, doc_id, 1)[:TEXT_NATIVE_MAX_CHUNKS],
         truncated=truncated,
     )
 

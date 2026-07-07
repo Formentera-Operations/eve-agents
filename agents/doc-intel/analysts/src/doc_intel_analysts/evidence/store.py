@@ -152,6 +152,11 @@ class ClipImageEmbedder:
         self._model = None
         self._preprocess = None
 
+    def _device(self):
+        import torch
+
+        return "mps" if torch.backends.mps.is_available() else "cpu"
+
     def _ensure_model(self):
         if self._model is None:
             import open_clip
@@ -160,6 +165,7 @@ class ClipImageEmbedder:
                 self._config.clip_model, pretrained=self._config.clip_pretrained
             )
             self._model.eval()
+            self._model.to(self._device())
         return self._model, self._preprocess
 
     def __call__(self, images: list[bytes]) -> list[list[float]]:
@@ -175,10 +181,10 @@ class ClipImageEmbedder:
                     preprocess(Image.open(io.BytesIO(data)).convert("RGB"))
                     for data in images
                 ]
-            )
+            ).to(self._device())
             feats = model.encode_image(batch)
             feats = feats / feats.norm(dim=-1, keepdim=True)
-        return feats.tolist()
+        return feats.cpu().tolist()
 
     def embed_text(self, query: str) -> list[float]:
         """CLIP text tower, for text-to-image retrieval (U4)."""
@@ -188,9 +194,9 @@ class ClipImageEmbedder:
         model, _ = self._ensure_model()
         tokenizer = open_clip.get_tokenizer(self._config.clip_model)
         with torch.no_grad():
-            feats = model.encode_text(tokenizer([query]))
+            feats = model.encode_text(tokenizer([query]).to(self._device()))
             feats = feats / feats.norm(dim=-1, keepdim=True)
-        return feats[0].tolist()
+        return feats[0].cpu().tolist()
 
 
 _ZERO_CLIP = [0.0] * CLIP_DIMENSIONS

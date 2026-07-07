@@ -53,7 +53,16 @@ def prefix_entries(prefix: str) -> list[dict]:
             key = obj["Key"]
             if key.endswith("/"):
                 continue
-            entries.append({"key": key, "asset_team": key.split("/", 1)[0]})
+            entries.append(
+                {
+                    "key": key,
+                    "asset_team": key.split("/", 1)[0],
+                    # ETag lets re-runs short-circuit completed docs from the
+                    # listing alone — no per-object fetch. Essential at
+                    # Westlake scale (37k objects, multi-day resumable runs).
+                    "etag": obj.get("ETag", "").strip('"'),
+                }
+            )
     return entries
 
 
@@ -78,6 +87,11 @@ def run_ingest(
     }
     for index, entry in enumerate(entries, 1):
         key = entry["key"]
+        doc_id = parse.doc_id_for_key(key)
+        etag = entry.get("etag", "")
+        if etag and not store.needs_ingest(doc_id, f"etag:{etag}"):
+            report["unchanged"] += 1
+            continue
         try:
             data = fetch(key)
         except Exception as exc:  # noqa: BLE001 — fetch failures reach the ledger
@@ -91,8 +105,7 @@ def run_ingest(
             report["failures"].append({"key": key, "reason": skip.reason})
             continue
 
-        checksum = checksum_bytes(data)
-        doc_id = parse.doc_id_for_key(key)
+        checksum = f"etag:{etag}" if etag else checksum_bytes(data)
         if not store.needs_ingest(doc_id, checksum):
             report["unchanged"] += 1
             continue
