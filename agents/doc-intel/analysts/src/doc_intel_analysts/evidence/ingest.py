@@ -130,6 +130,7 @@ def run_ingest(
             )
 
     store.build_indexes()
+    store.optimize()
     report["table_counts"] = store.counts()
     report["store_bytes"] = sum(
         f.stat().st_size

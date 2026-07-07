@@ -415,3 +415,17 @@ class EvidenceStore:
 
     def counts(self) -> dict[str, int]:
         return {name: t.count_rows() for name, t in self._tables.items()}
+
+    def optimize(self) -> None:
+        """Compact fragments and drop old MVCC versions.
+
+        Delete-before-insert writes a new table version per document; the
+        ledger and documents tables accumulate dead versions linearly with
+        ingest volume (~2 GB observed at 2,500 Westlake docs). Run at end of
+        ingest passes, never mid-pass (readers on old versions are safe, but
+        cleanup during heavy write churn just wastes IO).
+        """
+        from datetime import timedelta
+
+        for table in self._tables.values():
+            table.optimize(cleanup_older_than=timedelta(0))

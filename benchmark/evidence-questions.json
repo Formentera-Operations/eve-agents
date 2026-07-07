@@ -64,15 +64,15 @@
     {
       "id": "EQ-F5",
       "modality": "figure",
-      "question": "On the Fonda 23-02-BAL N516HF ST2 measured-depth log, between roughly which two depths does the orange curve deflect to the left before returning?",
-      "answer": "Between approximately 770 ft and 785 ft MD",
+      "question": "On the Fonda 23-02-BAL N516HF ST2 measured-depth log, the orange curve makes its shallowest leftward deflection above 1,000 ft MD \u2014 between roughly which two depths?",
+      "answer": "Between approximately 380 ft and 390 ft MD (the first of a cluster of left-edge excursions spanning ~380-410 ft)",
       "expected_pages": [
         {
           "s3key": "WESTLAKE RESOURCES/FONDA-23-02-BAL N516HF/Logs & Surveys/LWD/2026-04-18 Fonda-23-02-BAL N516HF ST2-MD 5 inch [35605513].pdf",
-          "page": 5
+          "page": 3
         }
       ],
-      "evidence_basis": "Box-shaped leftward deflection of the orange curve visible ~770-785 ft; text layer is 126 chars of scale numbers."
+      "evidence_basis": "Orange (rotary speed) curve makes its first hard leftward excursions at ~380-390 ft, visible on page 3 (depth range 290-490 ft); text layer is scale numbers only. Label history: originally mislabeled to the ~770-785 ft instance on page 5; the live agent found the genuinely shallowest deflection via vision during the 2026-07-07 label review, and the reviewer (Claude) verified page 3 visually and corrected the label. The agent corrected the benchmark, not the other way around."
     },
     {
       "id": "EQ-F6",
@@ -308,6 +308,19 @@
         }
       ],
       "evidence_basis": "CSV row '483, 0.62, 83.6, 482.97, ...'."
+    },
+    {
+      "id": "EQ-F7",
+      "modality": "figure",
+      "question": "What NFPA hazard diamond ratings are posted on the condensate tank photographed at the Faxel 2H facility, and which wells share the oil tank according to the handwritten note on it?",
+      "answer": "Flammability 4 (top/red), health 1 (left/blue), reactivity 0 (right/yellow) on the CONDENSATE placard; the handwritten note reads 2H + 3H shared oil tank.",
+      "expected_pages": [
+        {
+          "s3key": "FP GRIFFIN/FAXEL 2H/Well Information/Facility/IMG_2905.jpg",
+          "page": 1
+        }
+      ],
+      "evidence_basis": "Standalone field photo (image format gate) \u2014 zero text layer; the NFPA diamond and handwritten tank note exist only in pixels. Added 2026-07-07 per Rob's label review to diversify figure evidence beyond log plots (5th distinct figure document, first standalone-image question)."
     }
   ]
 }
