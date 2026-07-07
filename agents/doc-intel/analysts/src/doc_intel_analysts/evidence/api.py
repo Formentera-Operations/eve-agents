@@ -22,7 +22,10 @@ from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/evidence")
 
-DEFAULT_VISION_MODEL = "anthropic/claude-haiku-4.5"
+# Sonnet, not Haiku: on live SLWD log pages Haiku misread small depth
+# annotations (13,290 for 13,200) and missed one entirely; Sonnet read all
+# three exactly (2026-07-07). Vision reads are on-demand, so accuracy wins.
+DEFAULT_VISION_MODEL = "anthropic/claude-sonnet-5"
 VISION_PROMPT = (
     "You are reading one page of an oil & gas well file. Answer the question "
     "strictly from what is visible on this page image. If the page does not "
