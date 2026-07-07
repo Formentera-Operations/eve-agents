@@ -11,6 +11,11 @@ dependencies = [
     "uvicorn>=0.32",
     "boto3>=1.35",
     "cognee>=1.2.2,<1.3",
+    # Evidence store (approved 2026-07-06): lancedb pinned to cognee's
+    # resolved version so promotion to a direct dependency changes nothing.
+    "lancedb==0.34.0",
+    "liteparse>=2.4",
+    "open-clip-torch>=2.24",
 ]
 
 [tool.uv]
