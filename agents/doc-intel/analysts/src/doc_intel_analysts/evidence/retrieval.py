@@ -198,33 +198,41 @@ class EvidenceRetriever:
         A filtered column scan, deliberately not FTS-gated: tokenizers drop
         well codes like 'S733H'; a scan cannot.
         """
-        matcher = (
-            re.compile(pattern) if regex else re.compile(re.escape(pattern))
+        expression = pattern if regex else re.escape(pattern)
+        matcher = re.compile(expression)
+        # Filter pushdown, not a Python table scan: raw-dataset to_batches()
+        # panics in Rust on this store under the pinned lancedb/pylance combo
+        # (same family as the take_blobs panic — see store.py). regexp_like
+        # runs the same Rust regex engine inside the query.
+        clauses = [f"regexp_like(text, '{expression.replace(chr(39), chr(39) * 2)}')"]
+        where = self._where(asset_team)
+        if where:
+            clauses.append(where)
+        rows = (
+            self._store.table("pages")
+            .search()
+            .where(" AND ".join(clauses))
+            .select(["page_id", "doc_id", "page_num", "s3key", "asset_team", "text"])
+            .limit(limit)
+            .to_list()
         )
         results = []
-        table = self._store.table("pages").to_lance()
-        columns = ["page_id", "doc_id", "page_num", "s3key", "asset_team", "text"]
-        for batch in table.to_batches(columns=columns):
-            for row in batch.to_pylist():
-                if asset_team and row["asset_team"] != asset_team:
-                    continue
-                match = matcher.search(row["text"])
-                if not match:
-                    continue
-                start = max(0, match.start() - 150)
-                results.append(
-                    {
-                        "page_id": row["page_id"],
-                        "doc_id": row["doc_id"],
-                        "page_num": row["page_num"],
-                        "s3key": row["s3key"],
-                        "asset_team": row["asset_team"],
-                        "match": match.group(0),
-                        "context": row["text"][start : match.end() + 150],
-                    }
-                )
-                if len(results) >= limit:
-                    return results
+        for row in rows:
+            match = matcher.search(row["text"])
+            if not match:
+                continue
+            start = max(0, match.start() - 150)
+            results.append(
+                {
+                    "page_id": row["page_id"],
+                    "doc_id": row["doc_id"],
+                    "page_num": row["page_num"],
+                    "s3key": row["s3key"],
+                    "asset_team": row["asset_team"],
+                    "match": match.group(0),
+                    "context": row["text"][start : match.end() + 150],
+                }
+            )
         return results
 
     # -- find / read -------------------------------------------------------
