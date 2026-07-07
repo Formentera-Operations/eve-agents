@@ -266,7 +266,7 @@ class EvidenceRetriever:
         if where:
             clauses.append(where)
         if format_gate:
-            clauses.append(f"format_gate = '{format_gate}'")
+            clauses.append(f"format_gate = '{format_gate.replace(chr(39), chr(39) * 2)}'")
         q = self._store.table("documents").search().limit(limit)
         if clauses:
             q = q.where(" AND ".join(clauses))
