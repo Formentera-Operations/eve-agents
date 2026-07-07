@@ -92,6 +92,14 @@ def run_ingest(
         if etag and not store.needs_ingest(doc_id, f"etag:{etag}"):
             report["unchanged"] += 1
             continue
+        # Format-gate skips need no bytes: classify on the key alone, so
+        # 5k Excel-family files aren't re-fetched on every pass.
+        gate = parse.classify(key)
+        if gate.startswith("skip:"):
+            skip = parse.SkipRecord(s3key=key, doc_id=doc_id, reason=gate[5:])
+            store.record_skip(skip, f"etag:{etag}" if etag else "")
+            report["skipped"] += 1
+            continue
         try:
             data = fetch(key)
         except Exception as exc:  # noqa: BLE001 — fetch failures reach the ledger

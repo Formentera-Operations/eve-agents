@@ -247,12 +247,17 @@ class EvidenceStore:
         return rows[0] if rows else None
 
     def needs_ingest(self, doc_id: str, checksum: str) -> bool:
-        """Ledger short-circuit: only a `complete` row with a matching
-        checksum skips work — failed/partial/interrupted docs re-run."""
+        """Ledger short-circuit: `complete` and `skipped` rows with a
+        matching checksum skip work — failed/interrupted docs re-run.
+        (Skips are format-gate verdicts; unchanged bytes can't change them.)"""
         row = self.ledger_status(doc_id)
         if row is None:
             return True
-        return not (row["status"] == "complete" and row["checksum"] == checksum)
+        return not (
+            row["status"] in ("complete", "skipped")
+            and checksum
+            and row["checksum"] == checksum
+        )
 
     def upsert_document(self, doc: ParsedDocument, checksum: str) -> IngestOutcome:
         """Write one parsed document. Delete-before-insert, ledger LAST.
