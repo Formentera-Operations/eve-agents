@@ -74,6 +74,7 @@ def run_ingest(
     limit: int | None = None,
     fetch=parse.fetch_raw_bytes,
     progress_every: int = 25,
+    max_new: int | None = None,
 ) -> dict:
     if limit is not None:
         entries = entries[:limit]
@@ -85,6 +86,7 @@ def run_ingest(
         "skipped": 0,
         "failed": 0,
         "failures": [],
+        "stopped_early": False,
     }
     for index, entry in enumerate(entries, 1):
         key = entry["key"]
@@ -137,10 +139,19 @@ def run_ingest(
                 f"skipped={report['skipped']} failed={report['failed']}",
                 file=sys.stderr,
             )
-        # Same single writer, so mid-pass compaction is safe — dead versions
-        # otherwise accumulate for the whole multi-day pass.
-        if report["complete"] and report["complete"] % 1000 == 0:
-            store.optimize()
+        # Batch mode (memory bound): exit after N docs of real work so the
+        # driver can relaunch a fresh process — the only reliable way to
+        # return parser/OCR memory to the OS. Maintenance (index build +
+        # compaction) runs in its own invocation, never stacked on a parse
+        # process: the 2026-07-07 watchdog panic hit right as the mid-pass
+        # compaction of a 20GB pages table would have fired.
+        new_work = report["complete"] + report["skipped"] + report["failed"]
+        if max_new is not None and new_work >= max_new:
+            report["stopped_early"] = True
+            break
+
+    if report["stopped_early"]:
+        return report
 
     store.build_indexes()
     store.optimize()
@@ -155,14 +166,36 @@ def run_ingest(
 
 def main() -> None:
     parser_ = argparse.ArgumentParser(description="Evidence store ingest")
-    source = parser_.add_mutually_exclusive_group(required=True)
+    source = parser_.add_mutually_exclusive_group()
     source.add_argument("--manifest", type=Path, help="sample manifest CSV")
     source.add_argument("--prefix", help="raw-bucket prefix (Westlake mode)")
     parser_.add_argument("--limit", type=int, default=None)
     parser_.add_argument(
+        "--max-new",
+        type=int,
+        default=None,
+        help="batch mode: exit after N docs of real work (skips index build "
+        "and compaction — run --maintain between batches)",
+    )
+    parser_.add_argument(
+        "--maintain",
+        action="store_true",
+        help="run index build + compaction only, then exit (no source needed)",
+    )
+    parser_.add_argument(
         "--dry-run", action="store_true", help="list what would be ingested, no writes"
     )
     args = parser_.parse_args()
+
+    if args.maintain:
+        config = load_config()
+        store = EvidenceStore(config)
+        store.build_indexes()
+        store.optimize()
+        print(json.dumps({"maintain": True, "table_counts": store.counts()}, indent=2))
+        return
+    if not (args.manifest or args.prefix):
+        parser_.error("one of --manifest / --prefix is required (or --maintain)")
 
     entries = (
         manifest_entries(args.manifest) if args.manifest else prefix_entries(args.prefix)
@@ -178,7 +211,9 @@ def main() -> None:
 
     config = load_config()
     store = EvidenceStore(config)
-    report = run_ingest(entries, store, config.parsed_root, limit=args.limit)
+    report = run_ingest(
+        entries, store, config.parsed_root, limit=args.limit, max_new=args.max_new
+    )
     print(json.dumps(report, indent=2))
 
 
