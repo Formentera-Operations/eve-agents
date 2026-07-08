@@ -77,6 +77,7 @@ def run_ingest(
 ) -> dict:
     if limit is not None:
         entries = entries[:limit]
+    ledger = store.ledger_snapshot()
     report = {
         "requested": len(entries),
         "complete": 0,
@@ -89,7 +90,7 @@ def run_ingest(
         key = entry["key"]
         doc_id = parse.doc_id_for_key(key)
         etag = entry.get("etag", "")
-        if etag and not store.needs_ingest(doc_id, f"etag:{etag}"):
+        if etag and not store.needs_ingest(doc_id, f"etag:{etag}", ledger=ledger):
             report["unchanged"] += 1
             continue
         # Format-gate skips need no bytes: classify on the key alone, so
@@ -114,7 +115,7 @@ def run_ingest(
             continue
 
         checksum = f"etag:{etag}" if etag else checksum_bytes(data)
-        if not store.needs_ingest(doc_id, checksum):
+        if not store.needs_ingest(doc_id, checksum, ledger=ledger):
             report["unchanged"] += 1
             continue
 

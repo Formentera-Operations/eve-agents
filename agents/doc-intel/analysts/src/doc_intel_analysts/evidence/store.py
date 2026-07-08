@@ -246,11 +246,30 @@ class EvidenceStore:
         )
         return rows[0] if rows else None
 
-    def needs_ingest(self, doc_id: str, checksum: str) -> bool:
+    def ledger_snapshot(self) -> dict[str, dict]:
+        """Full ledger read keyed by doc_id, for resume fast-forward.
+
+        One scan replaces per-doc where-scans, which cost ~0.14s each at
+        Westlake fragment counts — ~35 min of silent resume per pass
+        (measured 2026-07-08). Point-in-time: valid because each doc
+        appears at most once per pass (single writer, deduped listing).
+        """
+        rows = (
+            self.table("ledger")
+            .search()
+            .select(["doc_id", "status", "checksum"])
+            .to_list()
+        )
+        return {row["doc_id"]: row for row in rows}
+
+    def needs_ingest(
+        self, doc_id: str, checksum: str, *, ledger: dict[str, dict] | None = None
+    ) -> bool:
         """Ledger short-circuit: `complete` and `skipped` rows with a
         matching checksum skip work — failed/interrupted docs re-run.
-        (Skips are format-gate verdicts; unchanged bytes can't change them.)"""
-        row = self.ledger_status(doc_id)
+        (Skips are format-gate verdicts; unchanged bytes can't change them.)
+        Pass `ledger` (from ledger_snapshot) to avoid a per-doc table scan."""
+        row = self.ledger_status(doc_id) if ledger is None else ledger.get(doc_id)
         if row is None:
             return True
         return not (
