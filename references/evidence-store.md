@@ -36,7 +36,11 @@ slash-free); `page_id = {doc_id}:p{page_num}`. Every row carries its corpus
   columns, `kind`, `image` (JPEG bytes), `clip_vector`
 - **ledger** — per-document ingest state: `checksum` (S3 ETag or sha256),
   `status` (complete | skipped | failed), `reason`, row counts,
-  `updated_at`. Skips are queryable, never silent.
+  `updated_at`. Terminality is explicit: `skipped` rows are deliberate
+  format-gate verdicts that keep their checksum (terminal for those exact
+  bytes); `failed` rows — fetch or parse errors — are written with **no
+  checksum**, count as failures in reports, and re-run every pass. Skips
+  are queryable, never silent.
 
 Version-pin divergences from the reference implementation
 (`lancedb/liteparse-lancedb-pdf-qa`), forced by lancedb==0.34.0 (cognee's
@@ -104,10 +108,19 @@ uv run python -m doc_intel_analysts.evidence.ingest --prefix "WESTLAKE RESOURCES
 ```
 
 Ingest is ledger-driven, resumable, and idempotent: re-runs process only
-new/changed/failed documents. Passes end with FTS/BTree index builds and
-MVCC compaction (`store.optimize()` — delete-before-insert accumulates dead
-versions otherwise). Concurrent service reads during ingest writes are safe
-(MVCC; verified). One rule: never run two ingest processes against the same
+new/changed/failed documents, and each pass starts by sweeping orphaned
+rows from any crash-interrupted first-seen ingest (`reconcile_orphans`).
+Parse and fetch failures are retriable by construction — recorded as
+`failed` with no checksum. That is a PR #12 fix: before it they were
+ledgered as terminal skips and never re-ran (see
+`../docs/solutions/logic-errors/ingest-ledger-conflates-parse-failures-with-skips.md`).
+Direct (manifest-mode) passes end with FTS/BTree index builds and MVCC
+compaction (`store.optimize()` — delete-before-insert accumulates dead
+versions otherwise); batch mode (`--max-new N`, how Westlake runs) always
+defers maintenance to its own invocation — light documents/ledger
+compaction mid-pass (`--maintain --light`), one full `--maintain` at end
+of pass. Concurrent service reads during ingest writes are safe (MVCC;
+verified). One rule: never run two ingest processes against the same
 store. Long runs need a fresh gateway token per ~12 h (`npx vercel env pull`
 in `agents/doc-intel/`).
 
