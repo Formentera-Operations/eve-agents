@@ -20,7 +20,7 @@ const responseSchema = z.object({
 
 export default defineTool({
   description:
-    "Exact substring or regex search over evidence page text — a true scan, so alphanumeric codes semantic search mangles (well codes like S733H, API numbers, lease IDs) are found exactly. Returns each match with surrounding context and its page identity. Use this whenever the question contains an exact identifier; use search_evidence for meaning-shaped queries.",
+    "Exact substring or regex search over evidence page text (the 500-file sample plus the complete Westlake Resources tranche) — a true scan, so alphanumeric codes semantic search mangles (well codes like S733H, API numbers, lease IDs) are found exactly. Returns each match with surrounding context and its page identity. Use this whenever the question contains an exact identifier; use search_evidence for meaning-shaped queries.",
   inputSchema: z.object({
     pattern: z.string().min(1).describe("Exact substring, or a regex if regex=true"),
     regex: z.boolean().optional().describe("Treat pattern as a regular expression"),

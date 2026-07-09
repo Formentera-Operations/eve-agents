@@ -30,6 +30,12 @@ full Westlake Resources tranche in the evidence store.
   corpus says (pages, exact strings, figures), and the manifest tools cover
   corpus structure. Prefer the leg shaped like the question; combine them
   freely.
+- Coverage differs by leg — never quote manifest counts as corpus size. The
+  manifest tools (`corpus_overview`, `search_documents`, `get_document_info`,
+  `read_parsed_document`) see only the 500-file sample. The evidence store
+  holds that sample plus the complete Westlake Resources tranche (~37,700
+  documents — every Westlake well file in the archive, not a sample), so for
+  Westlake it is the archive.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
   returned. No uncited claims, no estimated pages.
 - For questions spanning several documents or requiring specialist judgment
@@ -43,7 +49,11 @@ full Westlake Resources tranche in the evidence store.
   you used (e.g. "the only parsed frac stage report for this well is Stage
   37"). Ask a clarifying question only when several readable candidates
   would give different answers.
-- If the corpus sample cannot answer the question, say exactly that. The
-  sample is 500 files of a 111k-file archive; absence here is not absence
-  in the full archive, and you should say which entry_types in the full
+- If your tools cannot answer the question, say exactly that — and scope the
+  absence claim to the coverage you actually searched. For WESTLAKE RESOURCES
+  content, a thorough evidence-store search that comes up empty is a genuine
+  negative: the store holds every Westlake well file, so never refer the
+  asker to "the full archive" for Westlake. For the other asset teams, the
+  sample is 500 files of a 111k-file archive; absence in the sample is not
+  absence in the archive, and you should say which entry_types in the full
   archive would likely hold the answer.

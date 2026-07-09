@@ -5,7 +5,7 @@ import { loadManifest } from "../lib/manifest.ts";
 
 export default defineTool({
   description:
-    "Search the 500-file WellDrive corpus manifest. Filter by asset team, well name, entry_type (the authoritative document classification from S3 metadata), parse status, or a substring of the S3 key. Returns matching rows with their parse status. Start broad, then narrow.",
+    "Search the 500-file WellDrive corpus manifest. Filter by asset team, well name, entry_type (the authoritative document classification from S3 metadata), parse status, or a substring of the S3 key. Returns matching rows with their parse status. Start broad, then narrow. Covers the sample manifest only — total_matches is never corpus size; for Westlake Resources the evidence store holds the complete tranche (use find_evidence_files or search_evidence).",
   inputSchema: z.object({
     asset_team: z.string().optional().describe("Exact asset team, e.g. 'FP GRIFFIN'"),
     well: z.string().optional().describe("Case-insensitive substring of the well directory name"),
