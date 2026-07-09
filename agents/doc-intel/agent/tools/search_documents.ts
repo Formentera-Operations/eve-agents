@@ -8,7 +8,7 @@ export default defineTool({
     "Search the 500-file WellDrive corpus manifest. Filter by asset team, well name, entry_type (the authoritative document classification from S3 metadata), parse status, or a substring of the S3 key. Returns matching rows with their parse status. Start broad, then narrow. Covers the sample manifest only — total_matches is never corpus size; for Westlake Resources the evidence store indexes the full tranche of parseable documents (use find_evidence_files or search_evidence).",
   inputSchema: z.object({
     asset_team: z.string().optional().describe("Exact asset team, e.g. 'FP GRIFFIN'"),
-    well: z.string().optional().describe("Case-insensitive substring of the well directory name"),
+    well: z.string().optional().describe("Case-insensitive CONTIGUOUS substring of the well directory name. Directory names carry legal-location tokens (e.g. 'BULL MOUNTAIN-31-18-DIV S617HF'), so a single token like 'S617HF' matches where a reconstructed name like 'Bull Mountain S617HF' returns nothing"),
     entry_type: z.string().optional().describe("Exact entry_type, e.g. 'AFE', 'Well Test', 'Frac Report'"),
     key_contains: z.string().optional().describe("Case-insensitive substring of the S3 key"),
     parse_source: z.string().optional().describe("Filter by parse status: pilot-tierA, pilot-tierB, pilot-tierC, pilot-failed, pilot-skipped, unparsed"),

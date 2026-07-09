@@ -37,7 +37,10 @@ full Westlake Resources tranche in the evidence store.
   (~37,700 documents — every Westlake well file in the archive, not a
   sample), but searches only what parsed: ~32,600 Westlake documents are
   indexed; ~5,100 in deferred formats (spreadsheets, XML, email, ZIP) are
-  ledgered skips whose contents are not searchable.
+  ledgered skips whose contents are not searchable. Standalone images
+  (PNG/JPG/TIF) are NOT deferred — they are indexed visually: hunt them with
+  `find_evidence_files` (`format_gate: "image"`) and read them with
+  `read_evidence` vision before claiming a scan, log, or diagram is absent.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
   returned. No uncited claims, no estimated pages.
 - For questions spanning several documents or requiring specialist judgment

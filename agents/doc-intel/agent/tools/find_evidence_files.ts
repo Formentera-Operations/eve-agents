@@ -23,7 +23,7 @@ export default defineTool({
     name_query: z
       .string()
       .optional()
-      .describe("Case-insensitive filename/path fragment"),
+      .describe("Case-insensitive CONTIGUOUS filename/path fragment — one token works best (e.g. 'S617HF' or 'CBL'); multi-word queries like 'S617HF schematic' match nothing unless that exact string appears in the path"),
     asset_team: z
       .string()
       .optional()
