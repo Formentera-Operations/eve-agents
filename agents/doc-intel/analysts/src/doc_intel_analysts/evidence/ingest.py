@@ -89,6 +89,16 @@ def run_ingest(
         "stopped_early": False,
     }
     for index, entry in enumerate(entries, 1):
+        # Batch mode (memory bound): stop before starting another doc once N
+        # units of real work (complete/skipped/failed — anything that wrote
+        # the ledger) are done, so the driver can relaunch a fresh process —
+        # the only reliable way to return parser/OCR memory to the OS.
+        # Checked at the top of the loop so consecutive runs of skips or
+        # failures can't overshoot the cap.
+        new_work = report["complete"] + report["skipped"] + report["failed"]
+        if max_new is not None and new_work >= max_new:
+            report["stopped_early"] = True
+            break
         key = entry["key"]
         doc_id = parse.doc_id_for_key(key)
         etag = entry.get("etag", "")
@@ -111,7 +121,7 @@ def run_ingest(
                 doc_id=parse.doc_id_for_key(key),
                 reason=f"fetch failed: {exc}",
             )
-            store.record_skip(skip)
+            store.record_skip(skip, status="failed")
             report["failed"] += 1
             report["failures"].append({"key": key, "reason": skip.reason})
             continue
@@ -125,8 +135,16 @@ def run_ingest(
             key, data, parsed_root, asset_team=entry["asset_team"]
         )
         if isinstance(result, parse.SkipRecord):
-            store.record_skip(result, checksum)
-            report["skipped"] += 1
+            if result.retriable:
+                # Parse exceptions may be environmental (parser bug, memory
+                # pressure), not a property of the bytes — record without a
+                # checksum so the next pass retries, and count as failed.
+                store.record_skip(result, status="failed")
+                report["failed"] += 1
+                report["failures"].append({"key": key, "reason": result.reason})
+            else:
+                store.record_skip(result, checksum)
+                report["skipped"] += 1
             continue
 
         outcome = store.upsert_document(result, checksum)
@@ -139,16 +157,6 @@ def run_ingest(
                 f"skipped={report['skipped']} failed={report['failed']}",
                 file=sys.stderr,
             )
-        # Batch mode (memory bound): exit after N docs of real work so the
-        # driver can relaunch a fresh process — the only reliable way to
-        # return parser/OCR memory to the OS. Maintenance (index build +
-        # compaction) runs in its own invocation, never stacked on a parse
-        # process: the 2026-07-07 watchdog panic hit right as the mid-pass
-        # compaction of a 20GB pages table would have fired.
-        new_work = report["complete"] + report["skipped"] + report["failed"]
-        if max_new is not None and new_work >= max_new:
-            report["stopped_early"] = True
-            break
 
     # Batch mode always defers maintenance to its own invocation — even the
     # batch that finishes the listing must not stack the FTS rebuild on a

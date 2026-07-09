@@ -237,6 +237,56 @@ def test_ingest_max_new_stops_early_and_resumes(tmp_path):
     assert "table_counts" not in report2
 
 
+def test_parse_failure_counts_failed_and_retries(tmp_path):
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [{"key": "t/w/a.las", "asset_team": "t"}]
+    payload = {"data": b""}  # empty text file — parse raises
+
+    def fetch(key):
+        return payload["data"]
+
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report["failed"] == 1 and report["skipped"] == 0
+    assert "parse failed" in report["failures"][0]["reason"]
+    from doc_intel_analysts.evidence.parse import doc_id_for_key
+
+    row = st.ledger_status(doc_id_for_key("t/w/a.las"))
+    assert row["status"] == "failed" and row["checksum"] == ""
+    # next pass retries the doc; good bytes now complete it
+    payload["data"] = b"DEPT GR\n9800 45\n" * 50
+    report2 = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report2["complete"] == 1 and report2["unchanged"] == 0
+
+
+def test_max_new_counts_skips_toward_cap(tmp_path):
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [
+        {"key": f"t/w/sheet{i}.xlsx", "asset_team": "t"} for i in range(3)
+    ]
+
+    def fetch(key):  # gate skips never fetch
+        raise AssertionError("format-gate skip must not fetch")
+
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=fetch, max_new=1)
+    assert report["stopped_early"] is True
+    assert report["skipped"] == 1 and report["complete"] == 0
+
+
+def test_max_new_zero_processes_nothing(tmp_path):
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [{"key": "t/w/a.las", "asset_team": "t"}]
+
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=None, max_new=0)
+    assert report["stopped_early"] is True
+    assert report["complete"] == 0 and st.table("ledger").count_rows() == 0
+
+
 def test_optimize_accepts_table_subset(tmp_path):
     from doc_intel_analysts.evidence.ingest import run_ingest
 

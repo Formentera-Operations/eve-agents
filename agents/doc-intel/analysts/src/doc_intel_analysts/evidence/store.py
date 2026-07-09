@@ -285,6 +285,11 @@ class EvidenceStore:
         table commit, and at Westlake scale the per-doc delete storm was the
         dominant disk cost (~10 versions/doc, 1.9GB of ledger manifests for
         KB of live rows — measured 2026-07-07).
+
+        Each table commits separately, so a reader overlapping a crashed
+        upsert can observe the document with partial or missing rows until
+        the next pass redoes it (ledger-last makes the redo automatic).
+        Accepted: ingest and retrieval do not run concurrently.
         """
         prior = self.ledger_status(doc.doc_id)
         if prior is not None and prior["status"] == "complete" and prior["checksum"] == checksum:
@@ -305,15 +310,19 @@ class EvidenceStore:
         )
         return IngestOutcome(doc_id=doc.doc_id, status="complete")
 
-    def record_skip(self, skip: SkipRecord, checksum: str = "") -> IngestOutcome:
+    def record_skip(
+        self, skip: SkipRecord, checksum: str = "", *, status: str = "skipped"
+    ) -> IngestOutcome:
+        """`skipped` + checksum = terminal for those bytes; `failed` (or an
+        empty checksum) re-runs on the next pass — see needs_ingest."""
         prior = self.ledger_status(skip.doc_id)
         if prior is not None:
             self._delete_document_rows(skip.doc_id)
         self._write_ledger(
-            skip.doc_id, skip.s3key, checksum, "skipped", skip.reason,
+            skip.doc_id, skip.s3key, checksum, status, skip.reason,
             delete_prior=prior is not None,
         )
-        return IngestOutcome(doc_id=skip.doc_id, status="skipped", reason=skip.reason)
+        return IngestOutcome(doc_id=skip.doc_id, status=status, reason=skip.reason)
 
     def _delete_document_rows(self, doc_id: str) -> None:
         predicate = f"doc_id = '{doc_id}'"
