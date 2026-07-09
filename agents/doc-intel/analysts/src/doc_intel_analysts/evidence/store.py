@@ -307,10 +307,12 @@ class EvidenceStore:
         dominant disk cost (~10 versions/doc, 1.9GB of ledger manifests for
         KB of live rows — measured 2026-07-07).
 
-        Each table commits separately, so a reader overlapping a crashed
-        upsert can observe the document with partial or missing rows until
-        the next pass redoes it (ledger-last makes the redo automatic).
-        Accepted: ingest and retrieval do not run concurrently.
+        Each table commits separately: per-table reads stay MVCC-safe
+        during writes (R13, test_concurrent_read_during_write), but a
+        reader overlapping an in-flight upsert can see a document with
+        partial or missing rows ACROSS tables. Ledger-last makes
+        interrupted re-ingests redo cleanly on the next pass; first-seen
+        leftovers are swept by reconcile_orphans at pass start.
         """
         prior = self.ledger_status(doc.doc_id)
         if prior is not None and prior["status"] == "complete" and prior["checksum"] == checksum:
