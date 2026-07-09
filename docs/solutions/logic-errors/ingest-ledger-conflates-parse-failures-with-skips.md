@@ -8,7 +8,7 @@ component: database
 symptoms:
   - "Two production ingest passes reported 0 failures while 9 documents had silently failed to parse"
   - "Parse exceptions were recorded via record_skip with a real content checksum, so needs_ingest treated them as terminal and never retried them"
-  - "Parse and fetch failures incremented the 'skipped' counter instead of 'failed', so the headline failure metric was structurally blind to the entire parse layer"
+  - "Parse failures incremented the 'skipped' counter instead of 'failed', so the headline failure metric was structurally blind to the parse layer (fetch failures were counted as failed in reports but mislabeled 'skipped' in the ledger)"
   - "First-seen documents skipped the pre-insert delete, so a crash between row insert and ledger write could strand partial rows that a rerun would duplicate"
 root_cause: logic_error
 resolution_type: code_fix
@@ -43,7 +43,7 @@ The doc-intel evidence-store ingest funneled two categorically different outcome
 
 Nothing was tried-and-reverted here; the more useful observation is *why this survived so long undetected*. The defect went through two full production passes over the Westlake corpus and an in-session verification pass without being caught, because the only signal anyone was watching — the `failed` count — was the exact thing the bug suppressed. Verification graded *answer quality* against a benchmark, not *ledger semantics*, so a document that was silently skipped simply never showed up to be graded; there was no failing observation to trace back. The failure mode was invisible by construction: the instrument that would have detected it was the instrument that was broken.
 
-It took a **cross-provider adversarial review** to surface it. A Codex review of PR #12 flagged the parse-failure terminality/visibility defect; the sibling crash-window defect was found independently by both the Codex GitHub bot and the in-session verify pass — three reviewers converging on the same crash window. Author-aligned review kept re-reading the code the way it was intended to work; a reviewer with no stake in the original design read what it *actually* did.
+It took a **cross-provider adversarial review** to surface it. A Codex review of PR #12 flagged the parse-failure terminality/visibility defect; the sibling crash-window defect was then found independently by both the Codex GitHub bot and the in-session verify pass — two reviewers converging on the same crash window neither had been pointed at. Author-aligned review kept re-reading the code the way it was intended to work; a reviewer with no stake in the original design read what it *actually* did.
 
 ## Solution
 
@@ -107,7 +107,7 @@ The ingest loop now branches on `retriable` and records failures with `status="f
             continue
 ```
 
-Fetch failures got the same treatment — previously `store.record_skip(skip)` (a `skipped` row), now `store.record_skip(skip, status="failed")` counted as failed (`ingest.py:123-134`).
+Fetch failures got the ledger half of the same treatment: they were already counted as failed in reports and already retriable (empty checksum), but their ledger row was mislabeled `skipped` — `store.record_skip(skip)` became `store.record_skip(skip, status="failed")` so the ledger now says what the report says (`ingest.py:123-134`).
 
 The retry itself is an emergent property of `needs_ingest`, which only treats a row as terminal when it is `complete`/`skipped` **and** its stored checksum matches the current pass's checksum (`store.py:286-300`):
 
@@ -147,7 +147,7 @@ The new method does one `doc_id` column scan per content table and deletes any r
         return len(orphans)
 ```
 
-This is a deliberate alternative to reintroducing a per-document pre-insert delete — that delete was removed precisely because, at Westlake scale, a `delete()` across all 5 tables per document (`_delete_document_rows`, `store.py:350-353`) was a table commit each, and the accumulated dead versions cost ~1.9–2 GB of ledger manifests at ~2,500 docs (`store.py:305-308`). One column scan at pass start restores crash-safety for first-seen docs without bringing the delete storm back. It is safe under the store's single-writer invariant (`store.py:26-29`): no other writer touches the tables during the scan-and-delete.
+This is a deliberate alternative to reintroducing a per-document pre-insert delete — that delete was removed precisely because, at Westlake scale, a `delete()` across all 5 tables per document (`_delete_document_rows`, `store.py:350-353`) was a table commit each, and the accumulated dead versions cost ~1.9–2 GB of ledger manifests at ~2,500 docs (`store.py:305-308, 502`). One column scan at pass start restores crash-safety for first-seen docs without bringing the delete storm back. It is safe under the store's single-writer operating discipline (`store.py:26-29` — never run two ingest processes against the same store): no other writer touches the tables during the scan-and-delete.
 
 ### 4. Also in the same cycle: the batch cap counts all real work
 
@@ -168,7 +168,7 @@ The crash-safety hole had a parallel shape. The ledger-last write order (`store.
 - **Failure-path taxonomy.** Every error path must land in a ledger state that is *both* visible (counted as a failure, surfaced in the report) *and* retriable, unless the failure is provably a permanent property of the input. Terminality must be an explicit, named decision (`SkipRecord.retriable`), never an accident of which arguments a call site passed.
 - **Don't bucket errors with deliberate no-ops.** A metric that sums genuine failures together with intentional skips is structurally blind — the larger deliberate count (here ~5,100 gate skips) drowns the signal you actually care about. Count deliberate skips and real failures in separate report fields (`skipped` vs `failed`), as the loop now does.
 - **Contract tests for retry and crash semantics.** Three new tests lock the behavior in: `test_parse_failure_counts_failed_and_retries` asserts a parse exception is counted `failed` with an empty checksum and then completes on a second pass; `test_crashed_first_ingest_reconciles_without_duplicates` simulates a crash between `_insert_rows` and the ledger write and asserts the rerun reconciles rather than duplicates; `test_max_new_counts_skips_toward_cap` guards the related batch-cap fix (all in `agents/doc-intel/analysts/tests/test_evidence_store.py`).
-- **Cross-provider adversarial review before merge.** The blind spot was invisible to author-aligned review precisely because that review shared the author's mental model of how the code was supposed to behave. A reviewer from a different provider (Codex), with no stake in the original design, read what the code actually did — and three independent reviewers converged on the crash-window defect. Route agent-written diffs through a model that did not write them.
+- **Cross-provider adversarial review before merge.** The blind spot was invisible to author-aligned review precisely because that review shared the author's mental model of how the code was supposed to behave. A reviewer from a different provider (Codex), with no stake in the original design, read what the code actually did — and two independent reviewers then converged on a crash-window defect the original review had missed. Route agent-written diffs through a model that did not write them.
 
 ## Related Issues
 
