@@ -287,6 +287,27 @@ def test_max_new_zero_processes_nothing(tmp_path):
     assert report["complete"] == 0 and st.table("ledger").count_rows() == 0
 
 
+def test_crashed_first_ingest_reconciles_without_duplicates(tmp_path):
+    from doc_intel_analysts.evidence import parse
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    data = b"DEPT GR\n9800 45\n" * 50
+    # simulate a crash between _insert_rows and _write_ledger: table rows
+    # exist, ledger row does not
+    doc = parse.parse_document("t/w/a.las", data, st._config.parsed_root, asset_team="t")
+    st._insert_rows(doc)
+    assert st.table("pages").count_rows() == 1
+    assert st.ledger_status(doc.doc_id) is None
+
+    entries = [{"key": "t/w/a.las", "asset_team": "t"}]
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=lambda key: data)
+    assert report["reconciled"] == 1 and report["complete"] == 1
+    # the orphaned rows were cleaned, not duplicated
+    assert st.table("pages").count_rows() == 1
+    assert st.table("documents").count_rows() == 1
+
+
 def test_optimize_accepts_table_subset(tmp_path):
     from doc_intel_analysts.evidence.ingest import run_ingest
 

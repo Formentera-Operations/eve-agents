@@ -79,6 +79,12 @@ def run_ingest(
     if limit is not None:
         entries = entries[:limit]
     ledger = store.ledger_snapshot()
+    reconciled = store.reconcile_orphans(ledger)
+    if reconciled:
+        print(
+            f"reconciled {reconciled} orphaned doc(s) from an interrupted run",
+            file=sys.stderr,
+        )
     report = {
         "requested": len(entries),
         "complete": 0,
@@ -86,6 +92,7 @@ def run_ingest(
         "skipped": 0,
         "failed": 0,
         "failures": [],
+        "reconciled": reconciled,
         "stopped_early": False,
     }
     for index, entry in enumerate(entries, 1):

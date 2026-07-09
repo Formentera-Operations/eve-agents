@@ -262,6 +262,27 @@ class EvidenceStore:
         )
         return {row["doc_id"]: row for row in rows}
 
+    def reconcile_orphans(self, ledger: dict[str, dict]) -> int:
+        """Delete rows whose doc_id never reached the ledger.
+
+        First-seen documents skip the pre-insert delete (see
+        upsert_document), so a crash between _insert_rows and _write_ledger
+        strands partial rows that a rerun would then duplicate. One column
+        scan per table at pass start cleans them up without reintroducing
+        a delete commit per document.
+        """
+        orphans: set[str] = set()
+        for name in ("documents", "pages", "chunks", "assets"):
+            table = self.table(name)
+            count = table.count_rows()
+            if count == 0:
+                continue
+            rows = table.search().select(["doc_id"]).limit(count).to_list()
+            orphans.update(r["doc_id"] for r in rows if r["doc_id"] not in ledger)
+        for doc_id in orphans:
+            self._delete_document_rows(doc_id)
+        return len(orphans)
+
     def needs_ingest(
         self, doc_id: str, checksum: str, *, ledger: dict[str, dict] | None = None
     ) -> bool:
