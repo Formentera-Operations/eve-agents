@@ -94,12 +94,33 @@ dollars. Total Phase A spend is a rounding error against the $75 budget;
 exact per-document projections for Westlake are computed at the U7
 checkpoint from these measured numbers.
 
+## Label review outcome (2026-07-07, Rob)
+
+- EQ-F5 reworded to pin the shallowest deflection — then corrected
+  entirely: the live agent found a genuinely shallower instance
+  (~380–390 ft, page 3) via vision than the labeled one; verified
+  visually and relabeled. **The agent corrected the benchmark.**
+- EQ-F7 added (Faxel 2H condensate-tank field photo): first
+  standalone-image figure question and fifth distinct figure document.
+  Answer layer: NFPA diamond read exactly (1/4/0) plus the handwritten
+  shared-tank note, correct citation. Retrieval: hits via the CLIP
+  image signal — the first figure question to do so.
+- Scanned-table gap documented honestly: LiteParse's OCR captured every
+  printed form in the sample, so no image-only table question exists
+  yet; one will be drawn from the Westlake store at the U7 metric run.
+- Final set: 21 questions (7 figure / 4 table / 6 text / 4 text_native),
+  all 31+ page labels mechanically verified.
+- Updated retrieval metrics (21 questions): any_page_hit@5 = 0.571,
+  coverage@5 = 0.526, modality_hit@5 = 0.571
+  (figure 0.143, table 0.75, text 0.833, text_native 0.75).
+- **R8 label set: APPROVED by Rob, 2026-07-07.**
+
 ## Gate status
 
-- [ ] R8 label set — **awaiting Rob's review** of
-  `benchmark/evidence-questions.json` (incl. EQ-F5 rewording decision)
-- [x] R9 answer bar — 25/25 regression; evidence questions 19/20 with
-  page citations; figure-evidence success criterion met (EQ-F4 et al.)
+- [x] R8 label set — approved by Rob 2026-07-07 (this note, above)
+- [x] R9 answer bar — 25/25 regression; evidence questions 20/21 graded
+  correct with page citations (EQ-F5's original miss traced to a label
+  error, since corrected); figure-evidence success criterion met
 - [x] R11 evals — 8/8 gates
-- [ ] R10 cost+disk checkpoint — Phase B, presented separately with
-  measured Westlake projections
+- [x] R10 cost+disk checkpoint — Option B approved by Rob
+  (`2026-07-07-westlake-checkpoint.md`); Westlake ingest in progress

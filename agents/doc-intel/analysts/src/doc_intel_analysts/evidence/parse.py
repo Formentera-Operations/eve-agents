@@ -98,6 +98,9 @@ class SkipRecord:
     s3key: str
     doc_id: str
     reason: str
+    # True for parse exceptions (possibly environmental, retry next pass);
+    # False for format-gate verdicts (a property of the key/bytes, terminal).
+    retriable: bool = False
 
 
 def doc_id_for_key(s3key: str) -> str:
@@ -209,7 +212,10 @@ def parse_document(
         return _parse_image(s3key, doc_id, data, asset_team)
     except Exception as exc:  # noqa: BLE001 — every failure must reach the ledger
         return SkipRecord(
-            s3key=s3key, doc_id=doc_id, reason=f"{gate} parse failed: {exc}"
+            s3key=s3key,
+            doc_id=doc_id,
+            reason=f"{gate} parse failed: {exc}",
+            retriable=True,
         )
 
 

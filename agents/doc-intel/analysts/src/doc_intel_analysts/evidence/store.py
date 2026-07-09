@@ -246,33 +246,106 @@ class EvidenceStore:
         )
         return rows[0] if rows else None
 
-    def needs_ingest(self, doc_id: str, checksum: str) -> bool:
-        """Ledger short-circuit: only a `complete` row with a matching
-        checksum skips work — failed/partial/interrupted docs re-run."""
-        row = self.ledger_status(doc_id)
+    def ledger_snapshot(self) -> dict[str, dict]:
+        """Full ledger read keyed by doc_id, for resume fast-forward.
+
+        One scan replaces per-doc where-scans, which cost ~0.14s each at
+        Westlake fragment counts — ~35 min of silent resume per pass
+        (measured 2026-07-08). Point-in-time: valid because each doc
+        appears at most once per pass (single writer, deduped listing).
+        """
+        rows = (
+            self.table("ledger")
+            .search()
+            .select(["doc_id", "status", "checksum"])
+            .to_list()
+        )
+        return {row["doc_id"]: row for row in rows}
+
+    def reconcile_orphans(self, ledger: dict[str, dict]) -> int:
+        """Delete rows whose doc_id never reached the ledger.
+
+        First-seen documents skip the pre-insert delete (see
+        upsert_document), so a crash between _insert_rows and _write_ledger
+        strands partial rows that a rerun would then duplicate. One column
+        scan per table at pass start cleans them up without reintroducing
+        a delete commit per document.
+        """
+        orphans: set[str] = set()
+        for name in ("documents", "pages", "chunks", "assets"):
+            table = self.table(name)
+            count = table.count_rows()
+            if count == 0:
+                continue
+            rows = table.search().select(["doc_id"]).limit(count).to_list()
+            orphans.update(r["doc_id"] for r in rows if r["doc_id"] not in ledger)
+        for doc_id in orphans:
+            self._delete_document_rows(doc_id)
+        return len(orphans)
+
+    def needs_ingest(
+        self, doc_id: str, checksum: str, *, ledger: dict[str, dict] | None = None
+    ) -> bool:
+        """Ledger short-circuit: `complete` and `skipped` rows with a
+        matching checksum skip work — failed/interrupted docs re-run.
+        (Skips are format-gate verdicts; unchanged bytes can't change them.)
+        Pass `ledger` (from ledger_snapshot) to avoid a per-doc table scan."""
+        row = self.ledger_status(doc_id) if ledger is None else ledger.get(doc_id)
         if row is None:
             return True
-        return not (row["status"] == "complete" and row["checksum"] == checksum)
+        return not (
+            row["status"] in ("complete", "skipped")
+            and checksum
+            and row["checksum"] == checksum
+        )
 
     def upsert_document(self, doc: ParsedDocument, checksum: str) -> IngestOutcome:
-        """Write one parsed document. Delete-before-insert, ledger LAST."""
-        if not self.needs_ingest(doc.doc_id, checksum):
+        """Write one parsed document. Delete-before-insert, ledger LAST.
+
+        Deletes are skipped for first-seen documents: every delete() is a
+        table commit, and at Westlake scale the per-doc delete storm was the
+        dominant disk cost (~10 versions/doc, 1.9GB of ledger manifests for
+        KB of live rows — measured 2026-07-07).
+
+        Each table commits separately: per-table reads stay MVCC-safe
+        during writes (R13, test_concurrent_read_during_write), but a
+        reader overlapping an in-flight upsert can see a document with
+        partial or missing rows ACROSS tables. Ledger-last makes
+        interrupted re-ingests redo cleanly on the next pass; first-seen
+        leftovers are swept by reconcile_orphans at pass start.
+        """
+        prior = self.ledger_status(doc.doc_id)
+        if prior is not None and prior["status"] == "complete" and prior["checksum"] == checksum:
             return IngestOutcome(doc_id=doc.doc_id, status="unchanged")
         try:
-            self._delete_document_rows(doc.doc_id)
+            if prior is not None:
+                self._delete_document_rows(doc.doc_id)
             self._insert_rows(doc)
         except Exception as exc:  # noqa: BLE001 — failures must reach the ledger
             self._write_ledger(
-                doc.doc_id, doc.s3key, checksum, "failed", f"ingest error: {exc}", doc
+                doc.doc_id, doc.s3key, checksum, "failed", f"ingest error: {exc}",
+                doc, delete_prior=prior is not None,
             )
             return IngestOutcome(doc.doc_id, "failed", str(exc))
-        self._write_ledger(doc.doc_id, doc.s3key, checksum, "complete", "", doc)
+        self._write_ledger(
+            doc.doc_id, doc.s3key, checksum, "complete", "", doc,
+            delete_prior=prior is not None,
+        )
         return IngestOutcome(doc_id=doc.doc_id, status="complete")
 
-    def record_skip(self, skip: SkipRecord, checksum: str = "") -> IngestOutcome:
-        self._delete_document_rows(skip.doc_id)
-        self._write_ledger(skip.doc_id, skip.s3key, checksum, "skipped", skip.reason)
-        return IngestOutcome(doc_id=skip.doc_id, status="skipped", reason=skip.reason)
+    def record_skip(
+        self, skip: SkipRecord, checksum: str = "", *, status: str = "skipped"
+    ) -> IngestOutcome:
+        """`skipped` + checksum = terminal for those bytes; `failed` (or an
+        empty checksum) re-runs on the next pass — see needs_ingest."""
+        prior = self.ledger_status(skip.doc_id)
+        if prior is not None:
+            self._delete_document_rows(skip.doc_id)
+        self._write_ledger(
+            skip.doc_id, skip.s3key, checksum, status, skip.reason,
+            delete_prior=prior is not None,
+        )
+        return IngestOutcome(doc_id=skip.doc_id, status=status, reason=skip.reason)
 
     def _delete_document_rows(self, doc_id: str) -> None:
         predicate = f"doc_id = '{doc_id}'"
@@ -379,8 +452,11 @@ class EvidenceStore:
         status: str,
         reason: str,
         doc: ParsedDocument | None = None,
+        *,
+        delete_prior: bool = True,
     ) -> None:
-        self.table("ledger").delete(f"doc_id = '{doc_id}'")
+        if delete_prior:
+            self.table("ledger").delete(f"doc_id = '{doc_id}'")
         self.table("ledger").add(
             [
                 {
@@ -415,3 +491,23 @@ class EvidenceStore:
 
     def counts(self) -> dict[str, int]:
         return {name: t.count_rows() for name, t in self._tables.items()}
+
+    def optimize(self, table_names: list[str] | None = None) -> None:
+        """Compact fragments and drop old MVCC versions.
+
+        Delete-before-insert writes a new table version per document; the
+        ledger and documents tables accumulate dead versions linearly with
+        ingest volume (~2 GB observed at 2,500 Westlake docs). Mid-pass, pass
+        `["documents", "ledger"]` to bound that churn without compacting the
+        multi-GB pages/chunks tables (the 2026-07-07/08 memory chokes both hit
+        during full-store maintenance); full compaction runs at end of pass.
+        """
+        from datetime import timedelta
+
+        tables = (
+            self._tables.values()
+            if table_names is None
+            else [self._tables[name] for name in table_names]
+        )
+        for table in tables:
+            table.optimize(cleanup_older_than=timedelta(0))

@@ -10,6 +10,10 @@ s3://formentera-welldrive-derived/runs/doc-intel/graph/edges.csv
 Open tabular interchange (plan R8/R9): any consumer — dbt/Snowflake,
 a notebook, a dashboard — reads these without touching Cognee.
 
+The graph is one of doc-intel's three retrieval legs; the page-evidence
+leg (LiteParse + LanceDB, page-cited retrieval and vision reads) is
+documented in `evidence-store.md`.
+
 ## Schema
 
 **nodes.csv** — `id` (graph node id, stable within an export), `type`
