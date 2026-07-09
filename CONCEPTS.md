@@ -13,6 +13,14 @@ The deterministic stratified subset of the full WellDrive archive that agents op
 ### Parse Tier
 The cost/fidelity class assigned to a document's structured parsing. Tier A yields field extractions with per-field page citations; tiers B and C yield page-chunked Markdown; the lowest tier marks formats not worth parsing. A document with no usable parse output is "no-parse-output" — a classification, not a failure.
 
+### Format Gate
+The verdict, taken from a document's key alone before any bytes are fetched, that routes it into parsing or deliberately declines it as out of scope. A gate verdict is a property of the document, not of an attempt to process it, so unchanged bytes can never change the outcome — gate skips are terminal by design.
+
+### Ingest Ledger
+The per-document state record of an evidence-store ingest pass: every document ends a pass as complete, deliberately skipped, or failed, together with the content fingerprint that verdict applies to. The ledger is what makes multi-day ingests resumable — a new pass fast-forwards past settled documents and reprocesses only the new, changed, and failed.
+
+The ledger row is written last for each document, so an interrupted document has no settled row and simply redoes. Terminality is explicit: skips are terminal for the exact bytes they judged, while failures — fetch or parse errors — are always visible in failure counts and always retried, never absorbed into skip counts. Content rows for a document that never reached the ledger are swept at the start of the next pass.
+
 ### Derived Bucket
 The storage area holding everything computed *from* the corpus — parse outputs, ingest ledgers, graph exports — kept separate from the raw archive so derived data can be rebuilt or discarded without touching sources.
 

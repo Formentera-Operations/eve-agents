@@ -14,7 +14,13 @@ the laptop. Three kernel watchdog panics (Jul 7 13:36, Jul 7 23:01, Jul 8
 07:07), one jetsam-forced restart mid-ingest (Jul 8 20:05), and four jetsam
 kills during final maintenance (Jul 9 04:57–05:40). The batch-driver
 remediation (`dbdf9b3`, `4d0a16f`) was enough to *finish the pass* — all
-37,718 objects, 0 failures — but not enough to *maintain the store*:
+37,718 objects, 0 failures\* — but not enough to *maintain the store*:
+
+> \* Post-decision correction: that failure counter was structurally blind
+> to parse-layer failures — 9 documents were recorded as terminal skips,
+> invisible to the metric (fixed in PR #12; see
+> `../docs/solutions/logic-errors/ingest-ledger-conflates-parse-failures-with-skips.md`).
+> The migration conclusions are unaffected.
 
 - `pages` (51 GB, 280,016 rows) cannot be compacted on this machine. The
   raw `compact_files` API Rust-panics on a pylance 0.36 decode bug (any
