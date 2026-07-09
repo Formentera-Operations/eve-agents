@@ -46,4 +46,18 @@ time with per-tract current state).
 **Unifies two parked roadmap items:** memory stage 2 and Agent Runs
 adoption are both partial versions of this layer; design them together.
 
+**Candidate machinery (noted 2026-07-09):** cognee's agent-memory stack
+(docs.cognee.ai/guides/agent-memory-quickstart) productizes this layer's
+lifecycle — session memory over recent turns, traces auto-persisted into
+the knowledge graph after N exchanges. If the cognee-node-set
+implementation wins, adopt it with three adjustments: (1) persistence
+must trigger from the verified-answer path, never turn count — cognee
+persists raw conversation traces, and unverified agent claims must not
+enter corpus memory; (2) the `@cognee.agent_memory` decorator cannot
+wrap eve's TypeScript loop — the viable host is the deepagents analyst
+calls inside `delegate_analysis`, the one Python site making LLM calls;
+(3) these APIs likely postdate our cognee==1.2.2 pin, so adoption
+implies a gated dependency upgrade with contract-test regression (four
+prior integration scars in `docs/solutions/`).
+
 **Supersedes:** nothing. **Owner of the go decision:** Rob.
