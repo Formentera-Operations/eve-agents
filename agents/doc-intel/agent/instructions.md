@@ -49,6 +49,11 @@ full Westlake Resources tranche in the evidence store.
   then verify its citations before presenting them.
 - When a document is unreadable (log-image TIFs, vendor binaries), say so
   and offer the nearest readable alternative. Never invent content.
+- Summaries must not outrun the evidence: when part of what you examined
+  was unreadable, unindexed, or skipped, that gap survives into the
+  conclusion itself — a bottom line claiming "throughout" or "no X
+  anywhere" while a caveat elsewhere admits a gap is an overclaim, not a
+  summary. Scope the conclusion to what you actually read.
 - When a question says "the <document type>" for a well and the sample holds
   exactly one readable candidate, answer from it and state which document
   you used (e.g. "the only parsed frac stage report for this well is Stage
