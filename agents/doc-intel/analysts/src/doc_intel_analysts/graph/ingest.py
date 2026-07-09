@@ -60,12 +60,57 @@ def serialize_view(key: str, view: dict[str, Any]) -> str:
     return "\n\n".join(parts)
 
 
-def sample_trial(rows: list[dict[str, str]], n: int) -> list[dict[str, str]]:
+def load_evidence_rows(manifest: Path) -> list[dict[str, str]]:
+    """Rows from an evidence-store nomination manifest (pilot step 2 output:
+    key, doc_id, well, category, format_gate, page_count)."""
+    with manifest.open(newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def serialize_evidence_pages(key: str, pages: list[dict[str, Any]]) -> str:
+    """Render evidence-store page rows as ingest text — the same
+    `<!-- source | page -->` shape serialize_view emits, so cognify and
+    node-set provenance are indistinguishable across the two sources.
+    Pages without text (image-only) are skipped; all-empty docs yield ''."""
+    parts = []
+    for page in sorted(pages, key=lambda p: p["page_num"]):
+        text = (page.get("text") or "").strip()
+        if not text:
+            continue
+        parts.append(f"<!-- source: {key} | page: {page['page_num']} -->\n{text}")
+    return "\n\n".join(parts)
+
+
+def fetch_evidence_pages(doc_id: str) -> list[dict[str, Any]]:
+    """Page text for one document straight from the evidence store (MVCC
+    reads are safe alongside the service; graph ingest still requires the
+    service stopped for the Kuzu write lock, not for this read)."""
+    import lancedb
+
+    from ..evidence.config import LANCE_ROOT
+
+    table = lancedb.connect(str(LANCE_ROOT)).open_table("pages")
+    safe = doc_id.replace("'", "''")
+    return (
+        table.search()
+        .where(f"doc_id = '{safe}'")
+        .select(["page_num", "text"])
+        .limit(10_000)
+        .to_list()
+    )
+
+
+def sample_trial(
+    rows: list[dict[str, str]],
+    n: int,
+    bucket_cols: tuple[str, str] = ("asset_team", "parse_source"),
+) -> list[dict[str, str]]:
     """Deterministic stratified trial slice: spread across asset teams and
-    parse tiers, alternating small/large by key length as a size proxy."""
+    parse tiers (or, for evidence manifests, wells and categories),
+    alternating small/large by key length as a size proxy."""
     buckets: dict[tuple[str, str], list[dict[str, str]]] = {}
     for r in rows:
-        buckets.setdefault((r["asset_team"], r["parse_source"]), []).append(r)
+        buckets.setdefault((r[bucket_cols[0]], r[bucket_cols[1]]), []).append(r)
     for b in buckets.values():
         b.sort(key=lambda r: r["key"])
     picked: list[dict[str, str]] = []
@@ -114,15 +159,20 @@ def already_ingested_keys() -> set[str]:
     return done
 
 
-async def run(limit: int | None, skip_cognify: bool = False) -> dict[str, Any]:
+async def run(limit: int | None, skip_cognify: bool = False, from_evidence: Path | None = None) -> dict[str, Any]:
     cognee = runtime.get_cognee()
-    rows = load_ingestable_rows()
-    if limit:
-        rows = sample_trial(rows, limit)
+    if from_evidence is not None:
+        rows = load_evidence_rows(from_evidence)
+        if limit:
+            rows = sample_trial(rows, limit, bucket_cols=("well", "category"))
+    else:
+        rows = load_ingestable_rows()
+        if limit:
+            rows = sample_trial(rows, limit)
     done = already_ingested_keys()
 
     ledger: list[dict[str, Any]] = []
-    for r in load_no_output_rows() if not limit else []:
+    for r in load_no_output_rows() if not (limit or from_evidence) else []:
         ledger.append({"key": r["key"], "status": "no-parse-output", "kind": "", "chars": 0, "seconds": 0, "error": ""})
 
     total_chars = 0
@@ -133,14 +183,22 @@ async def run(limit: int | None, skip_cognify: bool = False) -> dict[str, Any]:
             continue
         started = time.monotonic()
         try:
-            view = fetch_document(key)
-            if view is None or (not view["pages"] and not view.get("extraction")):
-                ledger.append({"key": key, "status": "no-parse-output", "kind": "", "chars": 0, "seconds": 0, "error": ""})
+            if from_evidence is not None:
+                text = serialize_evidence_pages(key, fetch_evidence_pages(row["doc_id"]))
+                kind = "evidence-pages"
+            else:
+                view = fetch_document(key)
+                if view is None or (not view["pages"] and not view.get("extraction")):
+                    ledger.append({"key": key, "status": "no-parse-output", "kind": "", "chars": 0, "seconds": 0, "error": ""})
+                    continue
+                text = serialize_view(key, view)
+                kind = view["kind"]
+            if not text:
+                ledger.append({"key": key, "status": "no-parse-output", "kind": kind, "chars": 0, "seconds": 0, "error": ""})
                 continue
-            text = serialize_view(key, view)
             await cognee.add(text, dataset_name=DATASET_NAME, node_set=[f"s3key:{key}"])
             total_chars += len(text)
-            ledger.append({"key": key, "status": "ok", "kind": view["kind"], "chars": len(text),
+            ledger.append({"key": key, "status": "ok", "kind": kind, "chars": len(text),
                            "seconds": round(time.monotonic() - started, 1), "error": ""})
         except Exception as err:  # per-document failure accounting (R3)
             ledger.append({"key": key, "status": "failed", "kind": "", "chars": 0,
@@ -217,9 +275,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--limit", type=int, default=None, help="trial-slice size (stratified sample)")
     parser.add_argument("--skip-cognify", action="store_true", help="add() only, no graph build")
+    parser.add_argument(
+        "--from-evidence", type=Path, default=None,
+        help="ingest from an evidence-store nomination manifest (key,doc_id,... CSV) instead of the sample manifest",
+    )
     args = parser.parse_args()
     print("REMINDER: the analysts service must be stopped during ingest (Kuzu single-writer).")
-    asyncio.run(run(args.limit, skip_cognify=args.skip_cognify))
+    asyncio.run(run(args.limit, skip_cognify=args.skip_cognify, from_evidence=args.from_evidence))
 
 
 if __name__ == "__main__":
