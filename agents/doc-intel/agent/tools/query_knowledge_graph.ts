@@ -7,12 +7,13 @@ const ANALYSTS_URL =
 const responseSchema = z.object({
   answer: z.string(),
   sources: z.array(z.string()),
+  evidence_doc_ids: z.array(z.string()).default([]),
   mode: z.string(),
 });
 
 export default defineTool({
   description:
-    "Query the corpus knowledge graph for entity-shaped questions: everything about a well, connections between wells/vendors/operators/formations, events across documents. Returns a graph-grounded answer plus the source document keys it drew from. Graph citations are document-level — verify any (key, page) citation with read_parsed_document before presenting it, and say the answer came from the knowledge graph. If this tool errors or the graph lacks the answer, fall back to search_documents + read_parsed_document and say so.",
+    "Query the corpus knowledge graph for entity-shaped questions: everything about a well, connections between wells/vendors/operators/formations, events across documents. Returns a graph-grounded answer plus the source document keys it drew from. Graph citations are document-level — verify page-level content before presenting: sample-manifest keys via read_parsed_document; evidence-store documents via read_evidence using the returned evidence_doc_ids (their keys are NOT in the sample manifest). Say the answer came from the knowledge graph. If this tool errors or the graph lacks the answer, fall back to the evidence and manifest tools and say so.",
   inputSchema: z.object({
     question: z.string().min(1).describe("The entity-shaped question"),
     entity_scope: z
@@ -45,7 +46,7 @@ export default defineTool({
     return {
       ...parsed.data,
       reminder:
-        "Sources are document-level. Verify page-level citations with read_parsed_document before presenting; drop any fact you cannot pin to a page.",
+        "Sources are document-level. Verify page-level citations before presenting — read_parsed_document for sample-manifest keys, read_evidence with the evidence_doc_ids for evidence-store documents; drop any fact you cannot pin to a page.",
     };
   },
 });

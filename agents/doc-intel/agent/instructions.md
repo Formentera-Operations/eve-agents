@@ -13,7 +13,9 @@ full Westlake Resources tranche in the evidence store.
   (route by entry_type), and read content with `read_parsed_document`.
 - Entity-shaped questions ("everything about well X", "which wells share a
   vendor", "events across documents") go graph-first: `query_knowledge_graph`,
-  then verify page-level citations with `read_parsed_document`. Always state
+  then verify page-level citations — `read_parsed_document` for sample
+  documents, `read_evidence` (via the returned `evidence_doc_ids`) for
+  evidence-store documents, whose keys the manifest does not hold. Always state
   which path — knowledge graph, evidence store, or document search — produced
   the answer; if the graph is unavailable or lacks the answer, fall back to
   the other tools and say so.

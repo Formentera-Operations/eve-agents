@@ -186,6 +186,10 @@ async def run(limit: int | None, skip_cognify: bool = False, from_evidence: Path
             if from_evidence is not None:
                 text = serialize_evidence_pages(key, fetch_evidence_pages(row["doc_id"]))
                 kind = "evidence-pages"
+                # Carry the evidence doc_id alongside the s3key: these keys
+                # are outside the sample manifest, so graph answers must be
+                # page-verifiable through read_evidence, not read_parsed_document.
+                node_set = [f"s3key:{key}", f"doc_id:{row['doc_id']}"]
             else:
                 view = fetch_document(key)
                 if view is None or (not view["pages"] and not view.get("extraction")):
@@ -193,10 +197,11 @@ async def run(limit: int | None, skip_cognify: bool = False, from_evidence: Path
                     continue
                 text = serialize_view(key, view)
                 kind = view["kind"]
+                node_set = [f"s3key:{key}"]
             if not text:
                 ledger.append({"key": key, "status": "no-parse-output", "kind": kind, "chars": 0, "seconds": 0, "error": ""})
                 continue
-            await cognee.add(text, dataset_name=DATASET_NAME, node_set=[f"s3key:{key}"])
+            await cognee.add(text, dataset_name=DATASET_NAME, node_set=node_set)
             total_chars += len(text)
             ledger.append({"key": key, "status": "ok", "kind": kind, "chars": len(text),
                            "seconds": round(time.monotonic() - started, 1), "error": ""})
