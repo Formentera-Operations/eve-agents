@@ -42,6 +42,13 @@ trash .cognee && uv run python -m doc_intel_analysts.graph.ingest
 Unverified candidates land in `.masters/unverified-report.csv` (gitignored)
 with their nearest master and score — misses are visible, never silent.
 
+`aliases.csv` (hand-curated, committed) carries the exceptions no string
+metric can bridge — corporate renames ("Liberty Oilfield Services" →
+LIBERTY ENERGY SERVICES LLC) and brands that bill through a parent (Baroid
+is a Halliburton product service line, Rob 2026-07-09). Aliases resolve
+exactly, apply even to untyped sweep candidates, and fail loud when the
+named master is missing from the export.
+
 Consumed by the ingest CLI via cognee's RDFLibOntologyResolver; contract
 tests in `agents/doc-intel/analysts/tests/test_ontology.py` and
 `tests/test_individuals.py`.

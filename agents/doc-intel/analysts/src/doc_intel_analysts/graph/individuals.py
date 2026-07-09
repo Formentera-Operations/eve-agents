@@ -124,6 +124,23 @@ def extract_candidates(
     return pools
 
 
+def load_aliases(path: Path) -> dict[tuple[str, str], str]:
+    """Hand-curated alias exceptions (references/ontology/aliases.csv):
+    corporate renames and brands that bill through a parent — cases no string
+    metric can bridge ('liberty oilfield services' renamed to Liberty Energy
+    in 2022; Baroid is a Halliburton product service line). Keyed by
+    (class, normalized alias) -> normalized master name."""
+    if not path.exists():
+        return {}
+    aliases: dict[tuple[str, str], str] = {}
+    for row in read_csv_rows(path):
+        cls = row["class"].strip()
+        if cls not in CLASSES:
+            raise ValueError(f"aliases.csv: unknown class {cls!r} for alias {row['alias']!r}")
+        aliases[(cls, normalize_key(row["alias"]))] = normalize_key(row["master_name"])
+    return aliases
+
+
 # --- U2: verification against snowsql-exported masters -----------------------
 
 # Generator-side matching is stricter than cognee's 0.8 runtime cutoff (KTD6):
@@ -224,6 +241,7 @@ def verify_candidates(
     pools: dict[str, dict[str, str]],
     well_master: list[dict[str, str]],
     vendor_master: list[dict[str, str]],
+    aliases: dict[tuple[str, str], str] | None = None,
 ) -> tuple[list[Verified], list[dict[str, str]]]:
     """Split candidates into verified individuals and an unverified report (R4).
 
@@ -240,7 +258,20 @@ def verify_candidates(
         "County": _master_lookup(well_master, ("COUNTY",), "COUNTY", "gold_dim_well"),
     }
 
+    alias_map = aliases or {}
+
     def check(cls: str, key: str, pooled: bool) -> tuple[str, str, float] | None:
+        # Hand-curated aliases short-circuit everything, sweep included —
+        # they are exact by construction and fail loud on a master typo.
+        alias_master = alias_map.get((cls, key))
+        if alias_master is not None:
+            if alias_master not in lookups[cls]:
+                raise ValueError(
+                    f"aliases.csv: master {alias_master!r} for alias {key!r} "
+                    f"not present in the {cls} master export"
+                )
+            source, master_key = lookups[cls][alias_master]
+            return f"{source} (alias)", master_key, 1.0
         probe = _strip_county_suffix(key) if cls == "County" else key
         # Counties are short geographic words — exact-only at any length.
         hit = _match(probe, lookups[cls], fuzzy=cls != "County")
@@ -362,6 +393,7 @@ def _main() -> None:  # pragma: no cover — exercised end-to-end, not unit-test
     parser.add_argument("--manifest", type=Path, default=repo / "corpus" / "sample-manifest.csv")
     parser.add_argument("--masters-dir", type=Path, default=masters_dir)
     parser.add_argument("--ontology", type=Path, default=repo / "references" / "ontology" / "welldrive.owl")
+    parser.add_argument("--aliases", type=Path, default=repo / "references" / "ontology" / "aliases.csv")
     args = parser.parse_args()
 
     for path, key in ((args.nodes, "nodes.csv"), (args.edges, "edges.csv")):
@@ -374,7 +406,7 @@ def _main() -> None:  # pragma: no cover — exercised end-to-end, not unit-test
     pools = extract_candidates(args.nodes, args.edges, args.manifest)
     well_master = load_master_csv(args.masters_dir / "gold_dim_well.csv", "gold_dim_well.sql")
     vendor_master = load_master_csv(args.masters_dir / "gold_dim_vendor.csv", "gold_dim_vendor.sql")
-    verified, unverified = verify_candidates(pools, well_master, vendor_master)
+    verified, unverified = verify_candidates(pools, well_master, vendor_master, load_aliases(args.aliases))
 
     report_path = args.masters_dir / "unverified-report.csv"
     with report_path.open("w", newline="", encoding="utf-8") as handle:

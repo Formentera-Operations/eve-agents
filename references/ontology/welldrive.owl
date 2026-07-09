@@ -491,10 +491,20 @@
     <rdfs:label>baker hughes</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#baroid">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>baroid</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#certarus">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>certarus</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#core_geologic">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>core geologic</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#eog_resources,_inc.">
     <rdf:type rdf:resource="#ServiceVendor"/>
@@ -506,10 +516,25 @@
     <rdfs:label>halliburton</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#halliburton_baroid">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>halliburton baroid</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#ksw_oilfield_rental_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>ksw_oilfield_rental_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#liberty_energy">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>liberty energy</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#liberty_oilfield_services">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>liberty oilfield services</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#luke_weissler">
     <rdf:type rdf:resource="#ServiceVendor"/>

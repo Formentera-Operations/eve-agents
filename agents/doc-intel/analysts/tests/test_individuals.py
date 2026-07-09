@@ -11,6 +11,11 @@ from doc_intel_analysts.graph.individuals import (
     verify_candidates,
 )
 
+LIBERTY_MASTER = [
+    {"VENDOR_ID": "V-88", "VENDOR_NAME": "LIBERTY ENERGY SERVICES LLC",
+     "VENDOR_FULL_NAME": "102259: LIBERTY ENERGY SERVICES LLC"},
+]
+
 NODES = (
     "id,type,name,properties\n"
     "e1,Entity,Scientific Drilling,{}\n"
@@ -134,6 +139,29 @@ def test_below_cutoff_lands_in_report_with_nearest_master():
     assert verified == []
     (u,) = unverified
     assert u["class"] == "ServiceVendor" and u["nearest_master"] and float(u["score"]) < 0.9
+
+
+def test_alias_verifies_sweep_candidate_no_string_metric_reaches():
+    # 'liberty oilfield services' renamed to Liberty Energy in 2022 — fuzzy
+    # cannot bridge it; the alias layer applies even to untyped sweep names.
+    verified, unverified = verify_candidates(
+        {"_sweep": {"liberty_oilfield_services": "Liberty Oilfield Services"}},
+        WELL_MASTER, LIBERTY_MASTER,
+        aliases={("ServiceVendor", "liberty_oilfield_services"): "liberty_energy_services_llc"},
+    )
+    (v,) = verified
+    assert (v.cls, v.master_key, v.score) == ("ServiceVendor", "V-88", 1.0)
+    assert v.master_source == "gold_dim_vendor (alias)"
+    assert unverified == []
+
+
+def test_alias_with_unknown_master_fails_loud():
+    with pytest.raises(ValueError, match="not present in the ServiceVendor master"):
+        verify_candidates(
+            {"ServiceVendor": {"baroid": "Baroid"}},
+            WELL_MASTER, LIBERTY_MASTER,
+            aliases={("ServiceVendor", "baroid"): "halliburton_energy_service_inc"},
+        )
 
 
 def test_county_suffix_tolerated_and_asset_team_verified_by_manifest():
