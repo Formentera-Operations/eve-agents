@@ -48,6 +48,33 @@ def rows_from_graph(nodes: list[tuple], edges: list[tuple]) -> tuple[list[list],
     return node_rows, edge_rows
 
 
+def kuzu_fallback_edge(source: Any, target: Any, props_json: Any, relationship_name: Any, table_label: Any) -> tuple:
+    """Reassemble a fallback edge in the primary path's tuple shape. The
+    `properties` JSON column is what the engine deserializes, so its
+    relationship_name is authoritative (measured: it disagrees with the
+    native relationship_name column on thousands of edges); the native
+    column and the shared 'EDGE' table name are successively weaker
+    fallbacks."""
+    props: dict = {}
+    if isinstance(props_json, str) and props_json:
+        try:
+            parsed = json.loads(props_json)
+            props = parsed if isinstance(parsed, dict) else {}
+        except json.JSONDecodeError:
+            props = {}
+    label = (
+        props.get("relationship_name")
+        or (relationship_name if isinstance(relationship_name, str) else "")
+        or str(table_label)
+    )
+    return (source, target, label, props)
+
+
+def _iter_rows(result):  # kuzu QueryResult; get_as_df crashes on STRUCT ids
+    while result.has_next():
+        yield result.get_next()
+
+
 def to_csv(header: list[str], rows: list[list]) -> bytes:
     buf = io.StringIO()
     writer = csv.writer(buf)
@@ -71,15 +98,21 @@ async def fetch_graph() -> tuple[list[tuple], list[tuple]]:
 
             from .config import SYSTEM_ROOT
 
-            db_dirs = list((SYSTEM_ROOT).rglob("*.kuzu")) + [p for p in SYSTEM_ROOT.rglob("databases/*") if p.is_dir()]
-            if not db_dirs:
+            # cognee's store is a single file named like 'cognee_graph_kuzu'
+            # (no .kuzu extension); keep the legacy globs as fallbacks.
+            db_paths = (
+                [p for p in SYSTEM_ROOT.rglob("databases/*") if "kuzu" in p.name.lower() and not p.name.endswith(".wal")]
+                + list(SYSTEM_ROOT.rglob("*.kuzu"))
+                + [p for p in SYSTEM_ROOT.rglob("databases/*") if p.is_dir()]
+            )
+            if not db_paths:
                 raise RuntimeError(f"no kuzu store under {SYSTEM_ROOT}")
-            db = kuzu.Database(str(db_dirs[0]))
+            db = kuzu.Database(str(db_paths[0]), read_only=True)
             conn = kuzu.Connection(db)
-            nodes = [(r[0], {"name": r[1]}) for r in conn.execute(
-                "MATCH (n) RETURN id(n), coalesce(n.name, '')").get_as_df().itertuples(index=False)]
-            edges = [(r[0], r[1], r[2], {}) for r in conn.execute(
-                "MATCH (a)-[e]->(b) RETURN id(a), id(b), label(e)").get_as_df().itertuples(index=False)]
+            nodes = [(row[0], {"name": row[1]}) for row in _iter_rows(conn.execute(
+                "MATCH (n) RETURN id(n), coalesce(n.name, '')"))]
+            edges = [kuzu_fallback_edge(*row) for row in _iter_rows(conn.execute(
+                "MATCH (a)-[e]->(b) RETURN id(a), id(b), e.properties, e.relationship_name, label(e)"))]
             return nodes, edges
         except Exception as fallback_err:
             raise RuntimeError(
