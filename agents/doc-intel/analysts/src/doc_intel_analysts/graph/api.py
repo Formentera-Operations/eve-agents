@@ -16,18 +16,23 @@ from .config import DATASET_NAME
 router = APIRouter(prefix="/graph")
 
 TAG_PREFIX = "s3key:"
+DOC_TAG_PREFIX = "doc_id:"
 
 
-def extract_source_keys(payload: Any) -> list[str]:
+def extract_source_keys(payload: Any, prefix: str = TAG_PREFIX) -> list[str]:
     """Pull corpus keys out of any cognee result structure by walking it for
-    node_set tags. Pure function; handles keys containing '__', commas, spaces."""
+    node_set tags. Pure function; handles keys containing '__', commas, spaces.
+    Evidence-ingested documents additionally carry doc_id: tags (pass
+    DOC_TAG_PREFIX) so answers can be page-verified through read_evidence —
+    their s3keys are not in the sample manifest that read_parsed_document
+    accepts."""
     found: list[str] = []
     seen: set[str] = set()
 
     def walk(value: Any) -> None:
         if isinstance(value, str):
-            if value.startswith(TAG_PREFIX):
-                key = value[len(TAG_PREFIX):]
+            if value.startswith(prefix):
+                key = value[len(prefix):]
                 if key and key not in seen:
                     seen.add(key)
                     found.append(key)
@@ -56,6 +61,7 @@ class SearchRequest(BaseModel):
 
 class SearchResponse(BaseModel):
     answer: str
+    evidence_doc_ids: list[str] = []
     sources: list[str]
     mode: str
 
@@ -98,6 +104,7 @@ async def search(req: SearchRequest) -> SearchResponse:
     answer = "\n".join(answer_parts).strip()
 
     sources = extract_source_keys(results)
+    doc_ids = extract_source_keys(results, prefix=DOC_TAG_PREFIX)
     if not sources:
         # Fallback (plan U4): raw chunk retrieval carries node_set context.
         try:
@@ -108,7 +115,9 @@ async def search(req: SearchRequest) -> SearchResponse:
                 top_k=req.top_k,
             )
             sources = extract_source_keys(chunks)
+            doc_ids = extract_source_keys(chunks, prefix=DOC_TAG_PREFIX)
         except Exception:
             sources = []
+            doc_ids = []
 
-    return SearchResponse(answer=answer, sources=sources, mode="GRAPH_COMPLETION")
+    return SearchResponse(answer=answer, sources=sources, evidence_doc_ids=doc_ids, mode="GRAPH_COMPLETION")

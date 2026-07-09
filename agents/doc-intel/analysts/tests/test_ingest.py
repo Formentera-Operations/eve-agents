@@ -1,6 +1,10 @@
 """U3 contract tests: serialization branches, sampling, ledger vocabulary."""
 
-from doc_intel_analysts.graph.ingest import sample_trial, serialize_view
+from doc_intel_analysts.graph.ingest import (
+    sample_trial,
+    serialize_evidence_pages,
+    serialize_view,
+)
 
 MD_VIEW = {
     "kind": "markdown",
@@ -47,6 +51,38 @@ def test_sampler_spans_teams_and_is_deterministic():
 def test_sampler_handles_small_pools():
     rows = [{"key": "A/x.pdf", "asset_team": "A", "parse_source": "pilot-tierA"}]
     assert sample_trial(rows, 20) == rows
+
+
+def test_evidence_pages_serialize_like_parsed_views():
+    # Same <!-- source | page --> shape as serialize_view, ordered by page,
+    # image-only (empty-text) pages skipped.
+    pages = [
+        {"page_num": 3, "text": "Beta"},
+        {"page_num": 1, "text": "Alpha"},
+        {"page_num": 2, "text": "   "},
+    ]
+    text = serialize_evidence_pages("T/W/a.pdf", pages)
+    assert text.index("page: 1") < text.index("page: 3")
+    assert "<!-- source: T/W/a.pdf | page: 1 -->" in text
+    assert "page: 2" not in text
+    assert "Alpha" in text and "Beta" in text
+
+
+def test_evidence_serialization_of_imageonly_doc_is_empty():
+    assert serialize_evidence_pages("T/W/scan.tif", [{"page_num": 1, "text": ""}]) == ""
+
+
+def test_sampler_buckets_by_custom_columns():
+    rows = []
+    for well in ("S617HF", "S513HF"):
+        for cat in ("Completions/Frac", "Drilling/Daily Reports"):
+            for i in range(5):
+                rows.append({"key": f"W/{well}/{cat}/d{i}.pdf", "well": well, "category": cat})
+    picked = sample_trial(rows, 8, bucket_cols=("well", "category"))
+    assert len(picked) == 8
+    assert {r["well"] for r in picked} == {"S617HF", "S513HF"}
+    assert {r["category"] for r in picked} == {"Completions/Frac", "Drilling/Daily Reports"}
+    assert picked == sample_trial(list(rows), 8, bucket_cols=("well", "category"))
 
 
 def test_ontology_path_resolves_to_repo_root():
