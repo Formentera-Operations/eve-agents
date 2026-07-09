@@ -27,10 +27,20 @@ export default defineEval({
     t.check(t.reply, includes(/spreadsheet|deferred[- ]format/i));
     // The pre-fix failure mode: treating Westlake as a 125-doc sample and
     // deferring to the 111k-file archive for content it already holds.
+    // Two gates: the sample-scale tell (111k / 111,000 in any casing or
+    // punctuation), and any "full archive" framing — the instructions
+    // forbid referring Westlake askers to the full archive at all.
     t.check(
       t.reply,
       satisfies(
-        (reply) => !/111k|full archive would be/i.test(String(reply)),
+        (reply) => !/111[,.]?\s?(k|000)/i.test(String(reply)),
+        "never frames the corpus at 111k sample scale",
+      ),
+    );
+    t.check(
+      t.reply,
+      satisfies(
+        (reply) => !/full\s+archive/i.test(String(reply)),
         "does not defer to the full archive for Westlake content",
       ),
     );
