@@ -11,6 +11,7 @@ Usage: uv run python -m doc_intel_analysts.graph.individuals --help
 
 import csv
 import difflib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, TextIO
@@ -51,6 +52,19 @@ def read_csv_rows(source: Path | TextIO) -> Iterable[dict[str, str]]:
         yield from csv.DictReader(source)
 
 
+def _edge_relationship(row: dict[str, str]) -> str:
+    """Exports written before the export.py label fix carry the storage-table
+    name in `label`; the semantic relationship lives in properties. Prefer
+    properties so cached pre-fix exports still yield candidates."""
+    props = row.get("properties") or ""
+    if '"relationship_name"' not in props:
+        return row["label"]
+    try:
+        return str(json.loads(props).get("relationship_name") or row["label"])
+    except json.JSONDecodeError:
+        return row["label"]
+
+
 def _add(pool: dict[str, str], name: str) -> None:
     """Dedupe by normalized key, keeping the first-seen original spelling."""
     spelling = name.strip()
@@ -84,7 +98,7 @@ def extract_candidates(
             entity_type_names[row["id"]] = row["name"].strip().lower()
 
     for row in read_csv_rows(edges):
-        if row["label"] != "is_a":
+        if _edge_relationship(row) != "is_a":
             continue
         name = entity_names.get(row["source"])
         entity_type = entity_type_names.get(row["target"])

@@ -38,6 +38,12 @@ def rows_from_graph(nodes: list[tuple], edges: list[tuple]) -> tuple[list[list],
         source, target = edge[0], edge[1]
         label = edge[2] if len(edge) > 2 else ""
         props = (edge[3] if len(edge) > 3 else {}) or {}
+        # The engine tuple's label is the storage-table name — cognee packs
+        # many relationship types into shared tables, so it diverges from the
+        # semantic relationship (82% of is_a edges on the 2026-07 export).
+        # properties.relationship_name is authoritative; keep it in props so
+        # existing consumers reading it there don't break.
+        label = props.get("relationship_name") or label
         edge_rows.append([str(source), str(target), str(label), json.dumps(dict(props), default=str)])
     return node_rows, edge_rows
 

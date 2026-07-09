@@ -29,6 +29,19 @@ def test_edges_serialize_with_label_and_default_props():
     assert edge_rows[0][:3] == ["a", "b", "operatedBy"]
 
 
+def test_edge_label_prefers_properties_relationship_name():
+    import json
+
+    # The engine tuple's label is the shared storage-table name, which
+    # diverges from the semantic relationship held in properties.
+    _, edge_rows = rows_from_graph(
+        [], [("a", "b", "turned_to_sales", {"relationship_name": "is_a"})]
+    )
+    assert edge_rows[0][2] == "is_a"
+    # relationship_name stays in props — existing consumers read it there.
+    assert json.loads(edge_rows[0][3])["relationship_name"] == "is_a"
+
+
 def test_empty_graph_exports_headers_only():
     node_rows, edge_rows = rows_from_graph([], [])
     data = to_csv(["id", "type", "name", "properties"], node_rows).decode()

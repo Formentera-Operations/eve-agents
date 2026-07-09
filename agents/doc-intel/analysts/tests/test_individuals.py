@@ -72,6 +72,19 @@ def test_entities_without_is_a_edges_are_ignored():
     assert "benbrook_unit_'d'_fed_3h" in pools["Well"]
 
 
+def test_corrupted_label_pools_via_properties_relationship():
+    # Pre-fix exports carry the storage-table name in `label`; the semantic
+    # relationship lives in properties. Properties win in both directions.
+    edges = (
+        "source,target,label,properties\n"
+        'e1,t1,turned_to_sales,"{""relationship_name"": ""is_a""}"\n'
+        'e2,t2,is_a,"{""relationship_name"": ""performed_on""}"\n'
+    )
+    pools = _pools(edges=edges)
+    assert "scientific_drilling" in pools["ServiceVendor"]
+    assert "neal_3h_st02" not in pools["Well"]
+
+
 def test_normalize_matches_cognee_and_preserves_first_spelling():
     # byte-identical to cognee's _uri_to_key/find_closest_match normalization:
     # lower, spaces->underscores, strip — internal double spaces are NOT collapsed
