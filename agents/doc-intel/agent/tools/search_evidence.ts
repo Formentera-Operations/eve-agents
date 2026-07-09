@@ -22,7 +22,7 @@ const responseSchema = z.object({
 
 export default defineTool({
   description:
-    "Semantic search over the evidence store: page text, page images, and extracted figures across the 500-file corpus sample plus the complete Westlake Resources tranche (~37,700 documents — every Westlake well file in the archive, not a sample), merged to page-ranked results. The default hybrid_bundle mode combines text and visual signals; direct modes narrow to one (chunks, pages, fts, images, assets). Every hit carries its page_id and corpus S3 key — cite pages from these, and use read_evidence on a page_id to read the page before citing it. For exact strings (well codes, API numbers) use grep_evidence instead.",
+    "Semantic search over the evidence store: page text, page images, and extracted figures across the 500-file corpus sample plus the Westlake Resources tranche (~32,600 indexed Westlake documents — every parseable Westlake well file in the archive; deferred formats like spreadsheets and email are gate-skipped and not searchable), merged to page-ranked results. The default hybrid_bundle mode combines text and visual signals; direct modes narrow to one (chunks, pages, fts, images, assets). Every hit carries its page_id and corpus S3 key — cite pages from these, and use read_evidence on a page_id to read the page before citing it. For exact strings (well codes, API numbers) use grep_evidence instead.",
   inputSchema: z.object({
     query: z.string().min(1).describe("Plain-language content question"),
     mode: z

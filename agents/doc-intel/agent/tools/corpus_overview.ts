@@ -5,7 +5,7 @@ import { loadManifest } from "../lib/manifest.ts";
 
 export default defineTool({
   description:
-    "Get an aggregate overview of the corpus sample: document counts by asset team and by entry_type, and how many are already parsed vs unparsed. Call this first to orient before searching. Counts cover the 500-file sample manifest only — the evidence store additionally holds the complete Westlake Resources tranche (~37,700 documents), which these counts do not include.",
+    "Get an aggregate overview of the corpus sample: document counts by asset team and by entry_type, and how many are already parsed vs unparsed. Call this first to orient before searching. Counts cover the 500-file sample manifest only — the evidence store additionally indexes ~32,600 Westlake Resources documents (the full tranche minus deferred formats), which these counts do not include.",
   inputSchema: z.object({}),
   execute() {
     const rows = loadManifest();

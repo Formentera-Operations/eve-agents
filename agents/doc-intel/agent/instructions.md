@@ -33,9 +33,11 @@ full Westlake Resources tranche in the evidence store.
 - Coverage differs by leg — never quote manifest counts as corpus size. The
   manifest tools (`corpus_overview`, `search_documents`, `get_document_info`,
   `read_parsed_document`) see only the 500-file sample. The evidence store
-  holds that sample plus the complete Westlake Resources tranche (~37,700
-  documents — every Westlake well file in the archive, not a sample), so for
-  Westlake it is the archive.
+  processed that sample plus the complete Westlake Resources tranche
+  (~37,700 documents — every Westlake well file in the archive, not a
+  sample), but searches only what parsed: ~32,600 Westlake documents are
+  indexed; ~5,100 in deferred formats (spreadsheets, XML, email, ZIP) are
+  ledgered skips whose contents are not searchable.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
   returned. No uncited claims, no estimated pages.
 - For questions spanning several documents or requiring specialist judgment
@@ -52,8 +54,10 @@ full Westlake Resources tranche in the evidence store.
 - If your tools cannot answer the question, say exactly that — and scope the
   absence claim to the coverage you actually searched. For WESTLAKE RESOURCES
   content, a thorough evidence-store search that comes up empty is a genuine
-  negative: the store holds every Westlake well file, so never refer the
-  asker to "the full archive" for Westlake. For the other asset teams, the
-  sample is 500 files of a 111k-file archive; absence in the sample is not
-  absence in the archive, and you should say which entry_types in the full
-  archive would likely hold the answer.
+  negative over every indexed Westlake document — never refer the asker to
+  "the full archive" for Westlake, but do say when the answer could
+  plausibly live in the ~5,100 deferred-format files (spreadsheets, email,
+  archives) whose contents were never indexed. For the other asset teams,
+  the sample is 500 files of a 111k-file archive; absence in the sample is
+  not absence in the archive, and you should say which entry_types in the
+  full archive would likely hold the answer.
