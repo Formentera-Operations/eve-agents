@@ -233,4 +233,19 @@ def test_ingest_max_new_stops_early_and_resumes(tmp_path):
     report2 = run_ingest(entries, st, st._config.parsed_root, fetch=fetch, max_new=2)
     assert report2["stopped_early"] is False
     assert report2["unchanged"] == 2 and report2["complete"] == 1
-    assert report2["table_counts"]["ledger"] == 3
+    # batch mode defers maintenance even when the pass finishes the listing
+    assert "table_counts" not in report2
+
+
+def test_optimize_accepts_table_subset(tmp_path):
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [{"key": "t/w/a.las", "asset_team": "t"}]
+
+    def fetch(key):
+        return b"DEPT GR\n9800 45\n" * 50
+
+    run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    st.optimize(["documents", "ledger"])  # light maintenance path
+    assert st.table("documents").count_rows() == 1

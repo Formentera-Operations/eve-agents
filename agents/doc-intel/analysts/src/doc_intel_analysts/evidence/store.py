@@ -460,16 +460,22 @@ class EvidenceStore:
     def counts(self) -> dict[str, int]:
         return {name: t.count_rows() for name, t in self._tables.items()}
 
-    def optimize(self) -> None:
+    def optimize(self, table_names: list[str] | None = None) -> None:
         """Compact fragments and drop old MVCC versions.
 
         Delete-before-insert writes a new table version per document; the
         ledger and documents tables accumulate dead versions linearly with
-        ingest volume (~2 GB observed at 2,500 Westlake docs). Run at end of
-        ingest passes, never mid-pass (readers on old versions are safe, but
-        cleanup during heavy write churn just wastes IO).
+        ingest volume (~2 GB observed at 2,500 Westlake docs). Mid-pass, pass
+        `["documents", "ledger"]` to bound that churn without compacting the
+        multi-GB pages/chunks tables (the 2026-07-07/08 memory chokes both hit
+        during full-store maintenance); full compaction runs at end of pass.
         """
         from datetime import timedelta
 
-        for table in self._tables.values():
+        tables = (
+            self._tables.values()
+            if table_names is None
+            else [self._tables[name] for name in table_names]
+        )
+        for table in tables:
             table.optimize(cleanup_older_than=timedelta(0))

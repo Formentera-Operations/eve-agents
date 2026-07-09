@@ -150,7 +150,10 @@ def run_ingest(
             report["stopped_early"] = True
             break
 
-    if report["stopped_early"]:
+    # Batch mode always defers maintenance to its own invocation — even the
+    # batch that finishes the listing must not stack the FTS rebuild on a
+    # parse process (the driver runs a final full --maintain instead).
+    if report["stopped_early"] or max_new is not None:
         return report
 
     store.build_indexes()
@@ -183,16 +186,32 @@ def main() -> None:
         help="run index build + compaction only, then exit (no source needed)",
     )
     parser_.add_argument(
+        "--light",
+        action="store_true",
+        help="with --maintain: compact only the churn-heavy small tables "
+        "(documents, ledger) — no FTS rebuild, no pages/chunks compaction",
+    )
+    parser_.add_argument(
         "--dry-run", action="store_true", help="list what would be ingested, no writes"
     )
     args = parser_.parse_args()
 
+    if args.light and not args.maintain:
+        parser_.error("--light requires --maintain")
     if args.maintain:
         config = load_config()
         store = EvidenceStore(config)
-        store.build_indexes()
-        store.optimize()
-        print(json.dumps({"maintain": True, "table_counts": store.counts()}, indent=2))
+        if args.light:
+            store.optimize(["documents", "ledger"])
+        else:
+            store.build_indexes()
+            store.optimize()
+        print(
+            json.dumps(
+                {"maintain": True, "light": args.light, "table_counts": store.counts()},
+                indent=2,
+            )
+        )
         return
     if not (args.manifest or args.prefix):
         parser_.error("one of --manifest / --prefix is required (or --maintain)")
