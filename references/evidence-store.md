@@ -9,7 +9,11 @@ loop; the knowledge graph (see `graph-export.md`) interprets once at ingest.
 Coverage: the 500-file corpus sample plus the full Westlake Resources
 tranche. Store lives at `agents/doc-intel/analysts/.evidence/` (gitignored,
 deliberately OUTSIDE `.cognee/`, which graph rebuilds wipe); versioned
-snapshots publish to the derived bucket.
+snapshots publish to the derived bucket. That path is a symlink — the bytes
+physically live at `~/.doc-intel/evidence/` (likewise `.cognee` →
+`~/.doc-intel/cognee/`), because eve's dev runtime copies the whole agent
+directory on every `eve dev` launch with a hard-coded skip list that
+ignores `.gitignore` (eve 0.19; a 66 GB snapshot per launch otherwise).
 
 ## The three legs, divided
 
