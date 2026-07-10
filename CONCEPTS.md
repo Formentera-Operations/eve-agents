@@ -27,13 +27,18 @@ The storage area holding everything computed *from* the corpus — parse outputs
 ## Memory & Graph
 
 ### Knowledge Graph
-doc-intel's entity-level memory over the corpus sample: wells, operators, vendors, formations, and events extracted from parsed documents and linked across them. A data product consumed through the agent and through open node/edge exports, deliberately portable off the engine that builds it.
+doc-intel's entity-level memory over the interpreted slice of the corpus: wells, operators, vendors, formations, and events extracted from parsed documents and linked across them. A data product consumed through the agent and through open node/edge exports, deliberately portable off the engine that builds it.
+
+### Selective Enrichment
+The pattern by which the knowledge graph grows: the evidence store nominates entity-dense documents worth interpreting, and the graph ingests only those — never the whole corpus. Interpretation cost concentrates where questions actually land, while the evidence store answers verbatim for everything else.
+
+Ontology changes are batched ahead of rebuilds rather than triggering them, because a full re-interpretation is the expensive unit of work; validation counts therefore lag ontology changes until the next batched rebuild.
 
 ### Provenance Tag
 The document key carried into the graph with every ingested document, making each graph fact traceable to its source document. Provenance is two-tier: tags give the document; page-level attribution always comes from re-reading the parsed source before citation. A fact that cannot be pinned to a page is dropped, never cited with a guessed page.
 
 ### Ontology Validity
-The per-entity flag marking that an extracted graph entity fuzzy-matched a named individual in the project ontology (80% similarity cutoff). Its meaning is only as strong as the individuals list: matched against corpus-derived names alone it signals consistency, not correctness — ground truth requires individuals verified against enterprise masters. Many entities (dates, depths, measurements) legitimately never validate.
+The per-entity flag marking that an extracted graph entity fuzzy-matched a named individual in the project ontology above a similarity cutoff. Its meaning is only as strong as the individuals list: matched against corpus-derived names alone it signals consistency, not correctness — ground truth requires individuals verified against enterprise masters. Many entities (dates, depths, measurements) legitimately never validate.
 
 A validated entity takes its matched individual's name in the graph and exports — matching rewrites identity, so downstream consumers join validated entities to the ontology by name.
 
@@ -41,6 +46,11 @@ A validated entity takes its matched individual's name in the graph and exports 
 A concrete, verified instance of an ontology class — a specific well, operator, vendor, county, or asset team — as distinct from the class itself. Individuals are generated from corpus-seen spellings and verified against Snowflake masters, never hand-edited into the ontology file.
 
 An individual's identifier doubles as its match key: the spelling of the identifier is the matching behavior, so identifiers are minted in the matcher's normalized form and must avoid characters the matcher treats as delimiters.
+
+### Ontology Alias
+A hand-curated equivalence from a corpus spelling to a master-verified identity, reserved for names no string similarity can bridge — corporate renames, former trade names, and brands that bill through a parent company. Facility and location mentions of a firm are never aliased to it; an office is not the company.
+
+Aliases are exact-match and take precedence over all fuzzy verification, and they fail loudly when the master identity they name is absent — a typo breaks regeneration rather than minting a false individual.
 
 ### Matchable Ceiling
 The measurable upper bound on how many extracted entities can ever achieve ontology validity in a given corpus — the population of genuine well/organization/place/team mentions, excluding the majority of entities (dates, depths, measurements) that no named individual can represent. Success bars for enrichment are set against this ceiling, measured by offline simulation, not against the raw entity count.

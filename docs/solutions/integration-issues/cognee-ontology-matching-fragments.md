@@ -187,6 +187,11 @@ scoped at match time). Once that's the ground truth, three things follow:
 
 ## Related Issues
 
+- `docs/solutions/integration-issues/cognee-edge-labels-storage-table-corruption.md`
+  — the input-side companion: the typed candidate pools this doc's machinery
+  relies on were silently starved by corrupted `is_a` edge labels in the
+  graph export until PR #19; the generator now reads the relationship from
+  edge properties, making it robust to cached pre-fix exports.
 - `docs/solutions/integration-issues/cognee-vercel-ai-gateway-integration.md`
   — the configuration-layer companion (gateway routing, caching, telemetry,
   Kuzu locking). Its pitfall 8 (fail-loud ontology-path guard) is the
