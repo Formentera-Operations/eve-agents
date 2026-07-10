@@ -35,6 +35,16 @@ CHUNK_OVERLAP = 150
 JPEG_QUALITY = 70
 JPEG_MAX_DIMENSION = 2200
 
+# R5: project-owned replacement for PIL's decompression-bomb guard (which
+# rejects anything above ~179 MP by default — too small for legitimate
+# large-format well-log scans up to ~280 MP). Rationale for 600 MP: convert-
+# to-RGB copies the decoded buffer, so peak transient decode during _to_jpeg
+# is approximately (source bytes/px + 3) x pixels — at 600 MP that's ~1.8 GB
+# for RGB sources (convert skipped, see KTD1) and ~2.4 GB for grayscale
+# sources (convert not skipped). Checked strictly-above from header
+# dimensions only, before any decode (R4).
+IMAGE_PIXEL_CEILING = 600_000_000
+
 # Text-native files are size-capped, not rejected: the head of an oversized
 # LAS/CSV file is still searchable evidence.
 TEXT_NATIVE_MAX_CHARS = 2_000_000
@@ -99,7 +109,12 @@ class SkipRecord:
     doc_id: str
     reason: str
     # True for parse exceptions (possibly environmental, retry next pass);
-    # False for format-gate verdicts (a property of the key/bytes, terminal).
+    # False for format-gate verdicts, and (KTD2) for the two deterministic
+    # standalone-image failure classes — oversize header, unidentifiable
+    # bytes — which are properties of the key/bytes, not the environment,
+    # so retrying can never change the outcome. Everything else, including
+    # the same two exception types raised from a non-image gate (e.g. a
+    # PDF's embedded figure), stays retriable.
     retriable: bool = False
 
 
@@ -175,12 +190,46 @@ def chunk_text(text: str, doc_id: str, page_num: int) -> list[ChunkRecord]:
     return chunks
 
 
+class _OversizeImageError(Exception):
+    """A standalone image's declared pixel count exceeds IMAGE_PIXEL_CEILING.
+
+    Raised from header metadata alone (KTD1) — no pixel data has been
+    decoded when this fires. Carries the offending dimensions so the skip
+    reason names them (R2).
+    """
+
+    def __init__(self, width: int, height: int, ceiling: int):
+        self.width = width
+        self.height = height
+        super().__init__(
+            f"image is {width}x{height} ({width * height:,} px), exceeds "
+            f"project ceiling of {ceiling:,} px"
+        )
+
+
 def _to_jpeg(image_bytes: bytes) -> tuple[bytes, int, int]:
     """Re-encode any raster bytes as bounded JPEG (KTD5). Returns (jpeg, w, h)."""
     from PIL import Image
 
+    # KTD1: PIL's own decompression-bomb guard (MAX_IMAGE_PIXELS) rejects
+    # anything above ~179 MP, which is too small for legitimate large-format
+    # well-log scans. Neutralize it and enforce IMAGE_PIXEL_CEILING below
+    # instead — this is process-global, so any other PIL call site added to
+    # this process from here on inherits NO decompression-bomb guard;
+    # IMAGE_PIXEL_CEILING here is the sole guard for the whole process.
+    Image.MAX_IMAGE_PIXELS = None
+
     img = Image.open(io.BytesIO(image_bytes))
-    img = img.convert("RGB")
+    # Image.open reads only the header — dimensions are known before any
+    # pixel data is decoded, so this check spends memory only on images we
+    # go on to admit (R4).
+    if img.width * img.height > IMAGE_PIXEL_CEILING:
+        raise _OversizeImageError(img.width, img.height, IMAGE_PIXEL_CEILING)
+    if img.mode != "RGB":
+        # .convert("RGB") returns a new decoded copy while the source decode
+        # is still resident in memory — skip it for sources already in RGB
+        # so admitting an image at the ceiling doesn't double peak memory.
+        img = img.convert("RGB")
     if max(img.size) > JPEG_MAX_DIMENSION:
         img.thumbnail((JPEG_MAX_DIMENSION, JPEG_MAX_DIMENSION))
     buf = io.BytesIO()
@@ -211,11 +260,22 @@ def parse_document(
             return _parse_text_native(s3key, doc_id, data, asset_team)
         return _parse_image(s3key, doc_id, data, asset_team)
     except Exception as exc:  # noqa: BLE001 — every failure must reach the ledger
+        # KTD2: oversize and unidentifiable are deterministic properties of
+        # the bytes — but only for the standalone-image gate. A PDF whose
+        # *embedded* figure or page screenshot trips the same errors keeps
+        # the default retriable path: one bad figure must not terminally
+        # skip a whole multi-page PDF (KTD4: import where caught, not at
+        # module level).
+        from PIL import UnidentifiedImageError
+
+        terminal = gate == "image" and isinstance(
+            exc, (_OversizeImageError, UnidentifiedImageError)
+        )
         return SkipRecord(
             s3key=s3key,
             doc_id=doc_id,
             reason=f"{gate} parse failed: {exc}",
-            retriable=True,
+            retriable=not terminal,
         )
 
 
