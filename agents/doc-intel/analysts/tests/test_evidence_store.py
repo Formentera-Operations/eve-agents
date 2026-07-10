@@ -320,3 +320,87 @@ def test_optimize_accepts_table_subset(tmp_path):
     run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
     st.optimize(["documents", "ledger"])  # light maintenance path
     assert st.table("documents").count_rows() == 1
+
+
+def test_terminal_image_skip_settles_with_checksum(tmp_path):
+    """U2/KTD2 end-to-end: unidentifiable-bytes is one of the two
+    deterministic image-failure classes commit 5b513c9 made terminal in
+    parse_document. run_ingest's non-retriable branch must route it through
+    store.record_skip with the entry's etag checksum, landing a "skipped"
+    ledger row — never "failed" — with that checksum attached."""
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [{"key": "t/w/broken.png", "asset_team": "t", "etag": "e1"}]
+
+    def fetch(key):
+        return b"not an image at all"
+
+    report = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report["skipped"] == 1 and report["failed"] == 0
+    row = st.ledger_status(parse.doc_id_for_key("t/w/broken.png"))
+    assert row["status"] == "skipped"
+    assert row["checksum"] == "etag:e1"
+
+
+def test_settled_etag_skip_is_not_refetched(tmp_path):
+    """No re-fetch: once a terminal skip has settled under an etag
+    checksum, a second pass over the same (key, etag) must short-circuit at
+    the pre-fetch etag gate in run_ingest — needs_ingest treats "skipped +
+    matching checksum" as settled, so the fetch stub is never called again."""
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    entries = [{"key": "t/w/broken.png", "asset_team": "t", "etag": "e1"}]
+    calls = []
+
+    def fetch(key):
+        calls.append(key)
+        return b"not an image at all"
+
+    run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert calls == ["t/w/broken.png"]  # sanity: first pass did fetch once
+
+    report2 = run_ingest(entries, st, st._config.parsed_root, fetch=fetch)
+    assert report2["unchanged"] == 1
+    assert calls == ["t/w/broken.png"], "second pass must not re-fetch settled bytes"
+
+
+def test_etag_change_reopens_terminal_skip(tmp_path):
+    """Reopen on change: a new etag on the same key busts the settled
+    checksum, so run_ingest re-fetches and re-parses even though the
+    document was terminally skipped before. The new (still-unidentifiable)
+    bytes skip again, but the ledger checksum moves to the new etag —
+    proving the reopen is real, not a no-op re-skip of stale state."""
+    from doc_intel_analysts.evidence.ingest import run_ingest
+
+    st = make_store(tmp_path)
+    key = "t/w/broken.png"
+    calls = []
+
+    def fetch_v1(_key):
+        calls.append(_key)
+        return b"not an image at all"
+
+    run_ingest(
+        [{"key": key, "asset_team": "t", "etag": "e1"}],
+        st,
+        st._config.parsed_root,
+        fetch=fetch_v1,
+    )
+    assert len(calls) == 1
+
+    def fetch_v2(_key):
+        calls.append(_key)
+        return b"still not identifiable, but entirely different bytes"
+
+    report = run_ingest(
+        [{"key": key, "asset_team": "t", "etag": "e2"}],
+        st,
+        st._config.parsed_root,
+        fetch=fetch_v2,
+    )
+    assert len(calls) == 2, "changed etag must trigger a re-fetch"
+    assert report["skipped"] == 1
+    row = st.ledger_status(parse.doc_id_for_key(key))
+    assert row["checksum"] == "etag:e2"
