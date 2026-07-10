@@ -147,11 +147,26 @@ def test_alias_verifies_sweep_candidate_no_string_metric_reaches():
     verified, unverified = verify_candidates(
         {"_sweep": {"liberty_oilfield_services": "Liberty Oilfield Services"}},
         WELL_MASTER, LIBERTY_MASTER,
-        aliases={("ServiceVendor", "liberty_oilfield_services"): "liberty_energy_services_llc"},
+        aliases={("ServiceVendor", "liberty_oilfield_services"): {
+            "spelling": "Liberty Oilfield Services", "master": "liberty_energy_services_llc"}},
     )
     (v,) = verified
     assert (v.cls, v.master_key, v.score) == ("ServiceVendor", "V-88", 1.0)
     assert v.master_source == "gold_dim_vendor (alias)"
+    assert unverified == []
+
+
+def test_dormant_alias_still_mints_individual():
+    # A documented d/b/a with no extracted candidate yet must still emit an
+    # individual — cognee's runtime matches against OWL fragments, so the
+    # fragment has to exist the first time a document produces the name.
+    verified, unverified = verify_candidates(
+        {}, WELL_MASTER, LIBERTY_MASTER,
+        aliases={("ServiceVendor", "ipt_well_solutions"): {
+            "spelling": "IPT Well Solutions", "master": "liberty_energy_services_llc"}},
+    )
+    (v,) = verified
+    assert (v.name, v.cls, v.master_key, v.score) == ("IPT Well Solutions", "ServiceVendor", "V-88", 1.0)
     assert unverified == []
 
 
@@ -160,7 +175,20 @@ def test_alias_with_unknown_master_fails_loud():
         verify_candidates(
             {"ServiceVendor": {"baroid": "Baroid"}},
             WELL_MASTER, LIBERTY_MASTER,
-            aliases={("ServiceVendor", "baroid"): "halliburton_energy_service_inc"},
+            aliases={("ServiceVendor", "baroid"): {
+                "spelling": "Baroid", "master": "halliburton_energy_service_inc"}},
+        )
+
+
+def test_dormant_alias_bad_master_also_fails_loud():
+    # Unconditional minting means dormant rows get the fail-loud master
+    # check too — a typo breaks regeneration instead of hiding until the
+    # spelling first appears in an extraction.
+    with pytest.raises(ValueError, match="not present in the ServiceVendor master"):
+        verify_candidates(
+            {}, WELL_MASTER, LIBERTY_MASTER,
+            aliases={("ServiceVendor", "ghost_vendor"): {
+                "spelling": "Ghost Vendor", "master": "no_such_master_llc"}},
         )
 
 
