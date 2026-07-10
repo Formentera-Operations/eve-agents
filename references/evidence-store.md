@@ -118,6 +118,11 @@ Parse and fetch failures are retriable by construction — recorded as
 `failed` with no checksum. That is a PR #12 fix: before it they were
 ledgered as terminal skips and never re-ran (see
 `../docs/solutions/logic-errors/ingest-ledger-conflates-parse-failures-with-skips.md`).
+Two deterministic image verdicts are the exception: an image whose header
+declares more than `IMAGE_PIXEL_CEILING` (600 MP, the project-owned
+replacement for PIL's ~179 MP decompression-bomb guard) or bytes PIL
+cannot identify skip terminally for the judged checksum — a changed
+upstream file (new ETag) still re-ingests automatically.
 Direct (manifest-mode) passes end with FTS/BTree index builds and MVCC
 compaction (`store.optimize()` — delete-before-insert accumulates dead
 versions otherwise); batch mode (`--max-new N`, how Westlake runs) always
