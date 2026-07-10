@@ -23,13 +23,16 @@ scope) and runs on Phase 4 server hardware once available.
   graph grew 6,442 → **23,924 nodes**, 26,628 → **221,785 edges**.
 - **Validation**: 293 ontology-valid of a measured **matchable ceiling of
   337 (86.9%)**, with **zero runtime matcher misses** — the entire gap was
-  missing individuals, closed by the pass-2 regeneration (PR #22: 460
-  individuals, incl. the triple-verified IPT → NEW IPT INC alias). The
-  ceiling grew only ~10% while interpreted text grew ~5× — extraction
-  noise scales with volume; the matchable population does not.
+  missing individuals, closed by the pass-2 regeneration (PR #22, merged
+  2026-07-10: 462 individuals, incl. the triple-verified IPT → NEW IPT INC
+  alias, with alias rows minted unconditionally so documented d/b/a
+  spellings match the first time they appear). The ceiling grew only ~10%
+  while interpreted text grew ~5× — extraction noise scales with volume;
+  the matchable population does not.
 - **Behavior**: the cross-leg tandem verified live and locked in as
-  `evals/graph-pad-tandem.eval.ts` — graph-first recall, page verification
-  through `evidence_doc_ids`, unverifiable claims dropped.
+  `evals/graph-pad-tandem.eval.ts` (PR #23, merged 2026-07-10) — graph-first
+  recall, page verification through `evidence_doc_ids` with a required page
+  marker, unverifiable claims dropped.
 
 ## Measured economics (gateway dashboard, 24 h window covering the pilot)
 
@@ -70,7 +73,7 @@ priced above); per-change rebuilds (rejected — $95/change buys nothing a
 batched rebuild doesn't).
 
 **Trade-offs accepted:** validation counts lag ontology changes until the
-next batched rebuild (currently: 460 individuals banked, counts move at
+next batched rebuild (currently: 462 individuals banked, counts move at
 the Phase 4 rebuild, expected ≈ ceiling); graph coverage remains
 deliberately partial — the evidence store answers for everything else.
 
