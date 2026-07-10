@@ -2,6 +2,7 @@
 
 import io
 import json
+import struct
 
 import pytest
 
@@ -42,6 +43,36 @@ def tiny_jpeg() -> bytes:
     buf = io.BytesIO()
     img.save(buf, "JPEG")
     return buf.getvalue()
+
+
+def huge_bmp_header(width: int, height: int) -> bytes:
+    """Minimal BMP file+info header declaring the given dimensions, with no
+    pixel data following. PIL's BMP plugin reads width/height (and mode)
+    from these 54 header bytes at `Image.open` time and only decodes pixel
+    rows lazily on `.load()` — so this fixture exercises the header-only
+    pixel check (R4) without allocating any real pixel buffer. Keyed with a
+    supported *image* extension in tests (not `.bmp`, which isn't a
+    supported extension and would hit the format gate before the pixel
+    check) — PIL sniffs content, not the extension, so it identifies this
+    correctly as BMP regardless of the key's suffix.
+    """
+    header_size = 14 + 40
+    file_header = b"BM" + struct.pack("<IHHI", header_size, 0, 0, header_size)
+    info_header = struct.pack(
+        "<IiiHHIIiiII",
+        40,  # biSize
+        width,  # biWidth
+        height,  # biHeight
+        1,  # biPlanes
+        24,  # biBitCount (24-bit RGB, no palette)
+        0,  # biCompression (BI_RGB)
+        0,  # biSizeImage
+        0,  # biXPelsPerMeter
+        0,  # biYPelsPerMeter
+        0,  # biClrUsed
+        0,  # biClrImportant
+    )
+    return file_header + info_header
 
 
 def test_pdf_happy_path_yields_all_layers(tmp_path):
@@ -128,3 +159,88 @@ def test_chunks_overlap_and_stay_page_bounded():
 def test_unknown_extension_skips_with_named_reason():
     skip = parse.parse_document("t/w/data.kdex", b"?", None)
     assert isinstance(skip, parse.SkipRecord) and "kdex" in skip.reason
+
+
+def test_oversize_image_header_only_terminal_skip():
+    """R1/R2/R4/KTD1: a header declaring >600 MP is rejected from header
+    metadata alone (no pixel data in the fixture), terminally, with the
+    declared dimensions and the project's own reason text — not PIL's
+    "decompression bomb" message — proving PIL's stock guard was replaced."""
+    huge = huge_bmp_header(30_000, 30_000)  # 900,000,000 px
+    skip = parse.parse_document("t/w/huge.png", huge, None)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is False
+    assert "30000" in skip.reason and "900000000" in skip.reason.replace(",", "")
+    assert "decompression bomb" not in skip.reason.lower()
+    assert str(parse.IMAGE_PIXEL_CEILING) in skip.reason.replace(",", "")
+
+
+def test_oversize_boundary_via_patched_ceiling(monkeypatch):
+    """Boundary is strictly-above: below a patched ceiling it terminally
+    skips with dims in the reason; exactly at the ceiling it parses."""
+    fixture = tiny_jpeg()
+    pixels = 64 * 48
+
+    monkeypatch.setattr(parse, "IMAGE_PIXEL_CEILING", pixels - 1)
+    skip = parse.parse_document("t/w/plat.jpg", fixture, None)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is False
+    assert "64" in skip.reason and "48" in skip.reason
+
+    monkeypatch.setattr(parse, "IMAGE_PIXEL_CEILING", pixels)
+    doc = parse.parse_document("t/w/plat.jpg", fixture, None)
+    assert isinstance(doc, parse.ParsedDocument)
+    assert doc.format_gate == "image"
+
+
+def test_unidentifiable_image_terminal_skip():
+    """R3: bytes PIL cannot identify at all (not merely oversize) are a
+    deterministic content failure — terminal, not retriable."""
+    skip = parse.parse_document("t/w/broken.png", b"not an image at all", None)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is False
+    assert "identify" in skip.reason.lower()
+
+
+def test_pdf_gate_keeps_unidentifiable_error_retriable(tmp_path, monkeypatch):
+    """KTD2: terminal classification is image-gate-only — a PDF whose
+    embedded-figure handling raises PIL's UnidentifiedImageError must not
+    terminally skip the whole document."""
+    from PIL import UnidentifiedImageError
+
+    def boom(*args, **kwargs):
+        raise UnidentifiedImageError("cannot identify image file <fake>")
+
+    monkeypatch.setattr(parse, "_parse_pdf", boom)
+    skip = parse.parse_document("t/w/report.pdf", b"%PDF-1.4 fake", tmp_path)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is True
+
+
+def test_pdf_gate_keeps_oversize_error_retriable(tmp_path, monkeypatch):
+    """KTD2: same scoping for the oversize exception — a corrupt/oversize
+    embedded figure must not terminally skip the whole PDF."""
+    oversize_error_cls = parse._OversizeImageError  # resolved eagerly: a
+    # missing attribute here must surface as a collection-time AttributeError,
+    # not get swallowed by parse_document's own except-block under test.
+
+    def boom(*args, **kwargs):
+        raise oversize_error_cls(30_000, 30_000, parse.IMAGE_PIXEL_CEILING)
+
+    monkeypatch.setattr(parse, "_parse_pdf", boom)
+    skip = parse.parse_document("t/w/report.pdf", b"%PDF-1.4 fake", tmp_path)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is True
+
+
+def test_image_transient_oserror_stays_retriable(monkeypatch):
+    """R6: non-deterministic failures in the image path keep the existing
+    retriable semantics — only the two deterministic classes are terminal."""
+
+    def boom(*args, **kwargs):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(parse, "_to_jpeg", boom)
+    skip = parse.parse_document("t/w/plat.jpg", tiny_jpeg(), None)
+    assert isinstance(skip, parse.SkipRecord)
+    assert skip.retriable is True
