@@ -606,6 +606,11 @@
     <rdfs:label>ipt energy services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#ipt_well_solutions">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>IPT Well Solutions</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#ksw_oilfield_rental_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>ksw_oilfield_rental_llc</rdfs:label>
@@ -625,6 +630,11 @@
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>liberty lift solutions llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#liberty_oilfield_services">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>Liberty Oilfield Services</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#luke_weissler">
     <rdf:type rdf:resource="#ServiceVendor"/>

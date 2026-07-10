@@ -124,20 +124,27 @@ def extract_candidates(
     return pools
 
 
-def load_aliases(path: Path) -> dict[tuple[str, str], str]:
+def load_aliases(path: Path) -> dict[tuple[str, str], dict[str, str]]:
     """Hand-curated alias exceptions (references/ontology/aliases.csv):
     corporate renames and brands that bill through a parent — cases no string
     metric can bridge ('liberty oilfield services' renamed to Liberty Energy
     in 2022; Baroid is a Halliburton product service line). Keyed by
-    (class, normalized alias) -> normalized master name."""
+    (class, normalized alias) -> {spelling, master (normalized)}. Every row
+    mints an individual even before any extracted candidate carries the
+    spelling (e.g. a documented d/b/a) — cognee's runtime matches against
+    OWL fragments, so the fragment must exist the first time a document
+    produces the name."""
     if not path.exists():
         return {}
-    aliases: dict[tuple[str, str], str] = {}
+    aliases: dict[tuple[str, str], dict[str, str]] = {}
     for row in read_csv_rows(path):
         cls = row["class"].strip()
         if cls not in CLASSES:
             raise ValueError(f"aliases.csv: unknown class {cls!r} for alias {row['alias']!r}")
-        aliases[(cls, normalize_key(row["alias"]))] = normalize_key(row["master_name"])
+        aliases[(cls, normalize_key(row["alias"]))] = {
+            "spelling": row["alias"].strip(),
+            "master": normalize_key(row["master_name"]),
+        }
     return aliases
 
 
@@ -263,14 +270,14 @@ def verify_candidates(
     def check(cls: str, key: str, pooled: bool) -> tuple[str, str, float] | None:
         # Hand-curated aliases short-circuit everything, sweep included —
         # they are exact by construction and fail loud on a master typo.
-        alias_master = alias_map.get((cls, key))
-        if alias_master is not None:
-            if alias_master not in lookups[cls]:
+        alias = alias_map.get((cls, key))
+        if alias is not None:
+            if alias["master"] not in lookups[cls]:
                 raise ValueError(
-                    f"aliases.csv: master {alias_master!r} for alias {key!r} "
+                    f"aliases.csv: master {alias['master']!r} for alias {key!r} "
                     f"not present in the {cls} master export"
                 )
-            source, master_key = lookups[cls][alias_master]
+            source, master_key = lookups[cls][alias["master"]]
             return f"{source} (alias)", master_key, 1.0
         probe = _strip_county_suffix(key) if cls == "County" else key
         # Counties are short geographic words — exact-only at any length.
@@ -318,6 +325,19 @@ def verify_candidates(
                 source, master_key, score = hit
                 verified[key] = Verified(spelling, cls, source, master_key, score)
                 break
+
+    # Alias rows are hand-curated and master-verified by construction — mint
+    # an individual for every row even when no extracted candidate carries
+    # the spelling yet (e.g. a documented d/b/a). cognee's runtime matches
+    # extracted names against OWL fragments, so the fragment must already
+    # exist the first time a document produces the name. This also runs the
+    # fail-loud master check on dormant rows, which candidate-driven
+    # verification would otherwise never reach.
+    for (cls, key), alias in sorted(alias_map.items()):
+        if key in verified:
+            continue
+        source, master_key, score = check(cls, key, pooled=True)
+        verified[key] = Verified(alias["spelling"], cls, source, master_key, score)
 
     return list(verified.values()), unverified
 
