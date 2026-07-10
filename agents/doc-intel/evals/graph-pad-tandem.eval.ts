@@ -38,7 +38,10 @@ export default defineEval({
     t.check(t.reply, includes(/S617HF/i));
     t.check(t.reply, includes(/wireline/i));
     // Real citations, not hand-waving: at least one s3key-style document
-    // reference must appear.
+    // reference AND a page marker — naming a document without the page is
+    // exactly the regression this gate exists to catch. Matches observed
+    // citation styles: "page 2", "pages 1, 5-9", "(p.10)", "p. 4".
     t.check(t.reply, includes(/\.pdf/i));
+    t.check(t.reply, includes(/\bpages?[ .:]*\d|\(p\.?\s?\d|\bp\.\s?\d/i));
   },
 });
