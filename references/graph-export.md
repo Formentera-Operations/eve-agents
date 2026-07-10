@@ -30,7 +30,9 @@ County, AssetTeam). Extractor-assigned types travel as `is_a` edges from
 Entity nodes to EntityType nodes, not in the `type` column.
 
 **edges.csv** — `source`, `target` (node ids), `label` (relationship, e.g.
-operatedBy / servicedBy / occurredOn / is_part_of), `properties` (JSON).
+operatedBy / servicedBy / occurredOn / is_part_of; sourced from the edge's
+`properties.relationship_name`, which is also retained inside `properties`
+for consumers that read it there), `properties` (JSON).
 
 ## Worked example: vendors → wells in SQL
 
@@ -51,6 +53,10 @@ where e.label = 'performed_on'
 Edge labels are extractor-derived (`performed_on`, `underwent`, `contains`,
 `is_part_of`, `is_a`, …) — enumerate what an export actually contains with
 `select label, count(*) from edges group by 1`.
+
+Exports generated before 2026-07-09 (PR #19) carry kuzu storage-table
+names in `label` for most edges — regenerate before joining on `label`
+(see `../docs/solutions/integration-issues/cognee-edge-labels-storage-table-corruption.md`).
 
 Provenance: document nodes carry their corpus S3 key in `properties`
 (`s3key:<key>`); join through document edges to trace any fact to its
