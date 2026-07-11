@@ -109,6 +109,27 @@ class EvidenceRetriever:
             return None
         return f"asset_team = '{asset_team.replace(chr(39), chr(39) * 2)}'"
 
+    @staticmethod
+    def _like_literal(fragment: str) -> str:
+        """Escape a fragment for literal use inside a LIKE pattern: quotes
+        doubled for the SQL literal, and LIKE wildcards (%, _, \\) escaped so
+        filename underscores don't act as single-character wildcards. Pair
+        with ESCAPE '\\' on the LIKE clause."""
+        return (
+            fragment.replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+            .replace("'", "''")
+            .lower()
+        )
+
+    def _fragment_clause(self, name_query: str) -> str | None:
+        """Case-insensitive contiguous-fragment match on s3key, treating the
+        fragment literally (see _like_literal)."""
+        if not name_query:
+            return None
+        return f"lower(s3key) LIKE '%{self._like_literal(name_query)}%' ESCAPE '\\'"
+
     def _vector_search(
         self, table, vector, column, limit, asset_team, *, with_text=False
     ) -> list[dict]:
@@ -259,9 +280,9 @@ class EvidenceRetriever:
         manifest lacks.
         """
         clauses = []
-        if name_query:
-            escaped = name_query.replace("'", "''").lower()
-            clauses.append(f"lower(s3key) LIKE '%{escaped}%'")
+        fragment = self._fragment_clause(name_query)
+        if fragment:
+            clauses.append(fragment)
         where = self._where(asset_team)
         if where:
             clauses.append(where)
@@ -271,6 +292,72 @@ class EvidenceRetriever:
         if clauses:
             q = q.where(" AND ".join(clauses))
         return q.to_list()
+
+    def document_status(
+        self,
+        name_query: str = "",
+        *,
+        asset_team: str | None = None,
+        status: str | None = None,
+        limit: int = 25,
+    ) -> dict:
+        """Ingest-ledger lookup: per-document status with reasons.
+
+        The ledger is the coverage source of truth — complete rows are
+        indexed, skipped rows were deliberately declined (format gate or
+        deterministic image verdict), failed rows re-run every pass.
+        `will_retry` mirrors needs_ingest's settled test from the ledger
+        side: a row is settled only when its status is complete/skipped AND
+        it carries a non-empty checksum. Terminality is per-checksum — a
+        changed upstream file re-ingests regardless. Strictly read-only.
+
+        The ledger has no asset_team column: the team filter is an s3key
+        prefix match on `{team}/` (the archive layout), which is also why
+        returned rows carry no separate asset-team field.
+        """
+        clauses = []
+        fragment = self._fragment_clause(name_query)
+        if fragment:
+            clauses.append(fragment)
+        if asset_team:
+            team = self._like_literal(asset_team.rstrip("/"))
+            clauses.append(f"lower(s3key) LIKE '{team}/%' ESCAPE '\\'")
+        if status:
+            clauses.append(f"status = '{status.replace(chr(39), chr(39) * 2)}'")
+        where = " AND ".join(clauses) if clauses else None
+
+        ledger = self._store.table("ledger")
+        # Freshness watermark over the whole ledger (proxy for the last
+        # ingest pass) — computed FIRST so, under a concurrent ingest, it can
+        # only understate the freshness of the rows and counts read after it.
+        # Present on every response, including empty ones, so absence claims
+        # can be dated.
+        stamps = ledger.search().select(["updated_at"]).limit(None).to_list()
+        ledger_as_of = max((r["updated_at"] for r in stamps), default=None)
+        summary = {
+            s: ledger.count_rows(
+                f"status = '{s}'" if where is None else f"({where}) AND status = '{s}'"
+            )
+            for s in ("complete", "skipped", "failed")
+        }
+        q = ledger.search().select(
+            ["doc_id", "s3key", "checksum", "status", "reason",
+             "page_count", "updated_at"]
+        ).limit(limit)
+        if where:
+            q = q.where(where)
+        matches = []
+        for row in q.to_list():
+            checksum = row.pop("checksum", "")
+            row["will_retry"] = row["status"] == "failed" or not checksum
+            matches.append(row)
+
+        return {
+            "matches": matches,
+            "summary": summary,
+            "total_matches": sum(summary.values()),
+            "ledger_as_of": ledger_as_of,
+        }
 
     def get_page(
         self, page_id: str, *, include_screenshot: bool = False
