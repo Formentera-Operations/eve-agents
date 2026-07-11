@@ -404,3 +404,73 @@ def test_etag_change_reopens_terminal_skip(tmp_path):
     assert report["skipped"] == 1
     row = st.ledger_status(parse.doc_id_for_key(key))
     assert row["checksum"] == "etag:e2"
+
+
+def _seed_status_corpus(tmp_path):
+    """Four ledger states: complete, gate-skip w/o etag (empty checksum),
+    gate-skip w/ etag (terminal), parse failure."""
+    from doc_intel_analysts.evidence.ingest import run_ingest
+    from doc_intel_analysts.evidence.retrieval import EvidenceRetriever
+
+    st = make_store(tmp_path)
+    entries = [
+        {"key": "TEAM A/w/good.las", "asset_team": "TEAM A"},
+        {"key": "TEAM A/w/plain.xlsx", "asset_team": "TEAM A"},
+        {"key": "TEAM B/w/tagged.xlsx", "asset_team": "TEAM B", "etag": "e1"},
+        {"key": "TEAM A/w/broken.las", "asset_team": "TEAM A"},
+    ]
+    payloads = {
+        "TEAM A/w/good.las": b"DEPT GR\n9800 45\n" * 50,
+        "TEAM A/w/broken.las": b"",  # empty text file - parse raises
+    }
+    run_ingest(entries, st, st._config.parsed_root, fetch=lambda k: payloads[k])
+    return st, EvidenceRetriever(st, query_embedder=fake_text_embedder())
+
+
+def test_document_status_classifies_and_mirrors_needs_ingest(tmp_path):
+    st, retriever = _seed_status_corpus(tmp_path)
+    result = retriever.document_status()
+
+    assert result["summary"] == {"complete": 1, "skipped": 2, "failed": 1}
+    assert result["total_matches"] == 4
+    assert result["ledger_as_of"]
+    by_key = {r["s3key"]: r for r in result["matches"]}
+    assert all("checksum" not in r for r in result["matches"])
+    assert by_key["TEAM A/w/good.las"]["status"] == "complete"
+    assert by_key["TEAM A/w/good.las"]["will_retry"] is False
+    assert by_key["TEAM A/w/broken.las"]["status"] == "failed"
+    assert by_key["TEAM A/w/broken.las"]["will_retry"] is True
+    # gate skip without etag: verdict recorded without byte identity - re-runs
+    assert by_key["TEAM A/w/plain.xlsx"]["status"] == "skipped"
+    assert by_key["TEAM A/w/plain.xlsx"]["will_retry"] is True
+    # gate skip with etag: terminal for those bytes
+    assert by_key["TEAM B/w/tagged.xlsx"]["status"] == "skipped"
+    assert by_key["TEAM B/w/tagged.xlsx"]["will_retry"] is False
+    assert by_key["TEAM B/w/tagged.xlsx"]["reason"]
+    # parity contract: will_retry mirrors needs_ingest for unchanged bytes
+    for row in result["matches"]:
+        stored = st.ledger_status(row["doc_id"])
+        assert row["will_retry"] == st.needs_ingest(row["doc_id"], stored["checksum"])
+
+
+def test_document_status_filters_limit_and_empty(tmp_path):
+    st, retriever = _seed_status_corpus(tmp_path)
+
+    skipped_only = retriever.document_status(status="skipped")
+    assert skipped_only["summary"] == {"complete": 0, "skipped": 2, "failed": 0}
+
+    frag = retriever.document_status(name_query="GOOD.las")
+    assert frag["total_matches"] == 1
+
+    team_b = retriever.document_status(asset_team="TEAM B")
+    assert {r["s3key"] for r in team_b["matches"]} == {"TEAM B/w/tagged.xlsx"}
+
+    lim = retriever.document_status(limit=2)
+    assert len(lim["matches"]) == 2
+    assert lim["total_matches"] == 4  # summary reflects the full matched set
+
+    none = retriever.document_status(name_query="zzz-not-there")
+    assert none["matches"] == []
+    assert none["total_matches"] == 0
+    assert none["summary"] == {"complete": 0, "skipped": 0, "failed": 0}
+    assert none["ledger_as_of"]  # watermark present even on empty results
