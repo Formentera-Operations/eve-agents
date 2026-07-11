@@ -35,7 +35,7 @@ export default defineEval({
         return sentences.some((s) => {
           const l = s.toLowerCase();
           if (!l.includes("bull mountain")) return false;
-          if (!(l.includes("liberty") || l.includes("same"))) return false;
+          if (!l.includes("liberty")) return false;
           return !/\b(cannot|can't|could not|couldn't|unable|no evidence|not (?:verify|confirm|find|appear|work)|did not|didn't|never|unclear|unverified)\b/.test(
             l,
           );
