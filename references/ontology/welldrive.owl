@@ -486,6 +486,21 @@
     <rdfs:label>fp divide llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#fp_pronghorn">
+    <rdf:type rdf:resource="#Operator"/>
+    <rdfs:label>fp pronghorn</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#fp_pronghorn_llc">
+    <rdf:type rdf:resource="#Operator"/>
+    <rdfs:label>fp pronghorn llc</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#proghorn">
+    <rdf:type rdf:resource="#Operator"/>
+    <rdfs:label>proghorn</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#range_resources">
     <rdf:type rdf:resource="#Operator"/>
     <rdfs:label>range_resources</rdfs:label>
@@ -516,15 +531,50 @@
     <rdfs:label>american_cementing</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#angel_energy">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>angel energy</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#anytime_hydroexcavation_inc.">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>anytime hydroexcavation inc.</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#archrock">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>archrock</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#atlas_engineering">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>atlas engineering</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#badger_consulting">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>badger consulting</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#baroid">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>baroid</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#basin_services">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>basin services</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#basin_well_service,_inc.">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>basin well service, inc.</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#bryton_trucking_llc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>bryton trucking llc</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#cameron_ainsworth">
     <rdf:type rdf:resource="#ServiceVendor"/>
@@ -543,8 +593,18 @@
   </rdf:Description>
   <rdf:Description rdf:about="#ctap_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>ctap llc</rdfs:label>
+    <rdfs:label>ctap_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#d&amp;j_consulting">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>d&amp;j consulting</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#dean_r._bauste_trucking">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>dean r. bauste trucking</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#double_d_oil_field_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
@@ -566,14 +626,19 @@
     <rdfs:label>expertool, llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#g_style">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>g style</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#go_wireline">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>go wireline</rdfs:label>
+    <rdfs:label>go_wireline</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#go_wireline_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>go wireline llc</rdfs:label>
+    <rdfs:label>go_wireline_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hall_trucking">
@@ -603,13 +668,18 @@
   </rdf:Description>
   <rdf:Description rdf:about="#ipt_energy_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>ipt energy services</rdfs:label>
+    <rdfs:label>ipt_energy_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#ipt_well_solutions">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>IPT Well Solutions</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#key_energy_services_inc.">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>key energy services inc.</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#ksw_oilfield_rental_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
@@ -636,9 +706,19 @@
     <rdfs:label>Liberty Oilfield Services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor (alias)</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#lignite_oil_company_inc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>lignite oil company inc</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#luke_weissler">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>luke_weissler</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#lund_oil">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>lund oil</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#nabors_drilling">
@@ -648,7 +728,12 @@
   </rdf:Description>
   <rdf:Description rdf:about="#nd&amp;t_services_inc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>nd&amp;t services inc</rdfs:label>
+    <rdfs:label>nd&amp;t_services_inc</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#nd85_hotshot_llc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>nd85 hotshot llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#newpark_drilling_fluids">
@@ -658,7 +743,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#nine_downhole_technologies_llc">
     <rdf:type rdf:resource="#ServiceVendor"/>
-    <rdfs:label>nine downhole technologies llc</rdfs:label>
+    <rdfs:label>nine_downhole_technologies_llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#noble_casing,_inc">
@@ -669,6 +754,11 @@
   <rdf:Description rdf:about="#north_dakota_department_of_environmental_quality">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>north dakota department of environmental quality</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#northern_lights">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>northern lights</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#pathfinder_inspection_&amp;_field_services">
@@ -696,9 +786,19 @@
     <rdfs:label>ranger_energy_services</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
+  <rdf:Description rdf:about="#recon_oilfield_services">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>recon oilfield services</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
   <rdf:Description rdf:about="#s_&amp;_k_stack_testing_inc">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>s &amp; k stack testing inc</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#sandpro,_llc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>sandpro, llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#schlumberger_technology_corp">
@@ -709,6 +809,11 @@
   <rdf:Description rdf:about="#security">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>security</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#spielman_excavating,_llc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>spielman excavating, llc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#stickman_inc">
@@ -749,6 +854,21 @@
   <rdf:Description rdf:about="#vaughn_energy_services">
     <rdf:type rdf:resource="#ServiceVendor"/>
     <rdfs:label>vaughn_energy_services</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#veteran_hot">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>veteran hot</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#wellpro_fishing_&amp;_rental_tools">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>wellpro fishing &amp; rental tools</rdfs:label>
+    <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#wisco_trucking_inc">
+    <rdf:type rdf:resource="#ServiceVendor"/>
+    <rdfs:label>wisco trucking inc</rdfs:label>
     <rdfs:comment>verified: gold_dim_vendor</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#abilene_christian_university_ut_1h">
@@ -1053,7 +1173,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#bussey_2h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>BUSSEY 2H</rdfs:label>
+    <rdfs:label>bussey_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#bussey_5h">
@@ -1153,7 +1273,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#courts_federal_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>COURTS FEDERAL 1H</rdfs:label>
+    <rdfs:label>courts_federal_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#cox_2h">
@@ -1265,6 +1385,11 @@
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>deal_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#decleva_b_1h">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>DECLEVA B 1H</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#donald_cryer_1">
     <rdf:type rdf:resource="#Well"/>
@@ -1423,7 +1548,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#fth-22-34-bnd_s518hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>FTH-22-34-BND S518HF</rdfs:label>
+    <rdfs:label>fth-22-34-bnd_s518hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#g2_845-846-stx_c311vw">
@@ -1508,7 +1633,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#gravelco_gu_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>GRAVELCO GU 1H</rdfs:label>
+    <rdfs:label>gravelco_gu_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#guthrie,_thomas_3">
@@ -1643,7 +1768,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit-b_n724h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>HOOEY-STX-UNIT-B N724H</rdfs:label>
+    <rdfs:label>hooey-stx-unit-b_n724h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#hooey-stx-unit-c">
@@ -1735,6 +1860,11 @@
     <rdf:type rdf:resource="#Well"/>
     <rdfs:label>isbell_2h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#island_grove_ranch_1h">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>ISLAND GROVE RANCH 1H</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well (alias)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#island_grove_ranch_unit_1h">
     <rdf:type rdf:resource="#Well"/>
@@ -1968,7 +2098,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#mannings_4m_farms_3h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>MANNINGS 4M FARMS 3H</rdfs:label>
+    <rdfs:label>mannings_4m_farms_3h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#maples_4h">
@@ -2088,7 +2218,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#mckinney_childrens_trust_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>MCKINNEY CHILDRENS TRUST 1H</rdfs:label>
+    <rdfs:label>mckinney_childrens_trust_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#mcmahon,_mark_gu_1h">
@@ -2218,7 +2348,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#preston_elizabeth_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>PRESTON ELIZABETH 1H</rdfs:label>
+    <rdfs:label>preston_elizabeth_1h</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#preston_elizabeth_5h">
@@ -2318,7 +2448,7 @@
   </rdf:Description>
   <rdf:Description rdf:about="#scott_unit_1h">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>scott_unit_1h</rdfs:label>
+    <rdfs:label>SCOTT UNIT 1H</rdfs:label>
     <rdfs:comment>verified: gold_dim_well (lease)</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#selma_goodnight_2h">
@@ -2533,17 +2663,27 @@
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow-16-33-pgn_s516hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>WILDCAT HOLLOW-16-33-PGN S516HF</rdfs:label>
+    <rdfs:label>wildcat_hollow-16-33-pgn_s516hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow-16-33-pgn_s614hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>WILDCAT HOLLOW-16-33-PGN S614HF</rdfs:label>
+    <rdfs:label>wildcat_hollow-16-33-pgn_s614hf</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow-16-33-pgn_s618hf">
     <rdf:type rdf:resource="#Well"/>
-    <rdfs:label>WILDCAT HOLLOW-16-33-PGN S618HF</rdfs:label>
+    <rdfs:label>wildcat_hollow-16-33-pgn_s618hf</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#wildcat_hollow_16-16-pgn_n115dw">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>wildcat hollow 16-16-pgn n115dw</rdfs:label>
+    <rdfs:comment>verified: gold_dim_well</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="#wildcat_hollow_16-33">
+    <rdf:type rdf:resource="#Well"/>
+    <rdfs:label>wildcat hollow 16-33</rdfs:label>
     <rdfs:comment>verified: gold_dim_well</rdfs:comment>
   </rdf:Description>
   <rdf:Description rdf:about="#wildcat_hollow_16-33-pgn_s516hf">
