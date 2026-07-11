@@ -63,6 +63,13 @@ class FindRequest(BaseModel):
     limit: int = Field(default=25, ge=1, le=100)
 
 
+class StatusRequest(BaseModel):
+    name_query: str = ""
+    asset_team: str | None = None
+    status: str | None = None
+    limit: int = Field(default=25, ge=1, le=100)
+
+
 class ReadRequest(BaseModel):
     page_id: str | None = None
     doc_id: str | None = None
@@ -113,6 +120,17 @@ def find(req: FindRequest) -> dict[str, Any]:
         limit=req.limit,
     )
     return {"documents": documents}
+
+
+@router.post("/status")
+def document_status(req: StatusRequest) -> dict[str, Any]:
+    """Ingest-ledger lookup — the coverage source of truth (read-only)."""
+    return get_retriever().document_status(
+        req.name_query,
+        asset_team=req.asset_team,
+        status=req.status,
+        limit=req.limit,
+    )
 
 
 @router.post("/read")

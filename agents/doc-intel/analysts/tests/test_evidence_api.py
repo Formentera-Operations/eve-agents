@@ -49,6 +49,15 @@ class FakeRetriever:
         self.calls.append(("find", name_query, asset_team, format_gate, limit))
         return []
 
+    def document_status(self, name_query, *, asset_team, status, limit):
+        self.calls.append(("status", name_query, asset_team, status, limit))
+        return {
+            "matches": [],
+            "summary": {"complete": 0, "skipped": 0, "failed": 0},
+            "total_matches": 0,
+            "ledger_as_of": "2026-07-11T00:00:00",
+        }
+
     def get_page(self, page_id, *, include_screenshot=False):
         page = self.pages.get(page_id)
         if page is None:
@@ -128,3 +137,28 @@ def test_read_whole_document(client):
     res = http.post("/evidence/read", json={"doc_id": "doc-1"})
     body = res.json()
     assert body["doc_id"] == "doc-1" and len(body["pages"]) == 1
+
+
+def test_status_passes_filters_through(client):
+    tc, fake = client
+    res = tc.post(
+        "/evidence/status",
+        json={"name_query": "S617", "asset_team": "TEAM", "status": "skipped", "limit": 7},
+    )
+    assert res.status_code == 200
+    assert ("status", "S617", "TEAM", "skipped", 7) in fake.calls
+    body = res.json()
+    assert body["matches"] == [] and body["ledger_as_of"]
+
+
+def test_status_rejects_out_of_bounds_limit(client):
+    tc, _ = client
+    assert tc.post("/evidence/status", json={"limit": 0}).status_code == 422
+    assert tc.post("/evidence/status", json={"limit": 101}).status_code == 422
+
+
+def test_status_defaults_to_empty_query(client):
+    tc, fake = client
+    res = tc.post("/evidence/status", json={})
+    assert res.status_code == 200
+    assert ("status", "", None, None, 25) in fake.calls
