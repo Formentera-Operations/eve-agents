@@ -1,8 +1,13 @@
 import { defineEval } from "eve/evals";
 import { includes, satisfies } from "eve/evals/expect";
+import { z } from "zod";
 
 const ANALYSTS_URL =
   process.env.DOC_INTEL_ANALYSTS_URL ?? "http://127.0.0.1:8734";
+
+const probeSchema = z.object({
+  matches: z.array(z.object({ s3key: z.string() })),
+});
 
 // Locks in the ledger-grounded absence-claim contract: asked about a
 // document that exists in WellDrive only as a deferred-format skip, the
@@ -28,10 +33,8 @@ export default defineEval({
     if (!probe.ok) {
       throw new Error(`fixture setup: /evidence/status responded ${probe.status}`);
     }
-    const { matches } = (await probe.json()) as {
-      matches: { s3key: string }[];
-    };
-    if (!matches?.length) {
+    const { matches } = probeSchema.parse(await probe.json());
+    if (!matches.length) {
       throw new Error(
         "fixture setup: no skipped rows in the ledger — deferred-format ingest may have un-parked; retarget this eval",
       );
@@ -52,7 +55,18 @@ export default defineEval({
       `Does WellDrive have a document named "${filename}"? I need its contents — can you pull them?`,
     );
     t.succeeded();
-    t.calledTool("check_document_status");
+    // The ledger lookup must be driven by the asked document, not merely
+    // fired — the call's name_query must be a genuine fragment of the asked
+    // key (the model reasonably queries short distinctive tokens like a
+    // well code, so "fragment of the key", not "equals the filename").
+    t.calledTool("check_document_status", {
+      input: {
+        name_query: (value) =>
+          typeof value === "string" &&
+          value.length >= 3 &&
+          s3key.toLowerCase().includes(value.toLowerCase()),
+      },
+    });
     // The document must be reported present-but-declined, not absent.
     t.check(t.reply, includes(tokenPattern));
     t.check(
@@ -61,25 +75,34 @@ export default defineEval({
     );
     // Fail closed (the wildcat lesson), calibrated to real answer shape:
     // correct answers name the file once (often a heading) and attach the
-    // verdict anaphorically right after ("it's skipped"). Require the
-    // verdict within a 3-block window of a token mention, with no
-    // existence-negation in that window — a reply that negates existence
-    // near the token, or attaches the verdict to some other document far
-    // from it, still fails.
+    // verdict anaphorically right after ("it's skipped"). Require, within a
+    // 3-block window of a token mention: the skip verdict, an AFFIRMATIVE
+    // existence signal, and no negation/hedge — a hedged non-answer
+    // ("couldn't confirm, may be deferred") or an existence denial near the
+    // token still fails. Negation vocabulary matches the wildcat precedent.
     t.check(
       t.reply,
       satisfies((reply) => {
         const blocks = String(reply).split(/(?<=[.!?])\s+|\n+/);
         const verdict =
           /skip|deferred|not (indexed|searchable|parsed|readable)|never (parsed|indexed)/i;
+        const affirmative =
+          /exists|is in welldrive|welldrive (has|holds|contains)|found (it|in)|is present|located/i;
+        // Hedges and existence denials fail; capability statements the
+        // correct answer naturally contains ("can't pull its contents"
+        // because the format is deferred) must not.
         const negation =
-          /not (in|found in) welldrive|doesn't exist|does not exist|no such|couldn't find|could not find/i;
+          /(cannot|can't|could not|couldn't|unable to) (confirm|verify|find|locate|determine|tell)|no evidence|unclear|unverified|not (in|found in) welldrive|doesn't exist|does not exist|no such|is(n't| not) (in|present|available)|no record|(did not|didn't|never) (find|locate)/i;
         return blocks.some((b, i) => {
           if (!tokenPattern.test(b)) return false;
           const window = blocks.slice(i, i + 4).join(" ");
-          return verdict.test(window) && !negation.test(window);
+          return (
+            verdict.test(window) &&
+            affirmative.test(window) &&
+            !negation.test(window)
+          );
         });
-      }, "reports the document as present-but-skipped near its mention, without negating existence"),
+      }, "affirms existence and the skip verdict near the document mention, with no negation or hedge"),
     );
     t.check(
       t.reply,

@@ -47,7 +47,10 @@ full Westlake Resources tranche in the evidence store.
   specific skipped files rather than reciting aggregate counts; its live
   output is authoritative over `corpus_overview`'s static coverage numbers
   when they conflict. Standalone images
-  (PNG/JPG/TIF) are NOT deferred — they are indexed visually: hunt them with
+  (PNG/JPG/TIF) are indexed visually — not deferred — unless the ledger
+  marks a specific file skipped (unreadable bytes, or oversize beyond the
+  pixel ceiling); `check_document_status` is authoritative per file. Hunt
+  indexed images with
   `find_evidence_files` (`format_gate: "image"`) and read them with
   `read_evidence` vision before claiming a scan, log, or diagram is absent.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
@@ -77,11 +80,13 @@ full Westlake Resources tranche in the evidence store.
   absent. An empty ledger result is weak evidence, not a negative: retry
   fragment variations (shorter tokens, alternate spellings) before treating
   it as absence, and date any absence claim from the response's
-  `ledger_as_of` watermark. For WESTLAKE RESOURCES content, a thorough
-  evidence-store search that comes up empty — plus a ledger check for
-  skipped candidates — is a genuine negative over every indexed Westlake
-  document as of that watermark; never refer the asker to "the full
-  archive" for Westlake. For the other asset teams, the ledger and sample
+  `ledger_as_of` watermark — the ledger's last write, a proxy for the last
+  ingest pass (a pass may be in progress, and files added to WellDrive
+  since the last pass are invisible to the ledger). For WESTLAKE RESOURCES
+  content, a thorough evidence-store search that comes up empty — plus a
+  ledger check for skipped candidates — is a genuine negative over every
+  indexed Westlake document as of that watermark; never refer the asker to
+  "the full archive" for Westlake. For the other asset teams, the ledger and sample
   only ever saw 500 of a ~111k-file archive: absence there is never "not in
   WellDrive" — say which entry_types in the full archive would likely hold
   the answer.

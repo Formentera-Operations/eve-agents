@@ -474,3 +474,32 @@ def test_document_status_filters_limit_and_empty(tmp_path):
     assert none["total_matches"] == 0
     assert none["summary"] == {"complete": 0, "skipped": 0, "failed": 0}
     assert none["ledger_as_of"]  # watermark present even on empty results
+
+
+def test_document_status_treats_fragment_literally(tmp_path):
+    """LIKE wildcards in filenames/queries must not act as wildcards (review #4)."""
+    from doc_intel_analysts.evidence.ingest import run_ingest
+    from doc_intel_analysts.evidence.retrieval import EvidenceRetriever
+
+    st = make_store(tmp_path)
+    entries = [
+        {"key": "T/w/a_b.las", "asset_team": "T"},
+        {"key": "T/w/axb.las", "asset_team": "T"},
+    ]
+    payload = b"DEPT GR\n9800 45\n" * 50
+    run_ingest(entries, st, st._config.parsed_root, fetch=lambda k: payload)
+    retriever = EvidenceRetriever(st, query_embedder=fake_text_embedder())
+
+    literal = retriever.document_status(name_query="a_b")
+    assert {r["s3key"] for r in literal["matches"]} == {"T/w/a_b.las"}
+    assert literal["total_matches"] == 1  # '_' must not match the 'x' in axb
+
+    percent = retriever.document_status(name_query="%")
+    assert percent["total_matches"] == 0  # literal percent matches nothing
+
+
+def test_document_status_asset_team_case_insensitive(tmp_path):
+    """Wrong-cased team must not fake absence (review #5)."""
+    _, retriever = _seed_status_corpus(tmp_path)
+    lowered = retriever.document_status(asset_team="team b/")
+    assert {r["s3key"] for r in lowered["matches"]} == {"TEAM B/w/tagged.xlsx"}
