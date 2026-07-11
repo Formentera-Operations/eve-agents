@@ -95,7 +95,9 @@ export default defineEval({
           /(cannot|can't|could not|couldn't|unable to) (confirm|verify|find|locate|determine|tell)|no evidence|unclear|unverified|not (in|found in) welldrive|doesn't exist|does not exist|no such|is(n't| not) (in|present|available)|no record|(did not|didn't|never) (find|locate)/i;
         return blocks.some((b, i) => {
           if (!tokenPattern.test(b)) return false;
-          const window = blocks.slice(i, i + 4).join(" ");
+          // Symmetric window: correct replies sometimes affirm existence
+          // just before naming the file ("Yes — it exists ... at: <key>").
+          const window = blocks.slice(Math.max(0, i - 2), i + 4).join(" ");
           return (
             verdict.test(window) &&
             affirmative.test(window) &&

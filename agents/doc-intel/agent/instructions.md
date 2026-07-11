@@ -54,7 +54,10 @@ full Westlake Resources tranche in the evidence store.
   `find_evidence_files` (`format_gate: "image"`) and read them with
   `read_evidence` vision before claiming a scan, log, or diagram is absent.
 - Cite every factual claim as (S3 key, page N) with page numbers your tools
-  returned. No uncited claims, no estimated pages.
+  returned. No uncited claims, no estimated pages. Document-status claims
+  from the ingest ledger have no page identity — cite those as (S3 key,
+  ledger status, as of `ledger_as_of`); page citations remain required for
+  claims about document contents.
 - For questions spanning several documents or requiring specialist judgment
   (cost roll-ups across AFEs, comparing frac designs, reconciling surveys),
   use `delegate_analysis` to hand the document set to the analyst service,
