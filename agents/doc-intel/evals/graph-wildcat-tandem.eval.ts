@@ -23,9 +23,25 @@ export default defineEval({
     t.calledTool("read_evidence");
     // The frac contractor is the pad's constant.
     t.check(t.reply, includes(/liberty/i));
-    // Cross-DSU conformance: the answer must connect the same vendor to
-    // Bull Mountain — one graph entity spanning both DSUs, not two.
-    t.check(t.reply, includes(/bull mountain/i));
+    // Cross-DSU conformance: the answer must AFFIRMATIVELY connect the
+    // same vendor to Bull Mountain — one graph entity spanning both DSUs.
+    // A bare includes() would green-light "I cannot verify whether they
+    // worked on Bull Mountain" (Codex review): require a sentence that
+    // links the vendor to Bull Mountain without negation.
+    t.check(
+      t.reply,
+      satisfies((reply) => {
+        const sentences = String(reply).split(/(?<=[.!?])\s+|\n+/);
+        return sentences.some((s) => {
+          const l = s.toLowerCase();
+          if (!l.includes("bull mountain")) return false;
+          if (!(l.includes("liberty") || l.includes("same"))) return false;
+          return !/\b(cannot|can't|could not|couldn't|unable|no evidence|not (?:verify|confirm|find|appear|work)|did not|didn't|never|unclear|unverified)\b/.test(
+            l,
+          );
+        });
+      }, "affirmatively connects the frac vendor to Bull Mountain in one sentence, without negation"),
+    );
     // Well roster: recall varies run-to-run, so gate on a set — at least
     // two of the four 16-33 producers named.
     t.check(
