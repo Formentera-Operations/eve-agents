@@ -43,6 +43,10 @@ export default defineEval({
       .replace(/\[[^\]]*\]/g, " ")
       .split(/[\s._]+/)
       .sort((a, b) => b.length - a.length)[0];
+    const tokenPattern = new RegExp(
+      token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "i",
+    );
 
     await t.send(
       `Does WellDrive have a document named "${filename}"? I need its contents — can you pull them?`,
@@ -50,7 +54,7 @@ export default defineEval({
     t.succeeded();
     t.calledTool("check_document_status");
     // The document must be reported present-but-declined, not absent.
-    t.check(t.reply, includes(new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i")));
+    t.check(t.reply, includes(tokenPattern));
     t.check(
       t.reply,
       includes(/skip|deferred|not (indexed|searchable|parsed|readable)|never (parsed|indexed)/i),
@@ -66,13 +70,12 @@ export default defineEval({
       t.reply,
       satisfies((reply) => {
         const blocks = String(reply).split(/(?<=[.!?])\s+|\n+/);
-        const esc = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const verdict =
           /skip|deferred|not (indexed|searchable|parsed|readable)|never (parsed|indexed)/i;
         const negation =
           /not (in|found in) welldrive|doesn't exist|does not exist|no such|couldn't find|could not find/i;
         return blocks.some((b, i) => {
-          if (!new RegExp(esc, "i").test(b)) return false;
+          if (!tokenPattern.test(b)) return false;
           const window = blocks.slice(i, i + 4).join(" ");
           return verdict.test(window) && !negation.test(window);
         });
