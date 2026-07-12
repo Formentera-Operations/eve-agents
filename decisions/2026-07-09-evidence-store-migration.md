@@ -51,6 +51,15 @@ remediation (`dbdf9b3`, `4d0a16f`) was enough to *finish the pass* — all
 3. **Vercel team scope + gateway billing** move from Rob's personal scope
    (`doc-intel-dev`) to the formentera team — pre-existing open item, folded
    in here because prod deploy depends on it.
+   **Executed 2026-07-11:** relinked to `formentera/doc-intel`
+   (`team_4Py…`/`prj_M6tz…`) via `vercel link --scope formentera`; fresh
+   team-scoped OIDC pulled; analysts service restarted on the new
+   identity; `ledger-status` eval passed 6/6 through the team gateway —
+   scope + billing path verified end-to-end. Remaining (dashboard, Rob):
+   confirm team gateway credits + auto-reload (prevents the known $0
+   mid-batch stall), review team membership against the trace-viewership
+   invariant (`2026-07-11-agent-runs-trace-retention.md`), delete the
+   orphaned personal `doc-intel-dev` project at leisure.
 4. **Future ingests as an Azure Container Apps Job** with service
    credentials — kills OIDC token babysitting, and provides the
    high-memory environment where `pages` compaction (and every future
