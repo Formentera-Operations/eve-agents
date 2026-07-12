@@ -1,0 +1,130 @@
+{
+ "fixtures": {
+  "page_id": "2026-02-06-bull-mountain-31-18-div-s617hf-surveys-34466804-23db5d96:p1",
+  "doc_id": "2026-02-06-bull-mountain-31-18-div-s617hf-surveys-34466804-23db5d96"
+ },
+ "local": [
+  {
+   "op": "open+count(4 tables)",
+   "cold_s": 0.014,
+   "warm_median_s": 0.003,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "vector search (chunks, hybrid leg)",
+   "cold_s": 2.434,
+   "warm_median_s": 0.967,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "fts search (chunks)",
+   "cold_s": 0.038,
+   "warm_median_s": 0.004,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "grep exact 'S733H' (pages scan)",
+   "cold_s": 3.818,
+   "warm_median_s": 2.518,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "grep filtered '9,020' (Westlake)",
+   "cold_s": 2.794,
+   "warm_median_s": 2.775,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "find_documents 'surveys'",
+   "cold_s": 0.009,
+   "warm_median_s": 0.003,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "document_status '.xlsx' skipped",
+   "cold_s": 0.035,
+   "warm_median_s": 0.027,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "get_page (text)",
+   "cold_s": 0.956,
+   "warm_median_s": 0.573,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "get_page (+screenshot blob)",
+   "cold_s": 6.143,
+   "warm_median_s": 3.995,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "get_document_pages",
+   "cold_s": 0.622,
+   "warm_median_s": 0.04,
+   "within_60s_tool_budget": true
+  }
+ ],
+ "s3": [
+  {
+   "op": "open+count(4 tables)",
+   "cold_s": 1.696,
+   "warm_median_s": 0.012,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "vector search (chunks, hybrid leg)",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  },
+  {
+   "op": "fts search (chunks)",
+   "cold_s": 19.204,
+   "warm_median_s": 0.929,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "grep exact 'S733H' (pages scan)",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  },
+  {
+   "op": "grep filtered '9,020' (Westlake)",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  },
+  {
+   "op": "find_documents 'surveys'",
+   "cold_s": 8.22,
+   "warm_median_s": 5.073,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "document_status '.xlsx' skipped",
+   "cold_s": 28.183,
+   "warm_median_s": 8.94,
+   "within_60s_tool_budget": true
+  },
+  {
+   "op": "get_page (text)",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  },
+  {
+   "op": "get_page (+screenshot blob)",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  },
+  {
+   "op": "get_document_pages",
+   "cold_s": ">90 TIMEOUT",
+   "warm_median_s": ">90 TIMEOUT",
+   "within_60s_tool_budget": false
+  }
+ ]
+}

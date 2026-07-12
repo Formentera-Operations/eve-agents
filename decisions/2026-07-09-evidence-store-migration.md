@@ -1,7 +1,9 @@
 # Evidence-store migration off the laptop — S3 becomes source of truth
 
-**Status:** ACCEPTED (Rob, 2026-07-08) as a four-phase plan. Phase 2's host
-choice is the one open sub-decision. Execute Phase 1 promptly.
+**Status:** ACCEPTED (Rob, 2026-07-08) as a four-phase plan. Phase 1
+executed and verified 2026-07-09. **Phase 2 host choice RESOLVED
+2026-07-11 — Azure Container App with a local replica; direct-S3
+disqualified by benchmark (see "Phase 2 resolution" below).**
 
 **Decision recorded:** the Westlake evidence store (61 GB Lance + 2.4 GB
 parsed output under `agents/doc-intel/analysts/.evidence/`) migrates off
@@ -70,6 +72,46 @@ remediation (`dbdf9b3`, `4d0a16f`) was enough to *finish the pass* — all
 Phase 2 may add read latency vs local NVMe (hence the benchmark gate);
 two copies exist during the transition.
 
+**Phase 2 resolution (2026-07-11, Rob):** option (b) — Azure Container App
+hosting a local replica, bootstrapped by the Phase 1 sync script pointed
+downward (`aws s3 sync` S3→container disk at startup; ~100 GB disk to
+leave growth room). S3 remains source of truth; the replica is disposable.
+
+The benchmark (real `EvidenceRetriever` query code, read-only store shim,
+sampled stored vector as query embedding, 90 s per-call cap vs the 60 s
+tool budget; laptop → us-east-1) disqualified direct-S3 decisively:
+
+| Op | Local NVMe (warm) | Direct-S3 (cold → warm) |
+|---|---|---|
+| open + count 4 tables | 0.003 s | 1.7 s → 0.01 s ✅ |
+| vector search (chunks) | 0.97 s | **>90 s even warm** ❌ |
+| fts search (chunks) | 0.004 s | 19.2 s → 0.93 s ✅ warm |
+| grep (pages scan) ×2 | 2.5–2.8 s | **>90 s** ❌ |
+| find_documents | 0.003 s | 8.2 s → 5.1 s ⚠️ |
+| document_status | 0.03 s | 28.2 s → 8.9 s ⚠️ |
+| get_page text / +blob / doc pages | 0.04–4.0 s | **>90 s all three** ❌ |
+
+Two independent failure classes: (1) the pre-compaction `pages` table's
+12,851 fragments make even **point reads** time out — per-fragment
+round-trips dominate query planning, so Azure's better network cannot
+rescue it pre-Phase-4; (2) the chunks vector index never completed a
+query under 90 s even warm — per-query index reads exceed what any
+plausible bandwidth uplift closes against a 60 s *ceiling* (the product
+needs seconds). The local-NVMe column is green across the board and
+network-independent; the replica inherits it wholesale. Direct-S3 may be
+cheaply re-tested from inside Azure after Phase 4 compaction, but nothing
+waits on it. Raw data: benchmark run 2026-07-11, results JSON archived
+with the session; methodology reproducible from this table.
+
+Hosting note (2026-07-11): Vercel offers no comparable runtime — Fluid
+Compute caps at 800 s / 4 GB with no persistent volumes, versus the
+service's multi-hour jobs, 21–24 GB ingest peaks, and 61 GB replica. The
+seam decision's split (eve agent on Vercel, Python service on container
+infra) is also Vercel's own recommended shape. AWS colocation (Fargate
+beside the S3 bucket) would make replica bootstrap intra-region, but
+Azure-first policy and the existing Container Apps patterns keep ACA;
+cross-cloud sync (~$5–6, minutes, at startup only) is the accepted cost.
+
 **Supersedes:** nothing — extends `2026-07-05-doc-intel-seam.md` (evidence
 store as application-owned layer) with an infrastructure home.
-**Owner:** Rob (Phase 2 host choice, phase timing).
+**Owner:** Rob (phase timing; Phase 2 resolved as above).
