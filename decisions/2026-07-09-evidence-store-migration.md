@@ -44,10 +44,12 @@ remediation (`dbdf9b3`, `4d0a16f`) was enough to *finish the pass* — all
    evidence/`. Verify object counts + bytes against local before declaring
    S3 authoritative. Fragment-heavy `pages` syncs fine — this phase moves
    bytes, not table structure.
-2. **Retrieval rehome (open sub-decision):** (a) point `lance_root` directly
-   at S3 (LanceDB reads `s3://` natively) vs (b) a small Azure Container App
-   hosting a local replica. Benchmark direct-S3 query latency first; choose
-   (b) only if latency is unacceptable for the agent's read path.
+2. **Retrieval rehome — RESOLVED 2026-07-11:** (a) direct-S3 `lance_root`
+   vs (b) a small Azure Container App hosting a local replica. The
+   benchmark gate ran and chose **(b)** — direct-S3 latency is
+   unacceptable for the agent's read path (six of ten ops exceed the
+   90 s cap, including point reads). Details under "Phase 2 resolution"
+   below.
 3. **Vercel team scope + gateway billing** move from Rob's personal scope
    (`doc-intel-dev`) to the formentera team — pre-existing open item, folded
    in here because prod deploy depends on it.
@@ -83,8 +85,25 @@ two copies exist during the transition.
 
 **Phase 2 resolution (2026-07-11, Rob):** option (b) — Azure Container App
 hosting a local replica, bootstrapped by the Phase 1 sync script pointed
-downward (`aws s3 sync` S3→container disk at startup; ~100 GB disk to
-leave growth room). S3 remains source of truth; the replica is disposable.
+downward (`aws s3 sync` S3→replica volume at startup; ~100 GB to leave
+growth room). S3 remains source of truth; the replica is disposable.
+
+*Storage correction (2026-07-12, Codex PR review):* ACA ephemeral
+storage caps at **8 GiB per replica** regardless of vCPU, and ACA
+supports no block/managed-disk volumes — only Azure Files mounts
+(SMB/NFS; NetApp and Blob mounting unsupported). A 61+ GB replica
+therefore cannot live on "container disk." Amended plan: the replica
+volume is a **premium (SSD) Azure Files NFS share** mounted into the
+Container App (NFS requires the custom-VNet environment configuration).
+Gate: re-run this same benchmark from inside Azure against the NFS
+mount before building on it — NFS is network storage, expected between
+local-NVMe and S3 in latency; the local column's headroom (worst warm
+op 4 s vs the 60 s budget) suggests it fits, but that is a hypothesis,
+not a result. Documented fallback if the NFS gate fails: a small Azure
+VM (or AKS node) with an attached Premium SSD managed disk — true block
+storage at near-local latency, at the cost of leaving the Container
+Apps pattern. Note: Phase 4's ingest/compaction job shares this same
+storage constraint and inherits whichever home this gate selects.
 
 The benchmark (real `EvidenceRetriever` query code, read-only store shim,
 sampled stored vector as query embedding, 90 s per-call cap vs the 60 s
