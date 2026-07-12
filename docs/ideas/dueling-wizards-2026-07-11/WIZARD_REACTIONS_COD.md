@@ -1,0 +1,62 @@
+## REACTION
+
+**Overall.** Their ranking is mostly right. The critique materially lowers my confidence in the AFE mart’s extraction layer, the NPT loop’s first-release economics, and the coverage flywheel as a near-term product. It does not change the Evidence Desk’s priority or the core value of the AFE and readiness ideas. My post-reveal ordering remains Evidence Desk first, AFE mart and readiness radar in the same tier, NPT as a gated discovery project, and the coverage flywheel reduced to its useful kernel.
+
+### Evidence Desk — 860
+
+“Program-sized scope” is fair. The proposal combines three accepted migration phases (`decisions/2026-07-09-evidence-store-migration.md:38-55`), analyst-service authentication, proof enforcement, Teams, RBAC, and source-page viewing. Those should be separate milestones.
+
+The literal supporting-span requirement also needs revision. Tier-A reads expose structured fields and field-page citations but no page body (`corpus.py:79-96`), while OCR normalization makes exact string matching brittle. Support should allow several mechanically checked forms: structured field/value/page, normalized text span, page-region plus checksum, vision finding plus screenshot checksum, or ledger status. The evidence registry proves that a page was read; it does not by itself prove that the page entails the claim.
+
+One rival correction is factually wrong: eve’s bundled documentation explicitly supports client-supplied, per-turn `outputSchema` (`guides/client/output-schema.mdx:6-7,115-129`). The narrower caveat is valid: the stock Teams `onMessage` result exposes only `auth` and `context`, not `outputSchema` (`teamsChannel.d.ts:75-81`). Thus the client path can request structured output per turn, while Teams needs the finalize tool plus custom result/card delivery. Hooks, typed `action.result` narrowing, and durable session state are all genuinely present (`guides/hooks.md:43-72`; `guides/state.md:14-20,47-64`). The 860 score is fair; I would split delivery, not abandon the design.
+
+### AFE-to-Actual Mart — 800
+
+The `entry_type` correction is exactly right. Neither `documents` nor `ledger` stores it (`evidence/store.py:48-55,98-109`); prefix ingest lists only key, asset team, and ETag (`evidence/ingest.py:39-66`); even manifest ingest discards the manifest’s `entry_type` (`evidence/ingest.py:25-36`). The mart therefore needs an authoritative S3 metadata/inventory enrichment stage and should persist `entry_type` into its selection manifest. That is a real missing pipeline component.
+
+They are also right that semantic validation was underpriced. Verifying that `$1,390,000` appears on a page cannot prove it is the “Intangible – Completion” row rather than the `$1,762,000` completion subtotal—the exact trap in `benchmark/questions.json:193-200`. Production validation needs layout-aware row/column binding from retained parse geometry, deterministic arithmetic invariants, schema constraints, and sampled SME adjudication. The eight AFE benchmark wins demonstrate answerability, not scalable batch-extraction accuracy.
+
+This changes my confidence from high to medium until a one-asset extraction pilot clears those semantic checks. It does not undermine the end-state: source-versioned facts, SQL variance logic, and Power BI consumption remain the right architecture for a recurring Finance control.
+
+### NPT Learning Loop — 680
+
+The cost and extraction objections are warranted. Typed causal extraction from operational narratives is substantially harder than AFE headers, and a 20-event gold set is insufficient for the diversity of shorthand, vendors, phases, and ambiguous causality. The measured graph economics—approximately 9× token amplification and $3.2 per source MB (`decisions/2026-07-10-selective-graph-enrichment.md:37-58`)—should have been an explicit gate. V1 needs one incident class, a larger stratified gold set, extraction cost per source MB, and a stop condition before any mart or graph expansion.
+
+Two parts of their factual framing are wrong:
+
+- SCADA/IoT is explicitly part of Formentera’s stated technology estate. What the repo lacks is a callable SCADA/MQTT/Ignition connection or data contract. So “SCADA does not exist” is false; “this repo does not establish query access” is correct. SCADA correlation belongs behind a Phase 0 access, timestamp-quality, and tag-resolution spike.
+- The current graph is not solely Frac-PDF-derived. Base ingest loads every manifest row with a parsed reference (`graph/ingest.py:33-37`), and the sample includes drilling, completion, partner, and workover daily reports (`corpus/sample-manifest.csv:242-265`). The Bull Mountain selective extension was Frac-only, but the graph’s cross-pad vendor claim is exactly proven: `graph-wildcat-tandem.eval.ts:4-10,25-43` requires an affirmative Liberty link across Wildcat Hollow and Bull Mountain.
+
+I never claimed the typed event mart already existed; that remains substantial forward work. PatchOps should also be treated as regulatory/weather context, not as telemetry. Despite those rival misreads, 680 is a fair overall score because the delivery and causal-attribution risks are real.
+
+### Readiness and Change Radar — 805
+
+The core diagnosis is sound. Re-ingest deletes prior rows, each table commits independently, and concurrent readers can see partial cross-table state (`evidence/store.py:302-315`). `ledger_as_of` is merely the maximum ledger write time, explicitly documented as a proxy (`evidence/retrieval.py:329-336`). Append-only run history and reproducible readiness results remain valuable.
+
+Their blue/green criticism changes my sequencing. Current snapshots copy the entire store and are explicitly “convenience, not the durability story” (`evidence/snapshot.py:1-11,37-64`). The proposal did not choose between full immutable releases, Lance version pinning, or another publication mechanism for a 61 GB store. V1 should therefore be an append-only run/delta manifest plus a deterministic readiness audit. Atomic corpus promotion should wait until nightly production ingest and multiple concurrent consumers make the partial-state window operationally material.
+
+The 805 score is reasonable for the destination, but their deterministic CLI is the better first milestone.
+
+### Coverage Flywheel — 560
+
+This is the critique that most changes my evaluation. There is no deployed distribution surface yet, so demand telemetry would mostly measure development sessions. The supply-side decision is already unusually clear: the Westlake tranche contains 4,661 deferred Excel-family files versus 411 files in the remaining deferred tail (`docs/plans/2026-07-06-002-feat-evidence-store-plan.md:86-92`). Choosing tall-log tiling while claiming demand would select the winner was internally inconsistent.
+
+Their statement that `check_document_status` already enumerates the backlog “by format and reason” is slightly overstated: it offers filtered counts and at most 100 returned rows, not a one-call group-by over extensions/reasons (`evidence/retrieval.py:296-360`). But no telemetry system is needed to identify Excel as the obvious first adapter.
+
+The durable kernel remains important. Prefix ingest short-circuits an unchanged ETag before it reruns `classify()` (`evidence/ingest.py:109-120`), so a newly supported format stays terminal without a gate/policy version or manual reopening. I would ship `ingest_policy_version`, an Excel canonical-render/cell-citation contract, and adapter-specific benchmarks; I would defer the demand flywheel. The 560 score is fair for the proposal as written.
+
+### Posture verdicts
+
+- **Batch AFE mart vs live AtScale reconciliation:** The live, allow-listed reconciliation leg wins Phase 0; the mart wins the end-state. One actual-cost measure and one well/AFE join should first prove identity, grain, permissions, and semantic compatibility. But “one connection file plus one skill” prices only the adapter: the repo has no `agent/connections/` implementation, and eve connections assume an external MCP/OpenAPI server already exists (`connections/overview.mdx:7-21`). Once the reconciliation is recurring, the versioned Snowflake/dbt mart is safer, cheaper per use, auditable, and BI-native.
+
+- **Teams desk vs MCP-server distribution:** Teams wins as the first distribution surface; MCP should follow as a machine interface over the same proof contract. Teams is native to both Formentera’s working environment and eve (`channels/teams.mdx:7-23`). Conversely, eve’s MCP support here is client-side—it consumes remote MCP servers (`connections/mcp.mdx:6-13`); it does not automatically publish this agent as one. An MCP server therefore adds a new authentication, authorization, schema, and tenancy boundary. It becomes valuable after the proof-carrying service is stable, not instead of the human-facing pilot.
+
+- **Readiness radar vs deterministic audit CLI:** Their CLI wins V1. It can validate the readiness matrix, scope rules, and SME ownership without schedules, Teams noise, or atomic release machinery. It should still record its exact input run/watermark so the result is reproducible. Once Azure ingest is scheduled and users demonstrate value from repeated audits, append-only deltas and conditional Teams notifications can promote it into the radar. My radar is the better destination, not the better first commit.
+
+## BLIND SPOT
+
+**An untrusted-document capability firewall.** Neither slate treated document content itself as adversarial. Parsed Markdown is seeded verbatim into analyst files (`corpus.py:153-181`), while the analyst prompts require citation discipline but never say that instructions found inside documents are untrusted data (`agent.py:35-53`). A registered citation proves that a page was read; it does not prevent a malicious or accidental instruction on that page from steering the model. Before adding AtScale, SCADA, MCP distribution, or broader Teams access, extraction workers should have no external/write capabilities, document-derived text should never authorize tool calls, and adversarial PDF/text/metadata fixtures should test prompt injection, false citations, and attempted exfiltration. Both models focused on proof and distribution; the combination makes this omitted boundary more important for confidential well, financial, and operational data.
+
+**A canonical document-identity and lineage registry.** Both slates treated S3 location as document identity. Today `doc_id` hashes the S3 key, not the bytes (`evidence/parse.py:121-131`), and Westlake settlement is ETag-based. A copied or renamed document therefore becomes a new logical document, while exact duplicates can be extracted, graphed, alerted, or counted twice; the selective-enrichment pilot already eliminated 1,603 checksum duplicates (`decisions/2026-07-10-selective-graph-enrichment.md:18-23`). A lightweight registry should separate canonical content identity from key aliases and record SHA-256, S3 VersionId where available, authoritative `entry_type`, duplicate group, first/last observation, and explicit supersession. Both models concentrated versioning inside individual products—AFE chains or ingest runs—rather than fixing identity once. For a 111,288-object vendor-managed archive, this prevents duplicate spend, false “new document” alerts, broken citation continuity, and double-counted financial facts.
+
+**A correction-to-regression workflow.** Both slates use SMEs as pilot gates but neither turns corrections into durable quality improvements. The answer benchmark is still manual, while the automated harness scores retrieval only (`evidence/benchmark.py:14-16`). A “report wrong” action from Teams or Power BI should create a draft correction containing the source checksum, page/crop, semantic field, observed value, proposed value, and reason; an SME approval should invalidate the affected derived record, trigger targeted reprocessing, and generate a permanent regression fixture. This is not the deferred answer ledger: it stores adjudicated source-fact corrections and test cases, not conversations. Both models thought in terms of launching products and measuring pilots; they missed the mechanism that compounds scarce Finance and Operations expertise so gross/net, subtotal/line-item, and documented/inferred mistakes are not rediscovered repeatedly.
