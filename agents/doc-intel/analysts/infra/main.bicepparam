@@ -4,7 +4,7 @@
 using './main.bicep'
 
 // Pin every deploy to an explicit image tag.
-param imageTag = '503b5f0'
+param imageTag = 'f2ef40d'
 
 // Resource ID of the environment's infrastructure subnet (needs the
 // Microsoft.Storage service endpoint — README).
