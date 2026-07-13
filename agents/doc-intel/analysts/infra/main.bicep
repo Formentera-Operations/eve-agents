@@ -566,7 +566,11 @@ resource ingestJob 'Microsoft.App/jobs@2025-01-01' = if (deployService) {
 
 // --- maintenance (wave 2, E8 dedicated profile) ----------------------------------
 
-resource maintenanceJob 'Microsoft.App/jobs@2025-01-01' = if (deployService) {
+// NOT deployService-gated (revised 2026-07-13): the NFS gate's amended flow
+// runs pages compaction BEFORE wave 2 — the four benchmark timeouts are all
+// pre-compaction pages-table ops, so the maintenance job must exist in wave 1.
+// Manual trigger only; standing it up is harmless.
+resource maintenanceJob 'Microsoft.App/jobs@2025-01-01' = {
   name: '${appName}-maintenance'
   location: location
   tags: tags

@@ -66,5 +66,12 @@ RUN AI_GATEWAY_API_KEY=build-placeholder python -c "from doc_intel_analysts.evid
     && rm -r .evidence \
     && mkdir .evidence .cognee .masters
 
+# Kuzu downloads its `json` extension into $HOME/.lbdb on first use — that
+# happened on the dev laptop long ago, so it was invisible until the NFS gate
+# opened the graph store in Azure and failed loud (2026-07-13). Bake it:
+# INSTALL fetches the shared object into /home/appuser/.lbdb; LOAD proves it
+# links. The throwaway database never touches the mounts.
+RUN python -c "import tempfile, kuzu; db = kuzu.Database(f'{tempfile.mkdtemp()}/ext-seed'); conn = kuzu.Connection(db); conn.execute('INSTALL json'); conn.execute('LOAD json'); print('kuzu json extension baked')"
+
 EXPOSE 8734
 CMD ["uvicorn", "doc_intel_analysts.service:app", "--host", "0.0.0.0", "--port", "8734"]
