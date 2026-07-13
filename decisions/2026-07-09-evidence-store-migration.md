@@ -105,6 +105,32 @@ storage at near-local latency, at the cost of leaving the Container
 Apps pattern. Note: Phase 4's ingest/compaction job shares this same
 storage constraint and inherits whichever home this gate selects.
 
+**NFS GATE RESOLVED — PASS (2026-07-13, run 4: 10/10 ops within the
+60 s budget, worst op 16.9 s cold, inside the 4 vCPU/8 GiB Consumption
+envelope; `benchmark/results/2026-07-13-phase4-nfs-gate-run4-final.json`).**
+The pass required a compaction-first amendment (Rob-approved after run
+1 failed 4/10 — all pages-fragmentation timeouts) and surfaced a chain
+of latent store bugs the laptop could never reach, each now fixed in
+code and recorded in the gate-run artifacts:
+(1) maintenance built indexes BEFORE compacting — compaction rewrote
+row addresses and left every index stale (order swapped in ingest.py);
+(2) default `table.optimize()` merged pages into a single 280k-row/
+55 GB fragment — and lance `compact_files` cannot SPLIT fragments, so
+recovery was a streamed rewrite to byte-bounded fragments;
+(3) the pages FTS index — blanket policy, zero consumers (page search
+is regexp grep by design) — structurally cannot build on blob-wide
+rows: any fragment over ~2 GiB total bytes hits Arrow's 32-bit offset
+ceiling. Dropped from `build_indexes` (chunks-only FTS);
+(4) pylance 0.36 → 8.0.0 (Rob-approved dep change, the upgrade this
+record anticipated) fixed the maintenance-path decoder;
+(5) kuzu's json extension must be baked into the image ($HOME/.lbdb
+is not part of the venv) — any container graph-store open failed
+until it was.
+Replica state after repair: pages ~35 byte-bounded fragments, chunks
+20 fragments, indices rebuilt. S3 still holds the pre-compaction
+original; up-syncing the repaired replica to S3 is a deliberate U7
+runbook step AFTER U6 hosted verification, not an automatic sync.
+
 The benchmark (real `EvidenceRetriever` query code, read-only store shim,
 sampled stored vector as query embedding, 90 s per-call cap vs the 60 s
 tool budget; laptop → us-east-1) disqualified direct-S3 decisively:
