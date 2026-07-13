@@ -32,3 +32,8 @@ __pycache__/
 
 # OS noise
 .DS_Store
+
+# Terraform (doc-intel analysts stack) — state and tfvars carry secrets
+*.tfstate*
+.terraform/
+*.tfvars
