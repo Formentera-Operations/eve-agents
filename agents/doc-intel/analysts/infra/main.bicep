@@ -457,13 +457,31 @@ resource gateJob 'Microsoft.App/jobs@2025-01-01' = {
     }
     template: {
       volumes: storeVolumes
+      // ACA has no fsGroup: the NFS sub_path dirs are auto-created root-owned,
+      // and the analysts image runs as uid 1000 — the very first gate run hit
+      // EACCES exactly as the plan's non-root write check predicted. This init
+      // container (root by image default) hands the three mount dirs to the
+      // app user before the main container starts. Non-recursive on purpose:
+      // instant, and children created by uid 1000 stay owned by it.
+      initContainers: [
+        {
+          name: 'fix-mount-ownership'
+          image: 'mcr.microsoft.com/azurelinux/busybox:1.36'
+          command: ['sh', '-c', 'chown 1000:1000 /app/agents/doc-intel/analysts/.evidence /app/agents/doc-intel/analysts/.cognee /app/agents/doc-intel/analysts/.masters && echo "mount ownership -> 1000:1000"']
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          volumeMounts: storeVolumeMounts
+        }
+      ]
       containers: [
         {
           name: 'gate'
           image: image
           resources: {
-            cpu: 2
-            memory: '4Gi'
+            cpu: json('1.75')
+            memory: '3.5Gi'
           }
           args: ['python', '-m', 'doc_intel_analysts.evidence.replica', '--bootstrap']
           env: concat(guardEnv, [
