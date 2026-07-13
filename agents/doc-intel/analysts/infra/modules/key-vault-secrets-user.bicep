@@ -36,3 +36,25 @@ resource secretsUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
     principalType: 'ServicePrincipal'
   }
 }
+
+// The shared vault runs in ACCESS-POLICY mode (enableRbacAuthorization=false,
+// verified 2026-07-13) — the RBAC assignment above is inert there and secret
+// resolution fails without this policy (first deploy proved it). The RBAC
+// grant stays because it becomes load-bearing the day the vault migrates to
+// RBAC; this policy is what works today. 'add' merges — existing policies
+// are never touched.
+resource secretsPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-07-01' = {
+  parent: keyVault
+  name: 'add'
+  properties: {
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: principalId
+        permissions: {
+          secrets: ['get']
+        }
+      }
+    ]
+  }
+}
