@@ -19,6 +19,7 @@ const delegateAnalysis = (await import("../agent/tools/delegate_analysis.ts")).d
 const realFetch = globalThis.fetch;
 afterEach(() => {
   globalThis.fetch = realFetch;
+  delete process.env.DOC_INTEL_ANALYSTS_TOKEN;
 });
 
 test("rejects when no keys are in the manifest", async () => {
@@ -51,6 +52,27 @@ test("returns validated analyst response and passes references only", async () =
   const payload = JSON.parse(sentBody);
   assert.deepEqual(Object.keys(payload.documents[0]).sort(), ["entry_type", "key", "parsed_ref"]);
   assert.ok(!sentBody.includes("$6,000") || true, "request carries references, not content");
+});
+
+test("sends the bearer token when DOC_INTEL_ANALYSTS_TOKEN is set", async () => {
+  process.env.DOC_INTEL_ANALYSTS_TOKEN = "seam-token";
+  let sentHeaders: Record<string, string> = {};
+  globalThis.fetch = async (_url, init) => {
+    sentHeaders = { ...((init?.headers ?? {}) as Record<string, string>) };
+    return Response.json({
+      answer: "ok",
+      citations: [],
+      analyst_notes: "",
+      documents_seeded: 1,
+      documents_missing: [],
+    });
+  };
+  await delegateAnalysis.execute(
+    { question: "Q", document_keys: ["FP GRIFFIN/ALPHA 1H/Financial/AFE/a.pdf"] },
+    {} as never,
+  );
+  assert.equal(sentHeaders.authorization, "Bearer seam-token");
+  assert.equal(sentHeaders["content-type"], "application/json");
 });
 
 test("degrades gracefully when the analyst service is unreachable", async () => {

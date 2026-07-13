@@ -1,8 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-const ANALYSTS_URL =
-  process.env.DOC_INTEL_ANALYSTS_URL ?? "http://127.0.0.1:8734";
+import { ANALYSTS_URL, analystHeaders } from "../lib/analysts.ts";
 
 const hitSchema = z.object({
   page_id: z.string(),
@@ -40,7 +39,7 @@ export default defineTool({
     try {
       res = await fetch(`${ANALYSTS_URL}/evidence/search`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: analystHeaders(),
         body: JSON.stringify({ query, mode, limit, asset_team }),
         signal: AbortSignal.timeout(60_000),
       });
