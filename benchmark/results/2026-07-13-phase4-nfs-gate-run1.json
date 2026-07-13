@@ -1,0 +1,70 @@
+{
+  "run": "phase4-nfs-gate-run1",
+  "date": "2026-07-13",
+  "root": "premium Azure Files NFS share doc-intel-store mounted in cae-mcp-prod-002 (Consumption, 1.75 vCPU/3.5Gi)",
+  "store_state": "PRE-compaction: pages table at 12,851 fragments (the deferred U7 maintenance)",
+  "verdict": "FAILED 4/10 - all failures are pages-table ops (fragmentation planning round-trips, same class the direct-S3 benchmark showed); compaction-first re-run proposed before invoking the VM/AKS fallback",
+  "baseline": "benchmark/results/2026-07-11-phase2-s3-latency.json",
+  "rows": [
+    {
+      "op": "open+count(4 tables)",
+      "cold_s": 0.135,
+      "warm_median_s": 0.013,
+      "within_60s_tool_budget": true
+    },
+    {
+      "op": "vector search (chunks, hybrid leg)",
+      "cold_s": 21.242,
+      "warm_median_s": 44.037,
+      "within_60s_tool_budget": true
+    },
+    {
+      "op": "fts search (chunks)",
+      "cold_s": 0.489,
+      "warm_median_s": 0.033,
+      "within_60s_tool_budget": true
+    },
+    {
+      "op": "grep exact 'S733H' (pages scan)",
+      "cold_s": ">90 TIMEOUT",
+      "warm_median_s": ">90 TIMEOUT",
+      "within_60s_tool_budget": false
+    },
+    {
+      "op": "grep filtered '9,020' (Westlake)",
+      "cold_s": ">90 TIMEOUT",
+      "warm_median_s": ">90 TIMEOUT",
+      "within_60s_tool_budget": false
+    },
+    {
+      "op": "find_documents 'surveys'",
+      "cold_s": 0.061,
+      "warm_median_s": 0.06,
+      "within_60s_tool_budget": true
+    },
+    {
+      "op": "document_status '.xlsx' skipped",
+      "cold_s": 0.336,
+      "warm_median_s": 0.203,
+      "within_60s_tool_budget": true
+    },
+    {
+      "op": "get_page (text)",
+      "cold_s": ">90 TIMEOUT",
+      "warm_median_s": ">90 TIMEOUT",
+      "within_60s_tool_budget": false
+    },
+    {
+      "op": "get_page (+screenshot blob)",
+      "cold_s": ">90 TIMEOUT",
+      "warm_median_s": ">90 TIMEOUT",
+      "within_60s_tool_budget": false
+    },
+    {
+      "op": "get_document_pages",
+      "cold_s": 4.42,
+      "warm_median_s": 2.946,
+      "within_60s_tool_budget": true
+    }
+  ]
+}
