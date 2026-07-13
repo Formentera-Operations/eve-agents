@@ -1,10 +1,8 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 import { findByKey } from "../lib/manifest.ts";
-
-const ANALYSTS_URL =
-  process.env.DOC_INTEL_ANALYSTS_URL ?? "http://127.0.0.1:8734";
 
 const responseSchema = z.object({
   answer: z.string(),
@@ -48,7 +46,7 @@ export default defineTool({
     try {
       res = await fetch(`${ANALYSTS_URL}/analyze`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: analystHeaders(),
         body: JSON.stringify({ question, documents }),
         signal: AbortSignal.timeout(600_000),
       });
@@ -59,7 +57,7 @@ export default defineTool({
       };
     }
     if (!res.ok) {
-      return { error: `Analyst service responded ${res.status}.` };
+      return { error: analystError("Analyst service", res.status) };
     }
 
     const parsed = responseSchema.safeParse(await res.json());

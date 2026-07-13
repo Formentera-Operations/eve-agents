@@ -9,10 +9,14 @@ from the derived bucket and seeds it into the deep agent's virtual files.
 
 import json
 import logging
+import os
+import secrets
 import sys
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
+from starlette.responses import JSONResponse
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .agent import build_agent
 from .corpus import file_data, document_as_files, fetch_document
@@ -21,7 +25,68 @@ logging.basicConfig(stream=sys.stdout, format='{"level":"%(levelname)s","msg":%(
 log = logging.getLogger("doc-intel-analysts")
 log.setLevel(logging.INFO)
 
+
+def _auth_required() -> bool:
+    """Hosted-mode flag, read at call time: any non-empty value means auth is required."""
+    return bool(os.environ.get("ANALYSTS_REQUIRE_AUTH"))
+
+
+# Fail closed in hosted mode: refusing to start beats serving openly.
+if _auth_required() and not os.environ.get("ANALYSTS_API_TOKEN"):
+    raise RuntimeError(
+        "ANALYSTS_REQUIRE_AUTH is set but ANALYSTS_API_TOKEN is missing or empty; refusing to start."
+    )
+
+
+class BearerAuthMiddleware:
+    """Bearer-token gate for hosted mode.
+
+    Pure ASGI middleware — not an app-level dependency — because FastAPI's
+    auto-mounted /docs, /redoc and /openapi.json bypass app dependencies;
+    middleware runs before routing and covers every route. Reads
+    ANALYSTS_API_TOKEN at request time: unset with ANALYSTS_REQUIRE_AUTH also
+    unset means auth is disabled (local dev unchanged); the flag set without a
+    token 401s every non-/health request rather than serving open (defense in
+    depth against env drift past the startup guard). /health stays open for
+    liveness probes. The presented credential is never logged or echoed.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        expected = os.environ.get("ANALYSTS_API_TOKEN", "")
+        allowed = (
+            scope["path"] == "/health"
+            or (not expected and not _auth_required())
+            or (bool(expected) and _bearer_matches(scope, expected))
+        )
+        if allowed:
+            await self.app(scope, receive, send)
+            return
+        response = JSONResponse(
+            {"detail": "Not authenticated"},
+            status_code=401,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        await response(scope, receive, send)
+
+
+def _bearer_matches(scope: Scope, expected: str) -> bool:
+    header = next(
+        (value for name, value in scope["headers"] if name == b"authorization"), b""
+    )
+    scheme, _, credential = header.partition(b" ")
+    if scheme.lower() != b"bearer":
+        return False
+    return secrets.compare_digest(credential.strip(), expected.encode("utf-8"))
+
+
 app = FastAPI(title="doc-intel-analysts")
+app.add_middleware(BearerAuthMiddleware)
 
 from .graph.api import router as graph_router  # noqa: E402
 from .evidence.api import router as evidence_router  # noqa: E402

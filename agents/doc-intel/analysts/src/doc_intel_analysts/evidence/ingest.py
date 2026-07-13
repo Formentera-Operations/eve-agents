@@ -171,8 +171,13 @@ def run_ingest(
     if report["stopped_early"] or max_new is not None:
         return report
 
-    store.build_indexes()
+    # Compact BEFORE building indexes: compaction rewrites row addresses, so
+    # indexes built first go stale — btree lookups then return tombstone row
+    # addrs (u64::MAX "non-existent fragment" aborts). Latent until the first
+    # successful pages compaction (Azure E8, 2026-07-13) because that
+    # compaction had never completed anywhere before.
     store.optimize()
+    store.build_indexes()
     report["table_counts"] = store.counts()
     report["store_bytes"] = sum(
         f.stat().st_size
@@ -219,8 +224,10 @@ def main() -> None:
         if args.light:
             store.optimize(["documents", "ledger"])
         else:
-            store.build_indexes()
+            # optimize-then-index: see run_pass — indexes built before
+            # compaction go stale (row addresses rewritten).
             store.optimize()
+            store.build_indexes()
         print(
             json.dumps(
                 {"maintain": True, "light": args.light, "table_counts": store.counts()},

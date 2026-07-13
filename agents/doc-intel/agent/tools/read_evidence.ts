@@ -1,8 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-const ANALYSTS_URL =
-  process.env.DOC_INTEL_ANALYSTS_URL ?? "http://127.0.0.1:8734";
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 
 const pageReadSchema = z.object({
   page_id: z.string(),
@@ -54,7 +53,7 @@ export default defineTool({
     try {
       res = await fetch(`${ANALYSTS_URL}/evidence/read`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: analystHeaders(),
         body: JSON.stringify({ page_id, doc_id, question }),
         signal: AbortSignal.timeout(120_000),
       });
@@ -68,7 +67,7 @@ export default defineTool({
       return { error: "Unknown page_id or doc_id — take identities from search_evidence, grep_evidence, or find_evidence_files hits." };
     }
     if (!res.ok) {
-      return { error: `Evidence service responded ${res.status}.` };
+      return { error: analystError("Evidence service", res.status) };
     }
     const body = await res.json();
     const parsed = pageReadSchema.safeParse(body);

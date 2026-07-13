@@ -481,11 +481,20 @@ class EvidenceStore:
         """
         from lancedb.index import FTS, BTree
 
-        for name, column in (("chunks", "text"), ("pages", "text")):
+        # FTS on chunks only. pages.text FTS was blanket policy with no
+        # consumer -- page search is regexp grep (index-free) and get_page is
+        # btree -- and it CANNOT build on production data: the FTS builder's
+        # scan decodes blob-wide row batches, so any pages fragment over
+        # ~2 GiB total bytes (screenshot blobs dominate) dies on Arrow's
+        # 32-bit offset ceiling ("Offset overflow error", proven at 1, 6,
+        # and ~35 fragments on Azure, 2026-07-13). The laptop never saw it:
+        # pre-compaction fragments held ~22 rows.
+        for name, fts in (("chunks", True), ("pages", False)):
             table = self.table(name)
             if table.count_rows() == 0:
                 continue
-            table.create_index(column, config=FTS(), replace=True)
+            if fts:
+                table.create_index("text", config=FTS(), replace=True)
             table.create_index("asset_team", config=BTree(), replace=True)
             table.create_index("doc_id", config=BTree(), replace=True)
 

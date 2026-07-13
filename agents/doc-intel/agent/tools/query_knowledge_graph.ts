@@ -1,8 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-const ANALYSTS_URL =
-  process.env.DOC_INTEL_ANALYSTS_URL ?? "http://127.0.0.1:8734";
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 
 const responseSchema = z.object({
   answer: z.string(),
@@ -26,7 +25,7 @@ export default defineTool({
     try {
       res = await fetch(`${ANALYSTS_URL}/graph/search`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: analystHeaders(),
         body: JSON.stringify({ question, entity_scope }),
         signal: AbortSignal.timeout(120_000),
       });
@@ -37,7 +36,7 @@ export default defineTool({
       };
     }
     if (!res.ok) {
-      return { error: `Knowledge graph service responded ${res.status}.` };
+      return { error: analystError("Knowledge graph service", res.status) };
     }
     const parsed = responseSchema.safeParse(await res.json());
     if (!parsed.success) {
