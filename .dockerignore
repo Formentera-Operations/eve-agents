@@ -1,0 +1,42 @@
+# Container builds happen from a clean checkout: local state, dependencies,
+# and heavy artifacts never enter the build context. (The doc-intel analysts
+# image builds from the repo root — see agents/doc-intel/analysts/Dockerfile.)
+
+# VCS
+.git
+
+# Local/laptop state (gitignored; production mounts these via NFS)
+.evidence
+**/.evidence
+.cognee
+**/.cognee
+.masters
+**/.masters
+
+# Dependencies / virtualenvs
+node_modules
+**/node_modules
+.venv
+**/.venv
+
+# eve local state
+.eve
+**/.eve
+
+# Secrets — must never reach an image layer
+.env*
+**/.env*
+
+# Python caches
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/*.egg-info
+
+# Heavy or irrelevant repo-root content
+docs/
+benchmark/
+.playwright-mcp/
+.claude/
+.DS_Store
+**/.DS_Store
