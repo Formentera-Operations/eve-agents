@@ -1,36 +1,33 @@
-# doc-intel analysts — Azure Container Apps stack
+# doc-intel analysts — Azure Container Apps stack (Bicep)
 
 Hosts the analysts FastAPI service and four batch jobs on the existing
 `cae-mcp-prod-002` environment (`rg-mcp-prod-001`, Central US). The
-environment, ACR (`formenteramcp`), and vault (`kv-enterprise-shared-001`)
-are data-sourced — never managed here.
+environment, ACR (`formenteramcp`), NSG, and vault (`kv-enterprise-shared-001`)
+are referenced as `existing` resources — never managed here.
 
-## State is secret-bearing
-
-The Files storage account key lands in Terraform state. State MUST live in
-the RBAC'd remote Azure blob backend (`backend "azurerm"` in `main.tf` —
-replace the placeholders before `init`). Never local, never committed.
-(Deviation from the gis-snowflake-extractor sibling, which uses local state.)
+State lives server-side in ARM deployment history — no state file, nothing
+secret-bearing on disk. (This is why the stack moved off Terraform, whose
+state captured the Files storage account key.)
 
 ## Prerequisites
 
-1. Backend placeholders in `main.tf` replaced; `terraform init` clean.
-2. KV secrets exist in `kv-enterprise-shared-001`: `doc-intel-gateway-key`,
+1. KV secrets exist in `kv-enterprise-shared-001`: `doc-intel-gateway-key`,
    `doc-intel-analysts-token`, `doc-intel-aws-access-key-id`,
    `doc-intel-aws-secret-access-key`.
-3. Image pushed: `formenteramcp.azurecr.io/doc-intel-analysts:<tag>`.
-4. The environment's infrastructure subnet has the `Microsoft.Storage`
+2. Image pushed: `formenteramcp.azurecr.io/doc-intel-analysts:<tag>`.
+3. The environment's infrastructure subnet has the `Microsoft.Storage`
    service endpoint (`az network vnet subnet show ... --query serviceEndpoints`;
    add with `az network vnet subnet update --service-endpoints Microsoft.Storage`).
-5. `terraform.tfvars` (gitignored) with `subscription_id`, `image_tag`,
-   `infrastructure_subnet_id`, `nsg_name` — check existing NSG rule
-   priorities before accepting the 3900/3901 defaults.
+4. `infra/main.bicepparam` filled in: `imageTag`, `infrastructureSubnetId`,
+   `nsgName`. The file is committed — non-secret resource names/ids only —
+   check existing NSG rule priorities before accepting the 3900/3901 defaults
+   (`nsgRulePrioritySmb` / `nsgRulePriorityNfs`).
 
-## E8 workload profile (CLI, not Terraform)
+## E8 workload profile (CLI, not Bicep)
 
-azurerm cannot add profiles to an environment it does not own. Check for
-existing Dedicated profiles first — the FIRST Dedicated profile in an
-environment starts the plan management fee (~$70/mo):
+This stack does not manage the environment, so it cannot add profiles to it.
+Check for existing Dedicated profiles first — the FIRST Dedicated profile in
+an environment starts the plan management fee (~$70/mo):
 
 ```sh
 az containerapp env show -n cae-mcp-prod-002 -g rg-mcp-prod-001 \
@@ -41,10 +38,19 @@ az containerapp env workload-profile add -n cae-mcp-prod-002 -g rg-mcp-prod-001 
 
 `--min-nodes 0`: E8 node-hours bill only while the maintenance job runs.
 
+## Reviewing changes (replaces `terraform plan`)
+
+Run all commands from `agents/doc-intel/analysts/`. Before any apply, `what-if`
+is the pre-apply cost/blast-radius review:
+
+```sh
+az deployment group what-if -g rg-mcp-prod-001 -f infra/main.bicep -p infra/main.bicepparam
+```
+
 ## Wave 1 — storage + gate
 
 ```sh
-terraform apply -var-file=terraform.tfvars        # deploy_service defaults to false
+az deployment group create -g rg-mcp-prod-001 -f infra/main.bicep -p infra/main.bicepparam   # deployService defaults to false
 az containerapp job start -n doc-intel-analysts-gate -g rg-mcp-prod-001
 ```
 
@@ -110,7 +116,7 @@ into a single scripted gate command so the sequence cannot be skipped.
 ## Wave 2 — service + remaining jobs
 
 ```sh
-terraform apply -var-file=terraform.tfvars -var deploy_service=true
+az deployment group create -g rg-mcp-prod-001 -f infra/main.bicep -p infra/main.bicepparam -p deployService=true
 ```
 
 Adds the service (external ingress :8734, auth required, 1 replica pinned)
@@ -138,16 +144,17 @@ az containerapp job start -n doc-intel-analysts-ingest -g rg-mcp-prod-001 \
 ```
 
 Run maintenance (`--maintain`) between batches. The cron trigger is
-authored but commented in `jobs.tf`; ACA trigger types are immutable, so
+authored but commented in `main.bicep`; ACA trigger types are immutable, so
 enabling it replaces the job.
 
 ## R10 — RBAC enumeration
 
 Compare every principal below against the S3 raw-bucket reader list; any
-Azure-side principal not on it is an escalation:
+Azure-side principal not on it is an escalation. (The deployment name
+defaults to the template filename, `main`.)
 
 ```sh
-az role assignment list --scope $(terraform output -raw storage_account_name | xargs -I{} az storage account show -n {} -g rg-mcp-prod-001 --query id -o tsv) -o table
+az role assignment list --scope $(az deployment group show -g rg-mcp-prod-001 -n main --query properties.outputs.storageAccountName.value -o tsv | xargs -I{} az storage account show -n {} -g rg-mcp-prod-001 --query id -o tsv) -o table
 az role assignment list --scope /subscriptions/$ARM_SUBSCRIPTION_ID/resourceGroups/rg-mcp-prod-001 -o table
 az role assignment list --scope $(az keyvault show -n kv-enterprise-shared-001 -g rg-enterprise-shared-001 --query id -o tsv) -o table   # vault + per-secret scopes
 az role assignment list --scope $(az monitor log-analytics workspace list -g rg-mcp-prod-001 --query [0].id -o tsv) -o table             # env's workspace
