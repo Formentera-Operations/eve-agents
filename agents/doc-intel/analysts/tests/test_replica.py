@@ -6,6 +6,8 @@ is the gate run in Azure.
 """
 
 import hashlib
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -19,7 +21,14 @@ MASTERS = f"{replica.EVIDENCE_PREFIX}/masters/"
 
 
 class FakeS3:
-    """In-memory stand-in for the two client methods replica uses."""
+    """In-memory stand-in for the two client methods replica uses.
+
+    Thread-safe like the real low-level client: `download_file` may be called
+    concurrently, so recorded state is guarded by a lock. `download_delay`
+    keeps downloads in flight long enough for concurrency to be observable
+    (`max_in_flight`); keys in `fail_keys` write a partial file then raise,
+    modeling a mid-transfer failure.
+    """
 
     def __init__(
         self,
@@ -27,11 +36,18 @@ class FakeS3:
         *,
         multipart: set[str] | None = None,
         listed_size_override: dict[str, int] | None = None,
+        download_delay: float = 0.0,
+        fail_keys: set[str] | None = None,
     ):
         self.objects = objects
         self.multipart = multipart or set()
         self.listed_size_override = listed_size_override or {}
+        self.download_delay = download_delay
+        self.fail_keys = fail_keys if fail_keys is not None else set()
         self.downloads: list[str] = []
+        self.in_flight = 0
+        self.max_in_flight = 0
+        self._lock = threading.Lock()
 
     def _etag(self, key: str) -> str:
         digest = hashlib.md5(self.objects[key]).hexdigest()
@@ -68,8 +84,21 @@ class FakeS3:
         return Paginator()
 
     def download_file(self, bucket: str, key: str, filename: str) -> None:
-        self.downloads.append(key)
-        Path(filename).write_bytes(self.objects[key])
+        with self._lock:
+            self.in_flight += 1
+            self.max_in_flight = max(self.max_in_flight, self.in_flight)
+        try:
+            if self.download_delay:
+                time.sleep(self.download_delay)
+            if key in self.fail_keys:
+                Path(filename).write_bytes(b"partial-write-then-died")
+                raise RuntimeError(f"injected download failure: {key}")
+            with self._lock:
+                self.downloads.append(key)
+            Path(filename).write_bytes(self.objects[key])
+        finally:
+            with self._lock:
+                self.in_flight -= 1
 
 
 def _prewrite(dest: Path, subpath: str, content: bytes) -> Path:
@@ -113,7 +142,8 @@ def test_dry_run_reports_plan_and_transfers_nothing(tmp_path, capsys):
         assert name in out
 
 
-def test_skip_up_to_date_and_redownload_mismatches(tmp_path):
+@pytest.mark.parametrize("workers", [1, 8])
+def test_skip_up_to_date_and_redownload_mismatches(tmp_path, workers):
     fresh = f"{LANCE}tbl/fresh.bin"
     short = f"{LANCE}tbl/short.bin"
     drift = f"{PARSED}drift.json"
@@ -136,7 +166,7 @@ def test_skip_up_to_date_and_redownload_mismatches(tmp_path):
     # Multipart etag ('-'): size match suffices -> untouched.
     _prewrite(tmp_path, ".masters/big.csv", b"XXXXXXX-abc")
 
-    report = replica.bootstrap(tmp_path, dry_run=False, client=fake)
+    report = replica.bootstrap(tmp_path, dry_run=False, client=fake, workers=workers)
 
     assert sorted(fake.downloads) == sorted([short, drift])
     assert (tmp_path / ".evidence/lance/tbl/short.bin").read_bytes() == (
@@ -146,6 +176,9 @@ def test_skip_up_to_date_and_redownload_mismatches(tmp_path):
     assert (tmp_path / ".masters/big.csv").read_bytes() == b"XXXXXXX-abc"
     assert report["ok"] is True
     assert all(v["ok"] for v in report["verification"])
+    if workers == 1:
+        # workers=1 is the plain sequential path: never more than one in flight.
+        assert fake.max_in_flight == 1
 
 
 def test_extra_local_file_fails_verification_with_named_paths(
@@ -197,3 +230,51 @@ def test_verification_mismatch_exits_nonzero(tmp_path, monkeypatch, capsys):
 
     assert excinfo.value.code == 1
     assert "MISMATCH" in capsys.readouterr().out
+
+
+def test_concurrent_download_happy_path(tmp_path, monkeypatch, capsys):
+    # 50 objects with a per-download delay: with --workers 8 the pool must
+    # overlap transfers (bounded by the cap) and still land every byte.
+    objects = {
+        f"{COGNEE}chunks/{i:04d}.bin": f"content-{i:04d}".encode() for i in range(50)
+    }
+    fake = FakeS3(objects, download_delay=0.005)
+    monkeypatch.setattr(replica, "_make_client", lambda: fake)
+
+    replica.main(["--bootstrap", "--dest", str(tmp_path), "--workers", "8"])
+
+    assert sorted(fake.downloads) == sorted(objects)
+    for key, content in objects.items():
+        assert (tmp_path / ".cognee" / key[len(COGNEE) :]).read_bytes() == content
+    # Bounded concurrency actually happened: >1 in flight, never above the cap.
+    assert 1 < fake.max_in_flight <= 8
+    out = capsys.readouterr().out
+    assert "OK" in out and "MISMATCH" not in out
+
+
+def test_download_error_aborts_run_and_rerun_completes(tmp_path):
+    objects = {
+        f"{LANCE}tbl/{i:04d}.bin": f"payload-{i:04d}".encode() for i in range(30)
+    }
+    bad = f"{LANCE}tbl/0013.bin"
+    fake = FakeS3(objects, download_delay=0.002, fail_keys={bad})
+
+    # First download exception aborts the run un-swallowed (queued futures
+    # are cancelled; boto3-style partial writes may remain on disk).
+    with pytest.raises(RuntimeError, match="injected download failure"):
+        replica.bootstrap(tmp_path, dry_run=False, client=fake, workers=8)
+    assert (
+        tmp_path / ".evidence/lance/tbl/0013.bin"
+    ).read_bytes() == b"partial-write-then-died"
+
+    # Fresh run with the fault cleared: completed files resume-skip, the
+    # partial write is a size mismatch -> re-downloaded, run goes green.
+    fake.fail_keys.clear()
+    report = replica.bootstrap(tmp_path, dry_run=False, client=fake, workers=8)
+
+    assert report["ok"] is True
+    assert bad in fake.downloads
+    for key, content in objects.items():
+        assert (
+            tmp_path / ".evidence/lance" / key[len(LANCE) :]
+        ).read_bytes() == content

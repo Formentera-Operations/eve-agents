@@ -30,7 +30,14 @@ deletes them.
 Run from the analysts directory (or the one-off gate Job container):
 
     python -m doc_intel_analysts.evidence.replica --bootstrap [--dest PATH] \
-        [--dry-run] [--remove-extras]
+        [--dry-run] [--remove-extras] [--workers N]
+
+Downloads run on a bounded thread pool (``--workers``, default 12; 1 is
+strictly sequential). Concurrency is the point: a live Azure run measured
+~4 objects/s sequential regardless of object size — per-object round-trip
+latency (S3 GET + NFS open/write/close), not bandwidth, is the bound
+(measured 2026-07-13). boto3's low-level client is documented thread-safe
+for concurrent calls, so all workers share the one client.
 
 Exit status is nonzero when any prefix fails post-sync per-key parity
 (missing, size-mismatched, or extra local files).
@@ -40,6 +47,7 @@ import argparse
 import hashlib
 import logging
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -115,8 +123,51 @@ def _up_to_date(local: Path, remote: RemoteObject) -> bool:
     return _md5(local) == remote.etag
 
 
+def _download_all(
+    client: Any,
+    target: SyncTarget,
+    local_root: Path,
+    to_download: list[RemoteObject],
+    workers: int,
+) -> None:
+    """Transfer `to_download` with a bounded thread pool (sequential when 1).
+
+    Completions are counted in the main thread via ``as_completed``, so the
+    every-``_PROGRESS_EVERY`` progress line needs no lock. The first download
+    exception cancels all queued futures and re-raises — same abort-the-run
+    semantics as the sequential path; partially written files are caught by
+    the resume skip (size/etag mismatch) on the next run.
+    """
+    total = len(to_download)
+
+    def _download(obj: RemoteObject) -> None:
+        local = local_root / obj.key[len(target.prefix) :]
+        local.parent.mkdir(parents=True, exist_ok=True)
+        client.download_file(DERIVED_BUCKET, obj.key, str(local))
+
+    if workers <= 1:
+        for done, obj in enumerate(to_download, start=1):
+            _download(obj)
+            if done % _PROGRESS_EVERY == 0:
+                logger.info("%s: %d/%d objects downloaded", target.name, done, total)
+        return
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = [pool.submit(_download, obj) for obj in to_download]
+        try:
+            for done, future in enumerate(as_completed(futures), start=1):
+                future.result()
+                if done % _PROGRESS_EVERY == 0:
+                    logger.info(
+                        "%s: %d/%d objects downloaded", target.name, done, total
+                    )
+        except BaseException:
+            pool.shutdown(wait=True, cancel_futures=True)
+            raise
+
+
 def _sync_target(
-    client: Any, target: SyncTarget, dest: Path, *, dry_run: bool
+    client: Any, target: SyncTarget, dest: Path, *, dry_run: bool, workers: int = 12
 ) -> dict[str, Any]:
     local_root = dest / target.local_subdir
     remote = _list_remote(client, target.prefix)
@@ -132,14 +183,7 @@ def _sync_target(
     download_bytes = sum(o.size for o in to_download)
 
     if not dry_run:
-        for done, obj in enumerate(to_download, start=1):
-            local = local_root / obj.key[len(target.prefix) :]
-            local.parent.mkdir(parents=True, exist_ok=True)
-            client.download_file(DERIVED_BUCKET, obj.key, str(local))
-            if done % _PROGRESS_EVERY == 0:
-                logger.info(
-                    "%s: %d/%d objects downloaded", target.name, done, len(to_download)
-                )
+        _download_all(client, target, local_root, to_download, workers)
     logger.info(
         "%s: %d to download (%d bytes), %d skipped (%d bytes)%s",
         target.name,
@@ -214,6 +258,7 @@ def bootstrap(
     dry_run: bool = False,
     remove_extras: bool = False,
     client: Any = None,
+    workers: int = 12,
 ) -> dict[str, Any]:
     """Sync all four prefixes into `dest`, then verify (unless dry-run)."""
     client = client or _make_client()
@@ -221,7 +266,7 @@ def bootstrap(
         "dest": str(dest),
         "dry_run": dry_run,
         "targets": [
-            _sync_target(client, target, dest, dry_run=dry_run)
+            _sync_target(client, target, dest, dry_run=dry_run, workers=workers)
             for target in SYNC_TARGETS
         ],
         "ok": True,
@@ -304,13 +349,24 @@ def main(argv: list[str] | None = None) -> None:
         action="store_true",
         help="delete local files absent from the remote listing before verifying",
     )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=12,
+        help="concurrent download threads, min 1 (default: 12; 1 is sequential)",
+    )
     args = parser.parse_args(argv)
+    if args.workers < 1:
+        parser.error("--workers must be >= 1")
 
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
     )
     report = bootstrap(
-        args.dest, dry_run=args.dry_run, remove_extras=args.remove_extras
+        args.dest,
+        dry_run=args.dry_run,
+        remove_extras=args.remove_extras,
+        workers=args.workers,
     )
     _print_summary(report)
     if not report["ok"]:
