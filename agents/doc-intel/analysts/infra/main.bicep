@@ -55,8 +55,8 @@ param deployService bool = false
 @description('Resource ID of the environment\'s infrastructure subnet; becomes the storage account\'s only allowed network (needs the Microsoft.Storage service endpoint).')
 param infrastructureSubnetId string
 
-@description('Name of the NSG attached to the environment\'s infrastructure subnet. Only NEW allow rules are added; existing rules are never modified.')
-param nsgName string
+@description('Name of the NSG attached to the environment\'s infrastructure subnet, or empty to skip the allow rules entirely. Discovered 2026-07-13: sn-container-apps has NO NSG attached, so nothing filters 445/2049 and there is nothing to add rules to — attaching a new NSG to the shared production subnet is out of scope for this stack. If an NSG is ever attached to the subnet, set this parameter and redeploy. Only NEW allow rules are added; existing rules are never modified.')
+param nsgName string = ''
 
 @description('Priority for the outbound 445 allow rule (must not collide with existing rules).')
 param nsgRulePrioritySmb int = 3900
@@ -320,7 +320,7 @@ resource envStorage 'Microsoft.App/managedEnvironments/storages@2025-01-01' = {
 // so they can be slotted around what already exists.
 // ------------------------------------------------------------------------------
 
-resource nsgRuleSmb445 'Microsoft.Network/networkSecurityGroups/securityRules@2024-05-01' = {
+resource nsgRuleSmb445 'Microsoft.Network/networkSecurityGroups/securityRules@2024-05-01' = if (!empty(nsgName)) {
   parent: nsg
   name: 'allow-doc-intel-storage-smb-445'
   properties: {
@@ -335,7 +335,7 @@ resource nsgRuleSmb445 'Microsoft.Network/networkSecurityGroups/securityRules@20
   }
 }
 
-resource nsgRuleNfs2049 'Microsoft.Network/networkSecurityGroups/securityRules@2024-05-01' = {
+resource nsgRuleNfs2049 'Microsoft.Network/networkSecurityGroups/securityRules@2024-05-01' = if (!empty(nsgName)) {
   parent: nsg
   name: 'allow-doc-intel-storage-nfs-2049'
   properties: {

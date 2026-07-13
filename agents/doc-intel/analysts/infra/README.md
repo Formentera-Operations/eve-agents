@@ -2,7 +2,7 @@
 
 Hosts the analysts FastAPI service and four batch jobs on the existing
 `cae-mcp-prod-002` environment (`rg-mcp-prod-001`, Central US). The
-environment, ACR (`formenteramcp`), NSG, and vault (`kv-enterprise-shared-001`)
+environment, ACR (`formenteramcp`), and vault (`kv-enterprise-shared-001`)
 are referenced as `existing` resources — never managed here.
 
 State lives server-side in ARM deployment history — no state file, nothing
@@ -18,10 +18,13 @@ state captured the Files storage account key.)
 3. The environment's infrastructure subnet has the `Microsoft.Storage`
    service endpoint (`az network vnet subnet show ... --query serviceEndpoints`;
    add with `az network vnet subnet update --service-endpoints Microsoft.Storage`).
-4. `infra/main.bicepparam` filled in: `imageTag`, `infrastructureSubnetId`,
-   `nsgName`. The file is committed — non-secret resource names/ids only —
-   check existing NSG rule priorities before accepting the 3900/3901 defaults
-   (`nsgRulePrioritySmb` / `nsgRulePriorityNfs`).
+4. `infra/main.bicepparam` filled in: `imageTag`, `infrastructureSubnetId`.
+   The file is committed — non-secret resource names/ids only.
+5. NSG: `sn-container-apps` has **no NSG attached** (verified 2026-07-13), so
+   `nsgName` stays `''` and the 445/2049 allow rules are skipped — nothing
+   filters those ports today. If an NSG is ever attached to the subnet, set
+   `nsgName` and redeploy (check existing rule priorities before accepting
+   the 3900/3901 defaults).
 
 ## E8 workload profile (CLI, not Bicep)
 
@@ -55,7 +58,7 @@ az containerapp job start -n doc-intel-analysts-gate -g rg-mcp-prod-001
 ```
 
 Creates the Premium NFS share (200 GiB, VNet-scoped), the environment
-storage mount, the two NSG allow rules (445/2049, additive only), the
+storage mount, the
 identity + role assignments, and the gate job.
 
 **Single-writer cutover:** the laptop stops writing to the S3-replicated

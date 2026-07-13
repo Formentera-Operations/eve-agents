@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "imageTag": {
+      "value": "REPLACE_ME"
+    },
+    "infrastructureSubnetId": {
+      "value": "/subscriptions/67a8e488-3328-4e25-9202-952679ad9744/resourceGroups/rg-mcp-prod-001/providers/Microsoft.Network/virtualNetworks/vnet-mcp-prod/subnets/sn-container-apps"
+    },
+    "nsgName": {
+      "value": ""
+    },
+    "deployService": {
+      "value": false
+    }
+  }
+}
