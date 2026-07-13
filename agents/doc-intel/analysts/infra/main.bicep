@@ -442,10 +442,13 @@ resource gateJob 'Microsoft.App/jobs@2025-01-01' = {
     workloadProfileName: 'Consumption'
     configuration: {
       triggerType: 'Manual'
-      // Measured 2026-07-13: ~3.8 objects/s sequential; the 188k-object
-      // .cognee tree alone needs several hours, so 4h was never enough for
-      // a cold bootstrap. Resume is idempotent either way.
-      replicaTimeout: 28800
+      // Measured 2026-07-13: ~4 objects/s sequential regardless of size —
+      // per-object round-trip bound (S3 GET + NFS create/write/close). The
+      // 188k-object .cognee tree alone is ~13h, so a cold bootstrap needs
+      // one resume with a 14h budget. Resume is idempotent either way.
+      // Improvement candidate (U7-era): parallelize replica.py's download
+      // loop; concurrency ~8-16 would cut this to ~1-2h.
+      replicaTimeout: 50400
       replicaRetryLimit: 0 // idempotent resume — restart manually after triage
       manualTriggerConfig: {
         parallelism: 1
