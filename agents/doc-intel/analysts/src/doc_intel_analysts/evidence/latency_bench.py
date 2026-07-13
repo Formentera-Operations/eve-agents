@@ -12,10 +12,13 @@ missing tables and would mutate a real store root. The query embedding is a
 sampled stored chunk vector, so no gateway credential is needed.
 
 Every call is capped (default 90s) by submitting to a single-thread executor
-and abandoning the future on timeout. Abandoned threads are non-daemon and a
-stuck read (observed against direct S3) would block a normal interpreter
-exit, so the CLI finishes with ``os._exit`` after results are on disk; the
-library entry points return normally.
+and abandoning the future on timeout; a call that raises instead records an
+``ERROR: <ExcType>`` row and the run continues. Fixture sampling runs under
+the same cap but fails the whole run (``FixtureSamplingError``, nonzero CLI
+exit) — without fixtures there are no results to save. Abandoned threads are
+non-daemon and a stuck read (observed against direct S3) would block a normal
+interpreter exit, so the CLI finishes with ``os._exit`` after results are on
+disk; the library entry points return normally.
 
 Run from the analysts directory:
 
@@ -44,6 +47,14 @@ TOOL_BUDGET_S = 60.0
 log = logging.getLogger("doc-intel-analysts")
 
 
+class FixtureSamplingError(RuntimeError):
+    """Fixture sampling from the first root timed out or raised.
+
+    Raised before any op is benched — there are no results to persist, so
+    the CLI exits nonzero instead of writing ``--out``.
+    """
+
+
 class ReadOnlyStore:
     """Read-only stand-in for EvidenceStore: ``table()`` over ``open_table``.
 
@@ -63,8 +74,11 @@ class ReadOnlyStore:
         return self._tables[name]
 
 
-def timed(fn: Callable[[], object], cap: float = DEFAULT_CAP_S) -> float | None:
-    """Wall-clock one call; None if it exceeds ``cap`` seconds.
+def timed(
+    fn: Callable[[], object], cap: float = DEFAULT_CAP_S
+) -> float | Exception | None:
+    """Wall-clock one call; None if it exceeds ``cap`` seconds, the raised
+    exception if the call fails instead of finishing.
 
     The future is abandoned on timeout (``shutdown(wait=False)``) so a stuck
     read cannot stall the run; the thread may linger (see module docstring).
@@ -80,6 +94,10 @@ def timed(fn: Callable[[], object], cap: float = DEFAULT_CAP_S) -> float | None:
     except FutureTimeout:
         executor.shutdown(wait=False)
         return None
+    except Exception as exc:
+        executor.shutdown(wait=False)
+        log.warning("benched call raised %s: %s", type(exc).__name__, exc)
+        return exc
 
 
 def sample_fixtures(store: ReadOnlyStore) -> tuple[list[float], str, str]:
@@ -101,35 +119,48 @@ def _timeout_sentinel(cap: float) -> str:
     return f">{cap:g} TIMEOUT"
 
 
+def _error_sentinel(exc: Exception) -> str:
+    return f"ERROR: {type(exc).__name__}"
+
+
+def _failure_sentinel(outcome: float | Exception | None, cap: float) -> str | None:
+    """Sentinel string when a ``timed`` outcome failed; None when it succeeded."""
+    if outcome is None:
+        return _timeout_sentinel(cap)
+    if isinstance(outcome, Exception):
+        return _error_sentinel(outcome)
+    return None
+
+
 def _bench_op(
     name: str, fn: Callable[[], object], warm_passes: int, cap: float
 ) -> dict:
     """One result row: cold pass, then warm passes (skipped after a cold
-    timeout; a warm timeout discards that op's warm numbers)."""
+    timeout or error; a warm timeout or error discards that op's warm
+    numbers). Failures never propagate — the row carries the sentinel and
+    the run moves on to the next op."""
     cold = timed(fn, cap)
-    warm_timed_out = cold is None
+    failure = _failure_sentinel(cold, cap)
     warms: list[float] = []
-    if cold is not None:
+    if failure is None:
         for _ in range(warm_passes):
             warm_run = timed(fn, cap)
-            if warm_run is None:
-                warm_timed_out = True
+            failure = _failure_sentinel(warm_run, cap)
+            if failure is not None:
                 warms = []
                 break
             warms.append(warm_run)
     warm_median = statistics.median(warms) if warms else None
     return {
         "op": name,
-        "cold_s": round(cold, 3) if cold is not None else _timeout_sentinel(cap),
+        "cold_s": round(cold, 3) if isinstance(cold, float) else failure,
         "warm_median_s": (
-            round(warm_median, 3)
-            if warm_median is not None
-            else (_timeout_sentinel(cap) if warm_timed_out else None)
+            round(warm_median, 3) if warm_median is not None else failure
         ),
         "within_60s_tool_budget": (
-            cold is not None
+            isinstance(cold, float)
             and cold <= TOOL_BUDGET_S
-            and not warm_timed_out
+            and failure is None
             and (warm_median is None or warm_median <= TOOL_BUDGET_S)
         ),
     }
@@ -227,10 +258,28 @@ def run_latency_bench(
     """Bench every root with identical ops and fixtures.
 
     Fixtures (query vector + page/doc ids) are sampled from the FIRST root,
-    so list the cheapest root (local) first. Returns normally — CLI-only
+    so list the cheapest root (local) first. Sampling is capped like every
+    benched call and raises ``FixtureSamplingError`` on timeout or failure —
+    with no fixtures there is nothing to bench. Returns normally — CLI-only
     hard-exit behavior lives in ``main``.
     """
-    query_vector, page_id, doc_id = sample_fixtures(ReadOnlyStore(roots[0]))
+    # sample_fixtures does blocking store reads; run it under the same cap so
+    # an unresponsive first root fails loud instead of hanging the run.
+    sampled: list[tuple[list[float], str, str]] = []
+    outcome = timed(
+        lambda: sampled.append(sample_fixtures(ReadOnlyStore(roots[0]))), cap
+    )
+    if outcome is None:
+        raise FixtureSamplingError(
+            f"fixture sampling exceeded {cap:g}s — "
+            f"root unresponsive or unreadable: {roots[0]}"
+        )
+    if isinstance(outcome, Exception):
+        raise FixtureSamplingError(
+            f"fixture sampling failed ({type(outcome).__name__}: {outcome}) — "
+            f"root unresponsive or unreadable: {roots[0]}"
+        ) from outcome
+    query_vector, page_id, doc_id = sampled[0]
     log.info(
         "fixtures: page_id=%s doc_id=%s vec_dims=%d", page_id, doc_id, len(query_vector)
     )
@@ -274,9 +323,19 @@ def main() -> None:
     # Direct-S3 roots need a region even when no other AWS config is present.
     os.environ.setdefault("AWS_DEFAULT_REGION", "us-east-1")
 
-    results = run_latency_bench(
-        args.roots, cap=args.cap, warm=args.warm, scan_heavy_warm=args.scan_heavy_warm
-    )
+    try:
+        results = run_latency_bench(
+            args.roots,
+            cap=args.cap,
+            warm=args.warm,
+            scan_heavy_warm=args.scan_heavy_warm,
+        )
+    except FixtureSamplingError as err:
+        log.error("%s", err)
+        # No results exist yet, and the abandoned sampling thread is
+        # non-daemon and would block a normal interpreter exit — hard-exit
+        # nonzero so the gate run fails loud.
+        os._exit(1)
     args.out.write_text(json.dumps(results, indent=1))
     print(f"results written: {args.out}")
     # Abandoned timeout threads are non-daemon and would block a normal

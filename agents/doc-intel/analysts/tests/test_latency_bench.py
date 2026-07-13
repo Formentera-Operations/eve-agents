@@ -1,5 +1,6 @@
-"""Latency-bench runner tests: all 10 op rows against a temp store, and a
-test-lowered cap that records the timeout sentinel instead of hanging."""
+"""Latency-bench runner tests: all 10 op rows against a temp store, a
+test-lowered cap that records the timeout sentinel instead of hanging, error
+rows that keep the run alive, and capped fixture sampling that fails loud."""
 
 import io
 import json
@@ -135,6 +136,35 @@ def test_op_exceeding_cap_records_sentinel_and_run_returns(lance_root, monkeypat
         assert row["within_60s_tool_budget"] is False
 
 
+def test_op_raising_error_records_sentinel_and_run_continues(lance_root, monkeypatch):
+    def broken_grep(self, *args, **kwargs):
+        raise ValueError("bad filter expression")
+
+    monkeypatch.setattr(latency_bench.EvidenceRetriever, "grep", broken_grep)
+    report = latency_bench.run_latency_bench([str(lance_root)], warm=1)
+    rows = report["roots"][str(lance_root)]
+    assert [row["op"] for row in rows] == EXPECTED_OPS
+    for row in rows:
+        if row["op"].startswith("grep"):
+            assert row["cold_s"] == "ERROR: ValueError"
+            assert row["warm_median_s"] == "ERROR: ValueError"
+            assert row["within_60s_tool_budget"] is False
+        else:
+            assert isinstance(row["cold_s"], float), row
+            assert isinstance(row["warm_median_s"], float), row
+
+
+def test_fixture_sampling_exceeding_cap_fails_loud_naming_root(lance_root, monkeypatch):
+    def slow_sample(store):
+        time.sleep(0.5)
+
+    monkeypatch.setattr(latency_bench, "sample_fixtures", slow_sample)
+    with pytest.raises(latency_bench.FixtureSamplingError) as excinfo:
+        latency_bench.run_latency_bench([str(lance_root)], cap=0.05, warm=1)
+    assert "fixture sampling exceeded 0.05s" in str(excinfo.value)
+    assert str(lance_root) in str(excinfo.value)
+
+
 def test_cli_writes_json_and_exits_zero(lance_root, tmp_path):
     out = tmp_path / "latency.json"
     proc = subprocess.run(
@@ -157,3 +187,29 @@ def test_cli_writes_json_and_exits_zero(lance_root, tmp_path):
     report = json.loads(out.read_text())
     assert list(report["roots"]) == [str(lance_root)]
     assert len(report["roots"][str(lance_root)]) == 10
+
+
+def test_cli_exits_nonzero_when_fixture_sampling_exceeds_cap(lance_root, tmp_path):
+    out = tmp_path / "latency.json"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "doc_intel_analysts.evidence.latency_bench",
+            "--root",
+            str(lance_root),
+            "--out",
+            str(out),
+            "--cap",
+            "0.001",
+            "--warm",
+            "1",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=180,
+    )
+    assert proc.returncode != 0
+    assert "fixture sampling exceeded 0.001s" in proc.stderr
+    assert str(lance_root) in proc.stderr
+    assert not out.exists()

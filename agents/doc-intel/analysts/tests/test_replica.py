@@ -1,4 +1,5 @@
-"""U5 contract tests: bootstrap replica sync (dry-run plan, skip logic, verify).
+"""U5 contract tests: bootstrap replica sync (dry-run plan, skip logic, verify,
+extras remediation).
 
 Thin by design — stubbed S3 client, temp dirs, no network. The real proof
 is the gate run in Azure.
@@ -145,6 +146,43 @@ def test_skip_up_to_date_and_redownload_mismatches(tmp_path):
     assert (tmp_path / ".masters/big.csv").read_bytes() == b"XXXXXXX-abc"
     assert report["ok"] is True
     assert all(v["ok"] for v in report["verification"])
+
+
+def test_extra_local_file_fails_verification_with_named_paths(
+    tmp_path, monkeypatch, capsys
+):
+    key = f"{LANCE}tbl/data.bin"
+    fake = FakeS3({key: b"payload-abc"})
+    _prewrite(tmp_path, ".evidence/lance/tbl/data.bin", b"payload-abc")
+    # Orphaned s3transfer temp file: same directory, random suffix, stranded
+    # by a killed run. Not in the remote listing -> must fail as an extra.
+    _prewrite(tmp_path, ".evidence/lance/tbl/data.bin.6aF3xQ", b"partial")
+    monkeypatch.setattr(replica, "_make_client", lambda: fake)
+
+    with pytest.raises(SystemExit) as excinfo:
+        replica.main(["--bootstrap", "--dest", str(tmp_path)])
+
+    assert excinfo.value.code == 1
+    out = capsys.readouterr().out
+    assert "MISMATCH" in out
+    assert "tbl/data.bin.6aF3xQ" in out
+    assert "--remove-extras" in out
+
+
+def test_remove_extras_deletes_orphans_and_passes(tmp_path, monkeypatch, capsys):
+    key = f"{LANCE}tbl/data.bin"
+    fake = FakeS3({key: b"payload-abc"})
+    _prewrite(tmp_path, ".evidence/lance/tbl/data.bin", b"payload-abc")
+    orphan = _prewrite(tmp_path, ".evidence/lance/tbl/data.bin.6aF3xQ", b"partial")
+    monkeypatch.setattr(replica, "_make_client", lambda: fake)
+
+    replica.main(["--bootstrap", "--dest", str(tmp_path), "--remove-extras"])
+
+    assert not orphan.exists()
+    assert (tmp_path / ".evidence/lance/tbl/data.bin").read_bytes() == b"payload-abc"
+    out = capsys.readouterr().out
+    assert "MISMATCH" not in out
+    assert "OK" in out
 
 
 def test_verification_mismatch_exits_nonzero(tmp_path, monkeypatch, capsys):

@@ -1,7 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-import { ANALYSTS_URL, analystHeaders } from "../lib/analysts.ts";
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 
 const responseSchema = z.object({
   answer: z.string(),
@@ -36,7 +36,7 @@ export default defineTool({
       };
     }
     if (!res.ok) {
-      return { error: `Knowledge graph service responded ${res.status}.` };
+      return { error: analystError("Knowledge graph service", res.status) };
     }
     const parsed = responseSchema.safeParse(await res.json());
     if (!parsed.success) {

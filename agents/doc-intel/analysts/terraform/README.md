@@ -50,13 +50,62 @@ az containerapp job start -n doc-intel-analysts-gate -g rg-mcp-prod-001
 
 Creates the Premium NFS share (200 GiB, VNet-scoped), the environment
 storage mount, the two NSG allow rules (445/2049, additive only), the
-identity + role assignments, and the gate job. The gate job down-syncs the
-four S3 prefixes and exits nonzero on count/byte parity failure — **do not
-proceed to wave 2 until it exits 0** (idempotent: re-run resumes).
+identity + role assignments, and the gate job.
 
 **Single-writer cutover:** the laptop stops writing to the S3-replicated
 stores at the FIRST Azure job write. From the gate run onward, Azure owns
 the stores.
+
+### Gate checks — ALL FOUR must pass before wave 2
+
+The NFS gate is four blocking checks, not one. The gate job's default args
+run only check 1; checks 2–4 reuse the same job with `--args` overrides.
+
+**1. Replica parity** (the job's default args): down-syncs the four S3
+prefixes, exits nonzero on per-key parity failure (idempotent: re-run
+resumes).
+
+**2. Latency benchmark** — the plan's hard go/no-go. Run against the
+mounted lance root, write results to the mount, then pull and compare:
+
+```sh
+az containerapp job start -n doc-intel-analysts-gate -g rg-mcp-prod-001 \
+  --args "python" "-m" "doc_intel_analysts.evidence.latency_bench" \
+         "--root" "/app/agents/doc-intel/analysts/.evidence/lance" \
+         "--out" "/app/agents/doc-intel/analysts/.evidence/nfs-gate.json"
+```
+
+Pass criterion: **every row has `within_60s_tool_budget: true`**, compared
+against `benchmark/results/2026-07-11-phase2-s3-latency.json`'s local
+column. Commit the results JSON to `benchmark/results/` either way. Any op
+over budget = STOP: amend the migration decision record and switch to the
+documented VM/AKS fallback plan — do not build wave 2 on a failed gate.
+
+**3. Non-root NFS write check** (uid 1000, no fsGroup on ACA — NFS
+ownership is real POSIX):
+
+```sh
+az containerapp job start -n doc-intel-analysts-gate -g rg-mcp-prod-001 \
+  --args "python" "-c" "import pathlib
+for m in ('.evidence', '.cognee', '.masters'):
+    p = pathlib.Path('/app/agents/doc-intel/analysts', m, '.write-check')
+    p.write_text('ok'); p.unlink(); print(f'{m}: write ok')"
+```
+
+The point is a successful write+delete as the container user (uid 1000)
+on all three mounts; an `EACCES` here means the share's POSIX ownership
+needs fixing before anything else runs.
+
+**4. Kuzu-on-NFS lock check**: open the synced graph store on the mount,
+confirm lock acquisition/release and a basic read (embedded-DB-on-NFS
+locking is the open risk the brain decision flags). Locate the Kuzu
+database dir under `.cognee` (`find /app/agents/doc-intel/analysts/.cognee
+-maxdepth 3 -iname '*kuzu*'`), then open it with `python -c "import kuzu;
+kuzu.Database('<path>')"` via the same `--args` override, twice in
+succession (second open after first exits proves release).
+
+Deferred follow-up (also noted in the plan's KTD6 spirit): fold checks 2–4
+into a single scripted gate command so the sequence cannot be skipped.
 
 ## Wave 2 — service + remaining jobs
 

@@ -75,6 +75,18 @@ test("sends the bearer token when DOC_INTEL_ANALYSTS_TOKEN is set", async () => 
   assert.equal(sentHeaders["content-type"], "application/json");
 });
 
+test("surfaces an actionable credential error on 401", async () => {
+  globalThis.fetch = async () => new Response("unauthorized", { status: 401 });
+  const result = await delegateAnalysis.execute(
+    { question: "Q", document_keys: ["FP GRIFFIN/ALPHA 1H/Financial/AFE/a.pdf"] },
+    {} as never,
+  );
+  assert.ok("error" in result);
+  assert.match(String(result.error), /401 unauthorized/);
+  assert.match(String(result.error), /DOC_INTEL_ANALYSTS_TOKEN/);
+  assert.match(String(result.error), /Do not retry/);
+});
+
 test("degrades gracefully when the analyst service is unreachable", async () => {
   globalThis.fetch = async () => {
     throw new Error("ECONNREFUSED");

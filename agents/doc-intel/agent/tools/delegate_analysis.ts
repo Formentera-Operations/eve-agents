@@ -1,7 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-import { ANALYSTS_URL, analystHeaders } from "../lib/analysts.ts";
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 import { findByKey } from "../lib/manifest.ts";
 
 const responseSchema = z.object({
@@ -57,7 +57,7 @@ export default defineTool({
       };
     }
     if (!res.ok) {
-      return { error: `Analyst service responded ${res.status}.` };
+      return { error: analystError("Analyst service", res.status) };
     }
 
     const parsed = responseSchema.safeParse(await res.json());

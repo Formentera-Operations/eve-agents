@@ -25,10 +25,16 @@ logging.basicConfig(stream=sys.stdout, format='{"level":"%(levelname)s","msg":%(
 log = logging.getLogger("doc-intel-analysts")
 log.setLevel(logging.INFO)
 
+
+def _auth_required() -> bool:
+    """Hosted-mode flag, read at call time: any non-empty value means auth is required."""
+    return bool(os.environ.get("ANALYSTS_REQUIRE_AUTH"))
+
+
 # Fail closed in hosted mode: refusing to start beats serving openly.
-if os.environ.get("ANALYSTS_REQUIRE_AUTH") == "1" and not os.environ.get("ANALYSTS_API_TOKEN"):
+if _auth_required() and not os.environ.get("ANALYSTS_API_TOKEN"):
     raise RuntimeError(
-        "ANALYSTS_REQUIRE_AUTH=1 but ANALYSTS_API_TOKEN is missing or empty; refusing to start."
+        "ANALYSTS_REQUIRE_AUTH is set but ANALYSTS_API_TOKEN is missing or empty; refusing to start."
     )
 
 
@@ -38,9 +44,11 @@ class BearerAuthMiddleware:
     Pure ASGI middleware — not an app-level dependency — because FastAPI's
     auto-mounted /docs, /redoc and /openapi.json bypass app dependencies;
     middleware runs before routing and covers every route. Reads
-    ANALYSTS_API_TOKEN at request time: unset means auth is disabled (local
-    dev unchanged). /health stays open for liveness probes. The presented
-    credential is never logged or echoed.
+    ANALYSTS_API_TOKEN at request time: unset with ANALYSTS_REQUIRE_AUTH also
+    unset means auth is disabled (local dev unchanged); the flag set without a
+    token 401s every non-/health request rather than serving open (defense in
+    depth against env drift past the startup guard). /health stays open for
+    liveness probes. The presented credential is never logged or echoed.
     """
 
     def __init__(self, app: ASGIApp) -> None:
@@ -51,7 +59,12 @@ class BearerAuthMiddleware:
             await self.app(scope, receive, send)
             return
         expected = os.environ.get("ANALYSTS_API_TOKEN", "")
-        if not expected or scope["path"] == "/health" or _bearer_matches(scope, expected):
+        allowed = (
+            scope["path"] == "/health"
+            or (not expected and not _auth_required())
+            or (bool(expected) and _bearer_matches(scope, expected))
+        )
+        if allowed:
             await self.app(scope, receive, send)
             return
         response = JSONResponse(

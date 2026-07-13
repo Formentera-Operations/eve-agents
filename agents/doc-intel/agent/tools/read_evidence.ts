@@ -1,7 +1,7 @@
 import { defineTool } from "eve/tools";
 import { z } from "zod";
 
-import { ANALYSTS_URL, analystHeaders } from "../lib/analysts.ts";
+import { ANALYSTS_URL, analystError, analystHeaders } from "../lib/analysts.ts";
 
 const pageReadSchema = z.object({
   page_id: z.string(),
@@ -67,7 +67,7 @@ export default defineTool({
       return { error: "Unknown page_id or doc_id — take identities from search_evidence, grep_evidence, or find_evidence_files hits." };
     }
     if (!res.ok) {
-      return { error: `Evidence service responded ${res.status}.` };
+      return { error: analystError("Evidence service", res.status) };
     }
     const body = await res.json();
     const parsed = pageReadSchema.safeParse(body);

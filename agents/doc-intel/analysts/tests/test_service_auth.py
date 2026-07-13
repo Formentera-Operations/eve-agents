@@ -6,7 +6,9 @@ Security-review properties under test:
    credential never appears in logs or response bodies.
 2. FastAPI's auto-mounted /docs, /redoc and /openapi.json are gated too
    (pure ASGI middleware runs before routing).
-3. ANALYSTS_REQUIRE_AUTH=1 without a token refuses to start (fail closed).
+3. ANALYSTS_REQUIRE_AUTH set to ANY non-empty value without a token refuses
+   to start (fail closed), and the middleware 401s every non-/health request
+   if that drift is only visible at request time (defense in depth).
 Token unset without the flag = auth disabled entirely (local dev unchanged).
 
 The middleware reads ANALYSTS_API_TOKEN at request time, so monkeypatching
@@ -113,6 +115,29 @@ def test_require_auth_without_token_refuses_to_start():
     )
     assert proc.returncode != 0
     assert "ANALYSTS_API_TOKEN" in proc.stderr
+
+
+def test_require_auth_truthy_variant_without_token_refuses_to_start():
+    # Drift case: the flag set to a truthy-but-not-"1" value must still fail closed.
+    env = {k: v for k, v in os.environ.items() if k != "ANALYSTS_API_TOKEN"}
+    env["ANALYSTS_REQUIRE_AUTH"] = "true"
+    proc = subprocess.run(
+        [sys.executable, "-c", "import doc_intel_analysts.service"],
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode != 0
+    assert "ANALYSTS_API_TOKEN" in proc.stderr
+
+
+def test_flag_set_without_token_at_request_time_is_401(client, monkeypatch):
+    # Drift past the startup guard: env changes after import, so the module-level
+    # check never saw it. The middleware must still refuse to serve open.
+    monkeypatch.delenv("ANALYSTS_API_TOKEN", raising=False)
+    monkeypatch.setenv("ANALYSTS_REQUIRE_AUTH", "true")
+    assert client.post("/analyze", json={}).status_code == 401
+    assert client.get("/health").status_code == 200
 
 
 def test_require_auth_with_token_starts():

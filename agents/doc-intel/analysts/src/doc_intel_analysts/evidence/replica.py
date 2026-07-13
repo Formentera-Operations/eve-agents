@@ -2,8 +2,9 @@
 
 Stands up a complete replica of the doc-intel stores on a fresh volume (the
 Azure Files NFS mount) by down-syncing four prefixes from the derived bucket,
-then verifying count + byte parity per prefix the same way the Phase 1 laptop
-sync did (`.evidence/s3-sync-phase1.sh`).
+then verifying per-key parity (relative path + size) per prefix — a stricter
+form of the count/byte check the Phase 1 laptop sync did
+(`.evidence/s3-sync-phase1.sh`).
 
 S3 layout, all under ``s3://formentera-welldrive-derived/``:
 
@@ -21,13 +22,18 @@ and are never touched by the bootstrap.
 Idempotent resume: an object is skipped when the local file exists with
 matching size AND a matching ETag; multipart ETags (containing ``-``) cannot
 be recomputed locally, so size parity suffices for those. A re-run after a
-mid-transfer failure therefore picks up where it left off.
+mid-transfer failure therefore picks up where it left off. A killed run can
+also strand boto3 s3transfer temp files (random-suffix siblings of their
+targets); verification reports these as extras and ``--remove-extras``
+deletes them.
 
 Run from the analysts directory (or the one-off gate Job container):
 
-    python -m doc_intel_analysts.evidence.replica --bootstrap [--dest PATH] [--dry-run]
+    python -m doc_intel_analysts.evidence.replica --bootstrap [--dest PATH] \
+        [--dry-run] [--remove-extras]
 
-Exit status is nonzero when any prefix fails post-sync count/byte parity.
+Exit status is nonzero when any prefix fails post-sync per-key parity
+(missing, size-mismatched, or extra local files).
 """
 
 import argparse
@@ -49,6 +55,7 @@ _PACKAGE_ROOT = Path(__file__).resolve().parents[3]
 
 _PROGRESS_EVERY = 200
 _MD5_CHUNK = 1 << 20
+_EXAMPLE_PATHS = 10
 
 
 @dataclass(frozen=True)
@@ -152,30 +159,61 @@ def _sync_target(
     }
 
 
-def _local_stats(root: Path) -> tuple[int, int]:
+def _local_files(root: Path) -> dict[str, int]:
     if not root.is_dir():
-        return 0, 0
-    files = [p for p in root.rglob("*") if p.is_file()]
-    return len(files), sum(p.stat().st_size for p in files)
+        return {}
+    return {
+        p.relative_to(root).as_posix(): p.stat().st_size
+        for p in root.rglob("*")
+        if p.is_file()
+    }
 
 
-def _verify_target(client: Any, target: SyncTarget, dest: Path) -> dict[str, Any]:
-    """Count + byte parity, remote listing vs local tree (Phase 1 verify)."""
-    remote = _list_remote(client, target.prefix)
-    remote_count, remote_bytes = len(remote), sum(o.size for o in remote)
-    local_count, local_bytes = _local_stats(dest / target.local_subdir)
+def _verify_target(
+    client: Any, target: SyncTarget, dest: Path, *, remove_extras: bool = False
+) -> dict[str, Any]:
+    """Per-key parity (relative path + size), remote listing vs local tree.
+
+    Reports three categories: ``missing`` (listed, absent locally),
+    ``size_mismatch`` (present, wrong size), and ``extras`` (local files not
+    in the listing, e.g. s3transfer temp files stranded by a killed run).
+    With ``remove_extras`` the extras are deleted and the target re-verified.
+    """
+    local_root = dest / target.local_subdir
+    expected = {
+        obj.key[len(target.prefix) :]: obj.size
+        for obj in _list_remote(client, target.prefix)
+    }
+    local = _local_files(local_root)
+    missing = sorted(rel for rel in expected if rel not in local)
+    size_mismatch = sorted(
+        rel for rel, size in expected.items() if rel in local and local[rel] != size
+    )
+    extras = sorted(rel for rel in local if rel not in expected)
+    if remove_extras and extras:
+        for rel in extras:
+            (local_root / rel).unlink()
+        logger.info("%s: removed %d extra local file(s)", target.name, len(extras))
+        return _verify_target(client, target, dest)
     return {
         "name": target.name,
-        "remote_count": remote_count,
-        "remote_bytes": remote_bytes,
-        "local_count": local_count,
-        "local_bytes": local_bytes,
-        "ok": remote_count == local_count and remote_bytes == local_bytes,
+        "remote_count": len(expected),
+        "remote_bytes": sum(expected.values()),
+        "local_count": len(local),
+        "local_bytes": sum(local.values()),
+        "missing": missing,
+        "size_mismatch": size_mismatch,
+        "extras": extras,
+        "ok": not (missing or size_mismatch or extras),
     }
 
 
 def bootstrap(
-    dest: Path, *, dry_run: bool = False, client: Any = None
+    dest: Path,
+    *,
+    dry_run: bool = False,
+    remove_extras: bool = False,
+    client: Any = None,
 ) -> dict[str, Any]:
     """Sync all four prefixes into `dest`, then verify (unless dry-run)."""
     client = client or _make_client()
@@ -190,11 +228,17 @@ def bootstrap(
     }
     if not dry_run:
         verification = [
-            _verify_target(client, target, dest) for target in SYNC_TARGETS
+            _verify_target(client, target, dest, remove_extras=remove_extras)
+            for target in SYNC_TARGETS
         ]
         report["verification"] = verification
         report["ok"] = all(row["ok"] for row in verification)
     return report
+
+
+def _example_paths(paths: list[str]) -> str:
+    shown = ", ".join(paths[:_EXAMPLE_PATHS])
+    return shown if len(paths) <= _EXAMPLE_PATHS else f"{shown}, ..."
 
 
 def _print_summary(report: dict[str, Any]) -> None:
@@ -214,6 +258,23 @@ def _print_summary(report: dict[str, Any]) -> None:
         remote = f"{row['remote_count']} / {row['remote_bytes']}"
         local = f"{row['local_count']} / {row['local_bytes']}"
         print(f"{row['name']:<10} {remote:>24} {local:>24} {status}")
+    for row in report["verification"]:
+        if row["missing"]:
+            print(
+                f"{row['name']}: {len(row['missing'])} missing locally:"
+                f" {_example_paths(row['missing'])}"
+            )
+        if row["size_mismatch"]:
+            print(
+                f"{row['name']}: {len(row['size_mismatch'])} size mismatch:"
+                f" {_example_paths(row['size_mismatch'])}"
+            )
+        if row["extras"]:
+            print(
+                f"{row['name']}: {len(row['extras'])} extra local file(s) not in"
+                f" the remote listing: {_example_paths(row['extras'])}"
+                " (re-run with --remove-extras to delete them)"
+            )
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -238,12 +299,19 @@ def main(argv: list[str] | None = None) -> None:
         action="store_true",
         help="print the sync plan without transferring anything",
     )
+    parser.add_argument(
+        "--remove-extras",
+        action="store_true",
+        help="delete local files absent from the remote listing before verifying",
+    )
     args = parser.parse_args(argv)
 
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s"
     )
-    report = bootstrap(args.dest, dry_run=args.dry_run)
+    report = bootstrap(
+        args.dest, dry_run=args.dry_run, remove_extras=args.remove_extras
+    )
     _print_summary(report)
     if not report["ok"]:
         sys.exit(1)
