@@ -43,8 +43,11 @@ param location string = resourceGroup().location
 @description('Tag of formenteramcp.azurecr.io/doc-intel-analysts to deploy. No default: pin every deploy.')
 param imageTag string
 
-@description('Wave 2 gate: false deploys storage + the gate job only; true adds the service and the ingest/maintenance/graph-rebuild jobs (flip only after the NFS bootstrap parity gate passes).')
+@description('Wave 2 gate: false deploys storage + the gate job only; true adds the service and the ingest/graph-rebuild jobs (flip only after the NFS gate passes).')
 param deployService bool = false
+
+@description('Deploy the maintenance job. Off by default because it pins the E8 Dedicated profile, which carries a standing management fee — the transient flow is: az workload-profile add E8 -> deploy with deployMaintenance=true -> run -> delete job -> remove profile (README).')
+param deployMaintenance bool = false
 
 // ------------------------------------------------------------------------------
 // Networking (shared production subnet/NSG — identified, never managed).
@@ -566,11 +569,11 @@ resource ingestJob 'Microsoft.App/jobs@2025-01-01' = if (deployService) {
 
 // --- maintenance (wave 2, E8 dedicated profile) ----------------------------------
 
-// NOT deployService-gated (revised 2026-07-13): the NFS gate's amended flow
-// runs pages compaction BEFORE wave 2 — the four benchmark timeouts are all
-// pre-compaction pages-table ops, so the maintenance job must exist in wave 1.
-// Manual trigger only; standing it up is harmless.
-resource maintenanceJob 'Microsoft.App/jobs@2025-01-01' = {
+// Gated by its OWN toggle (not deployService): the job pins the E8 profile,
+// whose existence bills the Dedicated management fee — so job + profile are
+// stood up transiently around maintenance runs (README flow). The gate's
+// compaction runs (2026-07-13) used exactly this pattern.
+resource maintenanceJob 'Microsoft.App/jobs@2025-01-01' = if (deployMaintenance) {
   name: '${appName}-maintenance'
   location: location
   tags: tags
